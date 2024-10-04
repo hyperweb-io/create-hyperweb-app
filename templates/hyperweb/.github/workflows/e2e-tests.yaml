@@ -1,0 +1,41 @@
+name: Run E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository 📝
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "yarn"
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Set Up Starship Infrastructure
+        id: starship-infra
+        uses: cosmology-tech/starship-action@0.5.7
+        with:
+          config: configs/ci.yaml
+          cli-version: 2.10.2
+
+      - name: Run E2E Tests
+        run: yarn test

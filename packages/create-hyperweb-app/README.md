@@ -6,8 +6,8 @@
 
 <p align="center" width="100%">
    <a href="https://www.npmjs.com/package/create-hyperweb-app"><img height="20" src="https://img.shields.io/npm/dt/create-hyperweb-app"></a>
-   <a href="https://github.com/cosmology-tech/create-hyperweb-app/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-   <a href="https://www.npmjs.com/package/create-hyperweb-app"><img height="20" src="https://img.shields.io/github/package-json/v/cosmology-tech/create-hyperweb-app?filename=packages%2Fcreate-hyperweb-app%2Fpackage.json"></a>
+   <a href="https://github.com/hyperweb-io/create-hyperweb-app/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+   <a href="https://www.npmjs.com/package/create-hyperweb-app"><img height="20" src="https://img.shields.io/github/package-json/v/hyperweb-io/create-hyperweb-app?filename=packages%2Fcreate-hyperweb-app%2Fpackage.json"></a>
 </p>
 
 Set up a Hyperweb app by running one command ⚛️
@@ -18,9 +18,6 @@ Set up a Hyperweb app by running one command ⚛️
 - [Examples](#examples)
 - [Options](#options)
 - [Development](#development)
-
-https://user-images.githubusercontent.com/545047/192061992-f0e1106d-f4b2-4879-ab0a-896f22ee4f49.mp4
-
 
 ## Overview
 

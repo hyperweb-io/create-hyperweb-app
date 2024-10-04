@@ -1,6 +1,6 @@
 {
   "name": "create-hyperweb-app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Set up a Hyperweb app by running one command ⚛️",
   "author": "Dan Lynch <pyramation@gmail.com>",
   "homepage": "https://github.com/hyperweb-io/create-hyperweb-app#readme",

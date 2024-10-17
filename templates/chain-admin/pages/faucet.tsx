@@ -17,13 +17,10 @@ export default function Faucet() {
   const { selectedChain } = useChainStore();
   const { address, chain, assets } = useChain(selectedChain);
   const { toast } = useToast();
-  const { data: starshipChains } = useStarshipChains();
+  const { data: starshipData } = useStarshipChains();
 
   const checkIsChainSupported = () => {
-    const isStarshipRunning =
-      starshipChains?.chains?.length && starshipChains?.assets?.length;
-
-    if (!isStarshipRunning) {
+    if (!starshipData) {
       toast({
         type: 'error',
         title: 'Starship is not running',
@@ -32,8 +29,8 @@ export default function Faucet() {
       return false;
     }
 
-    const isStarshipChain = starshipChains?.chains?.some(
-      (c) => c.chain_id === chain.chain_id,
+    const isStarshipChain = starshipData?.chains?.some(
+      (c) => c.chain_id === chain.chain_id
     );
 
     if (!isStarshipChain) {
@@ -59,7 +56,7 @@ export default function Faucet() {
 
     const asset = assets.assets[0];
     const port = (config as StarshipConfig).chains.find(
-      (c) => c.id === chain.chain_id,
+      (c) => c.id === chain.chain_id
     )!.ports.faucet;
 
     try {

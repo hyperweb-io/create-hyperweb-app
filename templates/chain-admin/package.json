@@ -24,6 +24,7 @@
     "@cosmjs/amino": "0.32.3",
     "@cosmjs/cosmwasm-stargate": "0.32.3",
     "@cosmjs/stargate": "0.31.1",
+    "@cosmos-kit/core": "2.13.1",
     "@cosmos-kit/react": "2.18.0",
     "@interchain-ui/react": "1.23.31",
     "@interchain-ui/react-no-ssr": "0.1.2",
@@ -48,7 +49,7 @@
   "devDependencies": {
     "@chain-registry/types": "0.44.3",
     "@keplr-wallet/types": "^0.12.111",
-    "@starship-ci/cli": "^2.9.0",
+    "@starship-ci/cli": "^2.10.2",
     "@tanstack/react-query-devtools": "4.32.0",
     "@types/node": "18.11.9",
     "@types/node-gzip": "^1",
@@ -57,7 +58,7 @@
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.5",
     "generate-lockfile": "0.0.12",
-    "starshipjs": "^2.4.0",
+    "starshipjs": "^2.4.1",
     "typescript": "4.9.3",
     "yaml-loader": "^0.8.1"
   }

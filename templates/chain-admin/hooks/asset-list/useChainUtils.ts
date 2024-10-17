@@ -8,9 +8,17 @@ import BigNumber from 'bignumber.js';
 import { Coin } from '@cosmjs/amino';
 import { PrettyAsset } from '@/components';
 import { ChainName } from 'cosmos-kit';
+import { useStarshipChains } from '../common';
 
 export const useChainUtils = (chainName: string) => {
   const { getChainRecord } = useManager();
+  const { data: starshipData } = useStarshipChains();
+  const { chains: starshipChains = [], assets: starshipAssets = [] } =
+    starshipData ?? {};
+
+  const isStarshipChain = starshipChains.some(
+    (chain) => chain.chain_name === chainName
+  );
 
   const filterAssets = (assetList: AssetList[]): Asset[] => {
     return (
@@ -22,7 +30,10 @@ export const useChainUtils = (chainName: string) => {
 
   const { nativeAssets, ibcAssets } = useMemo(() => {
     // @ts-ignore
-    const nativeAssets = filterAssets(chainAssets);
+    const nativeAssets = filterAssets([
+      ...chainAssets,
+      ...(isStarshipChain ? starshipAssets : []),
+    ]);
     // @ts-ignore
     const ibcAssets = filterAssets(ibcAssetLists);
 
@@ -157,6 +168,7 @@ export const useChainUtils = (chainName: string) => {
   };
 
   return {
+    isStarshipChain,
     allAssets,
     nativeAssets,
     ibcAssets,

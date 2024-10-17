@@ -2,6 +2,7 @@ import { Asset } from '@chain-registry/types';
 import { useQuery } from '@tanstack/react-query';
 import { useChainUtils } from './useChainUtils';
 import { handleError } from './useTopTokens';
+import { DEFAULT_HYPERWEB_TOKEN_PRICE } from '@/config';
 
 type CoinGeckoId = string;
 type CoinGeckoUSD = { usd: number };
@@ -36,14 +37,19 @@ const fetchPrices = async (
 };
 
 export const useChainAssetsPrices = (chainName: string) => {
-  const { allAssets } = useChainUtils(chainName);
+  const { allAssets, isStarshipChain } = useChainUtils(chainName);
   const assetsWithGeckoIds = getAssetsWithGeckoIds(allAssets);
   const geckoIds = getGeckoIds(assetsWithGeckoIds);
 
   return useQuery({
     queryKey: ['useChainAssetsPrices', chainName],
     queryFn: () => fetchPrices(geckoIds),
-    select: (data) => formatPrices(data, assetsWithGeckoIds),
+    select: (data) => ({
+      ...formatPrices(data, assetsWithGeckoIds),
+      ...(isStarshipChain
+        ? { [allAssets[0].base]: DEFAULT_HYPERWEB_TOKEN_PRICE }
+        : {}),
+    }),
     staleTime: Infinity,
   });
 };

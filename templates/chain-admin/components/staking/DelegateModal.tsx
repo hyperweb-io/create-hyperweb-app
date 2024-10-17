@@ -20,9 +20,9 @@ import {
   isGreaterThanZero,
   shiftDigits,
   calcDollarValue,
-  getCoin,
-  getExponent,
   toBaseAmount,
+  getExponentFromAsset,
+  getNativeAsset,
 } from '@/utils';
 import { Prices, UseDisclosureReturn, useTx } from '@/hooks';
 
@@ -59,15 +59,15 @@ export const DelegateModal = ({
   showDescription?: boolean;
 }) => {
   const { isOpen, onClose } = modalControl;
-  const { address, estimateFee } = useChain(chainName);
+  const { address, estimateFee, assets } = useChain(chainName);
 
   const [amount, setAmount] = useState<number | undefined>(0);
   const [isDelegating, setIsDelegating] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [maxAmountAndFee, setMaxAmountAndFee] = useState<MaxAmountAndFee>();
 
-  const coin = getCoin(chainName);
-  const exp = getExponent(chainName);
+  const coin = getNativeAsset(assets!);
+  const exp = getExponentFromAsset(coin);
   const { tx } = useTx(chainName);
 
   const onModalClose = () => {

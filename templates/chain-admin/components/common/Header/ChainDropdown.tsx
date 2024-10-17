@@ -27,7 +27,7 @@ export const ChainDropdown = () => {
       addChains(
         starshipChains.chains,
         starshipChains.assets,
-        getSignerOptions(),
+        getSignerOptions()
       );
       setIsChainsAdded(true);
     }

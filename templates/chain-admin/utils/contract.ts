@@ -1,10 +1,11 @@
-import { Asset, AssetList, Chain } from '@chain-registry/types';
+import { AssetList, Chain } from '@chain-registry/types';
 import { toBech32, fromBech32 } from '@cosmjs/encoding';
 import { DeliverTxResponse } from '@cosmjs/cosmwasm-stargate';
 import { Coin, logs, parseCoins } from '@cosmjs/stargate';
 import { CodeInfoResponse } from 'interchain-query/cosmwasm/wasm/v1/query';
 import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
 import BigNumber from 'bignumber.js';
+import { getExponentFromAsset } from './common';
 
 export const validateContractAddress = (
   address: string,
@@ -54,11 +55,6 @@ export const countJsonLines = (text: string) => text.split(/\n/).length;
 export const getExplorerLink = (chain: Chain, txHash: string) => {
   const txPageLink = chain.explorers?.[0].tx_page ?? '';
   return `${txPageLink.replace('${txHash}', txHash)}`;
-};
-
-export const getExponentFromAsset = (asset: Asset) => {
-  return asset.denom_units.find((unit) => unit.denom === asset.display)
-    ?.exponent;
 };
 
 export const bytesToKb = (bytes: number) => {

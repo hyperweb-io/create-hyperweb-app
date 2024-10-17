@@ -1,15 +1,19 @@
 export interface State {
-  get(key: string): any;
+  get(key: string): string;
   set(key: string, value: any): void;
-}
-
-export interface StateEntries {
-  totalSupply: number;
-  balance: (address: string) => number;
-  reserves: [number, number];
 }
 
 export interface Msg {
   sender: string;
   sent_funds: { [key: string]: number };
 }
+
+export type MappingStore<Params extends any[], ValueType> = (state: State) => [
+  (...args: Params) => ValueType, 
+  (...args: [...Params, ValueType]) => void,
+]
+
+export type Store<ValueType> = (state: State) => [
+  () => ValueType,
+  (value: ValueType) => void,
+]

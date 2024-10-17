@@ -1,15 +1,10 @@
 {
   "name": "hyperweb",
-  "private": true,
   "version": "0.0.3",
   "author": "__USERFULLNAME__ <__USEREMAIL__>",
   "description": "__MODULEDESC__",
   "homepage": "https://github.com/__USERNAME__/__REPONAME__",
   "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "__ACCESS__",
-    "directory": "dist"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/__USERNAME__/__REPONAME__"
@@ -17,16 +12,24 @@
   "bugs": {
     "url": "https://github.com/__USERNAME__/__REPONAME__/issues"
   },
+  "publishConfig": {
+    "access": "__ACCESS__",
+    "directory": "dist"
+  },
   "scripts": {
     "clean": "rimraf dist/contracts/**",
     "build": "ts-node scripts/build.ts",
     "test": "jest --verbose --bail",
     "test:debug": "jest --runInBand --verbose --bail",
+    "docker": "npm run docker:stop && npm run docker:run",
+    "docker:run": "docker run -d --name jsd-plus -p 26657:26657 -p 1317:1317 -p 8000:8000 -p 8001:8001 -p 8081:8081 ghcr.io/cosmology-tech/jsd-plus:0.1.1",
+    "docker:exec": "docker exec -it jsd-plus /bin/bash",
+    "docker:stop": "docker stop jsd-plus || true && docker rm jsd-plus || true",
     "starship": "starship --config configs/local.yaml",
     "starship:ci": "starship --config configs/ci.yaml"
   },
   "devDependencies": {
-    "@interweb/build": "^0.0.5",
+    "@hyperweb/build": "^0.0.2",
     "@starship-ci/cli": "^2.10.1",
     "@types/jest": "^29.5.11",
     "@types/node": "^22.7.4",
@@ -37,7 +40,7 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "jest": "^29.6.2",
-    "jsdjs": "1.5.0",
+    "hyperwebjs": "0.0.4",
     "prettier": "^3.0.2",
     "rimraf": "4.4.1",
     "starshipjs": "^2.4.1",
@@ -45,6 +48,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   },
-  "keywords": [],
-  "gitHead": "8cacfd657ec77cadabe58e80b8cc8adfa9704f83"
+  "keywords": []
 }

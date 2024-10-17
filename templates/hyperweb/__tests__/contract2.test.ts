@@ -4,12 +4,12 @@ import { assertIsDeliverTxSuccess } from '@cosmjs/stargate';
 
 import path from "path";
 import fs from 'fs';
-import { getSigningJsdClient, jsd } from 'jsdjs'
+import { getSigningJsdClient, jsd } from 'hyperwebjs'
 import { useChain, generateMnemonic } from 'starshipjs';
 import { sleep } from '../test-utils/sleep';
 import './setup.test';
 
-describe('JSD tests', () => {
+describe('Contract 2: AMM contract test', () => {
   let wallet, denom, address, queryClient, signingClient;
   let chainInfo, getCoin, getRpcEndpoint, creditFromFaucet;
   let contractCode, contractIndex;
@@ -17,7 +17,7 @@ describe('JSD tests', () => {
   let wallet2, address2;
   let fee;
 
-  const denom2 = "uweb", denomATOM = "ATOM", denomUSDC = "USDC";
+  const denom2 = "uhypweb", uatom = "uatom", uusdc = "uusdc";
 
   beforeAll(async () => {
     ({
@@ -33,14 +33,14 @@ describe('JSD tests', () => {
       prefix: chainInfo.chain.bech32_prefix
     });
     address = (await wallet.getAccounts())[0].address;
-    console.log(`contract creator address: ${address}`)
+    console.log(`contract creator address for amm: ${address}`)
 
     // Initialize wallet2
     wallet2 = await DirectSecp256k1HdWallet.fromMnemonic(generateMnemonic(), {
       prefix: chainInfo.chain.bech32_prefix
     });
     address2 = (await wallet2.getAccounts())[0].address;
-    console.log(`contract creator address: ${address2}`)
+    console.log(`contract creator address2 for amm: ${address2}`)
 
     // Create custom cosmos interchain client
     queryClient = await jsd.ClientFactory.createRPCQueryClient({
@@ -54,8 +54,8 @@ describe('JSD tests', () => {
 
     await creditFromFaucet(address, denom);
     await creditFromFaucet(address, denom2);
-    await creditFromFaucet(address, denomATOM);
-    await creditFromFaucet(address, denomUSDC);
+    await creditFromFaucet(address, uatom);
+    await creditFromFaucet(address, uusdc);
 
     await creditFromFaucet(address2, denom);
     await creditFromFaucet(address2, denom2);
@@ -118,7 +118,7 @@ describe('JSD tests', () => {
       creator: address,
       index: contractIndex,
       fnName: "addLiquidity",
-      arg: `{"amount0":50, "amount1":50}`,
+      arg: `{"amount0":50000000, "amount1":50000000}`,
     });
 
     const result = await signingClient.signAndBroadcast(address, [msg], fee);
@@ -129,11 +129,11 @@ describe('JSD tests', () => {
   });
 
   it('check balance after addLiquidity', async () => {
-    const usdcBalance = await signingClient.getBalance(address, "USDC");
-    expect(usdcBalance.amount).toEqual("9999999950");
+    const usdcBalance = await signingClient.getBalance(address, uusdc);
+    expect(usdcBalance.amount).toEqual("9950000000");
 
-    const atomBalance = await signingClient.getBalance(address, "ATOM");
-    expect(atomBalance.amount).toEqual("9999999950");
+    const atomBalance = await signingClient.getBalance(address, uatom);
+    expect(atomBalance.amount).toEqual("9950000000");
   });
 
   it('perform swap eval', async () => {
@@ -141,13 +141,13 @@ describe('JSD tests', () => {
       creator: address,
       index: contractIndex,
       fnName: "swap",
-      arg: `{"tokenIn":"USDC","amountIn":10}`,
+      arg: `{"tokenIn":"${uusdc}","amountIn":10000000}`,
     });
 
     const result = await signingClient.signAndBroadcast(address, [msg], fee);
     assertIsDeliverTxSuccess(result);
 
     const response = jsd.jsd.MsgEvalResponse.fromProtoMsg(result.msgResponses[0]);
-    expect(response.result).toEqual("8.312489578122396");
+    expect(response.result).toEqual("9969998.011982398");
   });
 });

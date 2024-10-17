@@ -1,4 +1,4 @@
-import { InterwebBuild, InterwebBuildOptions } from '@interweb/build';
+import { HyperwebBuild, HyperwebBuildOptions } from '@hyperweb/build';
 import { join } from 'path';
 
 interface BuildConfig {
@@ -25,14 +25,14 @@ const rootDir = join(__dirname, '/../');
 async function buildInterweb(config: BuildConfig): Promise<void> {
   const { entryFile, outFile, externalPackages } = config;
 
-  const options: Partial<InterwebBuildOptions> = {
+  const options: Partial<HyperwebBuildOptions> = {
     entryPoints: [join(rootDir, entryFile)],
     outfile: join(rootDir, outFile),
     external: externalPackages
   };
 
   try {
-    await InterwebBuild.build(options);
+    await HyperwebBuild.build(options);
     console.log(`Build completed successfully! Output: ${options.outfile}`);
   } catch (error) {
     console.error('Build failed:', error);

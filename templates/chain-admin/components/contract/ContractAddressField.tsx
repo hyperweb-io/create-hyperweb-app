@@ -70,7 +70,7 @@ export const ContractAddressField = ({
     contractAddress: input,
     enabled: false,
   });
-  const { data: myContracts = [] } = useMyContracts();
+  const { data: myContracts } = useMyContracts();
 
   useEffect(() => {
     const updateWidth = () => {
@@ -159,19 +159,21 @@ export const ContractAddressField = ({
           }}
           styleProps={{ width: fieldWidth }}
         >
-          {myContracts.map(({ address, contractInfo }) => (
-            <Combobox.Item key={address} textValue={address}>
-              <Box transform="translateY(2px)">
-                <Text>
-                  {`${shortenAddress(address, isMobile ? 8 : 18)} (`}
-                  <Text as="span" fontWeight="600">
-                    {`${contractInfo?.label || 'Unnamed'}`}
+          {(myContracts?.wasmContracts || []).map(
+            ({ address, contractInfo }) => (
+              <Combobox.Item key={address} textValue={address}>
+                <Box transform="translateY(2px)">
+                  <Text>
+                    {`${shortenAddress(address, isMobile ? 8 : 18)} (`}
+                    <Text as="span" fontWeight="600">
+                      {`${contractInfo?.label || 'Unnamed'}`}
+                    </Text>
+                    {')'}
                   </Text>
-                  {')'}
-                </Text>
-              </Box>
-            </Combobox.Item>
-          ))}
+                </Box>
+              </Combobox.Item>
+            )
+          )}
         </Combobox>
         {status.state !== 'init' && (
           <Box display="flex" alignItems="center" gap="6px">

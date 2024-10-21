@@ -1,4 +1,12 @@
-import { Box, BoxProps, useColorModeValue } from '@interchain-ui/react';
+import { useState } from 'react';
+import {
+  Box,
+  BoxProps,
+  useColorModeValue,
+  Icon,
+  Text,
+} from '@interchain-ui/react';
+import { useCopyToClipboard } from '@/hooks';
 
 const Table = (props: BoxProps) => {
   return <Box as="table" rawCSS={{ borderSpacing: '0 20px' }} {...props} />;
@@ -45,7 +53,56 @@ const TableHeaderCell = (props: BoxProps) => {
   );
 };
 
-const TableCell = (props: BoxProps) => {
+interface TableCellProps extends BoxProps {
+  copyOnHover?: boolean;
+  copyValue?: string;
+}
+
+const TableCell = ({
+  copyOnHover = false,
+  copyValue,
+  children,
+  ...props
+}: TableCellProps) => {
+  const [isHover, setIsHover] = useState(false);
+  const { copyToClipboard, isCopied } = useCopyToClipboard();
+
+  const handleCopy = () => {
+    if (copyValue) {
+      copyToClipboard(copyValue);
+    }
+  };
+
+  const content = copyOnHover ? (
+    <Box
+      display="flex"
+      alignItems="center"
+      gap="8px"
+      width="$fit"
+      cursor="pointer"
+      attributes={{
+        onMouseEnter: () => setIsHover(true),
+        onMouseLeave: () => setIsHover(false),
+        onClick: handleCopy,
+      }}
+    >
+      <Text color="inherit" fontSize="inherit" fontWeight="inherit">
+        {children}
+      </Text>
+      {isHover && (
+        <Box display="flex" transform="translateY(2px)">
+          <Icon
+            name={isCopied ? 'checkLine' : 'copy'}
+            color={isCopied ? '$green600' : '$blackAlpha500'}
+            size="$md"
+          />
+        </Box>
+      )}
+    </Box>
+  ) : (
+    children
+  );
+
   return (
     <Box
       as="td"
@@ -53,7 +110,9 @@ const TableCell = (props: BoxProps) => {
       fontSize="14px"
       fontWeight="600"
       {...props}
-    />
+    >
+      {content}
+    </Box>
   );
 };
 

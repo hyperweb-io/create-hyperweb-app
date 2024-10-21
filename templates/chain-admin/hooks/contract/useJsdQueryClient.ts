@@ -1,25 +1,29 @@
-import { useChainStore } from '@/contexts';
 import { useChain } from '@cosmos-kit/react';
 import { useQuery } from '@tanstack/react-query';
-import { cosmwasm } from 'interchain-query';
+import { jsd } from 'hyperwebjs';
 
-export type CwQueryClient = NonNullable<
-  Awaited<ReturnType<typeof useCwQueryClient>['data']>
+import { useChainStore } from '@/contexts';
+import { useIsHyperwebChain } from '../common';
+
+export type JsdQueryClient = NonNullable<
+  Awaited<ReturnType<typeof useJsdQueryClient>['data']>
 >;
 
-export const useCwQueryClient = () => {
+export const useJsdQueryClient = () => {
   const { selectedChain } = useChainStore();
   const { getRpcEndpoint } = useChain(selectedChain);
+  const isHyperwebChain = useIsHyperwebChain();
 
   return useQuery({
-    queryKey: ['cwQueryClient', selectedChain],
+    queryKey: ['jsdQueryClient', isHyperwebChain],
     queryFn: async () => {
       const rpcEndpoint = await getRpcEndpoint();
-      const client = await cosmwasm.ClientFactory.createRPCQueryClient({
+      const client = await jsd.ClientFactory.createRPCQueryClient({
         rpcEndpoint,
       });
       return client;
     },
+    enabled: isHyperwebChain,
     staleTime: Infinity,
     cacheTime: Infinity,
     refetchOnMount: false,

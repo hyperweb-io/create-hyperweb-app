@@ -4,7 +4,7 @@ import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
 import { useChain } from '@cosmos-kit/react';
 
 import { InputField } from './InputField';
-import { WasmFileUploader } from './WasmFileUploader';
+import { FileUploader } from './FileUploader';
 import {
   Address,
   Permission,
@@ -23,7 +23,7 @@ export const UploadContract = ({ show, onSuccess }: UploadContractProps) => {
   const [wasmFile, setWasmFile] = useState<File | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([{ value: '' }]);
   const [permission, setPermission] = useState<Permission>(
-    AccessType.ACCESS_TYPE_EVERYBODY,
+    AccessType.ACCESS_TYPE_EVERYBODY
   );
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,7 +83,7 @@ export const UploadContract = ({ show, onSuccess }: UploadContractProps) => {
         Upload Contract
       </Text>
       <InputField title="Contract File" required>
-        <WasmFileUploader file={wasmFile} setFile={setWasmFile} />
+        <FileUploader file={wasmFile} setFile={setWasmFile} type="wasm" />
       </InputField>
       <InputField title="Instantiate Permission" required>
         <InstantiatePermissionRadio

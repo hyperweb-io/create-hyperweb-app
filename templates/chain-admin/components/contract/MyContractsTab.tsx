@@ -6,11 +6,14 @@ import { PopoverSelect } from './PopoverSelect';
 import { MyContractsTable } from './MyContractsTable';
 import { CreateFromUpload } from './CreateFromUpload';
 import { CreateFromCodeId } from './CreateFromCodeId';
+import { useIsHyperwebChain } from '@/hooks';
+import { DeployFromJS } from './DeployFromJS';
 
 const ContentViews = {
   MY_CONTRACTS: 'my_contracts',
   CREATE_FROM_UPLOAD: 'create_from_upload',
   CREATE_FROM_CODE_ID: 'create_from_code_id',
+  DEPLOY_FROM_JS: 'deploy_from_js',
 } as const;
 
 type ContentView = typeof ContentViews[keyof typeof ContentViews];
@@ -30,6 +33,8 @@ export const MyContractsTab = ({ show, switchTab }: MyContractsTabProps) => {
     ContentViews.MY_CONTRACTS
   );
 
+  const isHyperwebChain = useIsHyperwebChain();
+
   return (
     <Box display={show ? 'block' : 'none'}>
       <MyContractsTable
@@ -37,12 +42,21 @@ export const MyContractsTab = ({ show, switchTab }: MyContractsTabProps) => {
         show={contentView === ContentViews.MY_CONTRACTS}
         switchTab={switchTab}
         createContractTrigger={
-          <PopoverSelect
-            trigger={<Button variant="primary">Create Contract</Button>}
-            options={contractCreationOptions}
-            onOptionClick={(value) => setContentView(value as ContentView)}
-            popoverWidth="152px"
-          />
+          isHyperwebChain ? (
+            <Button
+              variant="primary"
+              onClick={() => setContentView(ContentViews.DEPLOY_FROM_JS)}
+            >
+              Deploy Contract
+            </Button>
+          ) : (
+            <PopoverSelect
+              trigger={<Button variant="primary">Create Contract</Button>}
+              options={contractCreationOptions}
+              onOptionClick={(value) => setContentView(value as ContentView)}
+              popoverWidth="152px"
+            />
+          )
         }
       />
       {contentView === ContentViews.CREATE_FROM_UPLOAD && (
@@ -53,6 +67,12 @@ export const MyContractsTab = ({ show, switchTab }: MyContractsTabProps) => {
       )}
       {contentView === ContentViews.CREATE_FROM_CODE_ID && (
         <CreateFromCodeId
+          switchTab={switchTab}
+          onBack={() => setContentView(ContentViews.MY_CONTRACTS)}
+        />
+      )}
+      {contentView === ContentViews.DEPLOY_FROM_JS && (
+        <DeployFromJS
           switchTab={switchTab}
           onBack={() => setContentView(ContentViews.MY_CONTRACTS)}
         />

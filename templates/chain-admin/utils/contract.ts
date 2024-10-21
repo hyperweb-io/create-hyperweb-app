@@ -5,6 +5,8 @@ import { Coin, logs, parseCoins } from '@cosmjs/stargate';
 import { CodeInfoResponse } from 'interchain-query/cosmwasm/wasm/v1/query';
 import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
 import BigNumber from 'bignumber.js';
+import { jsd, DeliverTxResponse as DeliverJsdTxResponse } from 'hyperwebjs';
+
 import { getExponentFromAsset } from './common';
 
 export const validateContractAddress = (
@@ -180,4 +182,23 @@ export const toPascalCase = (str: string): string => {
     .split('-')
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .join('');
+};
+
+export const getContractIndex = (txResult: DeliverJsdTxResponse) => {
+  const response = jsd.jsd.MsgInstantiateResponse.fromProtoMsg(
+    // @ts-ignore
+    txResult.msgResponses[0]
+  );
+  return response.index.toString();
+};
+
+export const readFileContent = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      resolve(event.target?.result as string);
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsText(file);
+  });
 };

@@ -34,6 +34,7 @@
     "chain-registry": "1.62.3",
     "cosmos-kit": "2.18.4",
     "dayjs": "1.11.11",
+    "hyperwebjs": "^0.0.5",
     "interchain-query": "1.10.1",
     "next": "^13",
     "node-gzip": "^1.1.2",

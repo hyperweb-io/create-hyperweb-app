@@ -53,7 +53,7 @@ export default function Contract() {
         shallow: true,
       });
     },
-    [router],
+    [router]
   );
 
   const handleTabChange = useCallback(
@@ -64,11 +64,11 @@ export default function Contract() {
         tabId === TabLabel.Query
           ? queryAddress
           : tabId === TabLabel.Execute
-            ? executeAddress
-            : undefined,
+          ? executeAddress
+          : undefined
       );
     },
-    [updateUrl, queryAddress, executeAddress],
+    [updateUrl, queryAddress, executeAddress]
   );
 
   const switchTabWithAddress = useCallback(
@@ -78,7 +78,7 @@ export default function Contract() {
       setActiveTab(tabId);
       updateUrl(tabId, address);
     },
-    [updateUrl],
+    [updateUrl]
   );
 
   const handleAddressInput = useCallback(
@@ -87,7 +87,7 @@ export default function Contract() {
       if (activeTab === TabLabel.Execute) setExecuteAddress(address);
       updateUrl(activeTab, address);
     },
-    [activeTab, updateUrl],
+    [activeTab, updateUrl]
   );
 
   return (

@@ -12,20 +12,21 @@ export const useStarshipChains = () => {
     queryKey: ['starship-chains'],
     queryFn: async () => {
       try {
-        const { chains } = (await fetcher<{ chains: Chain[] }>(
-          `${baseUrl}/chains`
-        )) ?? { chains: [] };
-        const chainIds = chains.map((chain) => chain.chain_id);
+        const { chains = [] } =
+          (await fetcher<{ chains: Chain[] }>(`${baseUrl}/chains`)) ?? {};
+
         const assets = (await Promise.all(
-          chainIds.map((chainId) =>
-            fetcher<AssetList>(`${baseUrl}/chains/${chainId}/assets`)
+          chains.map((chain) =>
+            fetcher<AssetList>(`${baseUrl}/chains/${chain.chain_id}/assets`)
           )
         ).then((assetLists) => assetLists.filter(Boolean))) as AssetList[];
 
-        return { chains, assets };
+        return chains.length > 0 && assets.length > 0
+          ? { chains, assets }
+          : null;
       } catch (error) {
         console.error(error);
-        return undefined;
+        return null;
       }
     },
     staleTime: Infinity,

@@ -12,36 +12,45 @@ import { useDropzone } from 'react-dropzone';
 
 import { bytesToKb } from '@/utils';
 
-const MAX_FILE_SIZE = 800_000;
+const MAX_FILE_SIZE = {
+  wasm: 800_000, // 800KB
+  js: 128_000, // 128KB
+} as const;
 
-const getDefaultFileInfo = (theme: ThemeVariant) => ({
+const getDefaultFileInfo = (
+  theme: ThemeVariant,
+  fileType: string,
+  maxSize: number
+) => ({
   image: {
     src: theme === 'light' ? '/images/upload.svg' : '/images/upload-dark.svg',
     alt: 'upload',
     width: 80,
     height: 48,
   },
-  title: 'Upload or drag .wasm file here',
-  description: `Max file size: ${bytesToKb(MAX_FILE_SIZE)}KB`,
+  title: `Upload or drag .${fileType} file here`,
+  description: `Max file size: ${bytesToKb(maxSize)}KB`,
 });
 
-type WasmFileUploaderProps = {
+type FileUploaderProps = {
   file: File | null;
   setFile: (file: File | null) => void;
+  type: 'wasm' | 'js';
 };
 
-export const WasmFileUploader = ({ file, setFile }: WasmFileUploaderProps) => {
+export const FileUploader = ({ file, setFile, type }: FileUploaderProps) => {
   const { theme } = useTheme();
+  const maxFileSize = MAX_FILE_SIZE[type];
 
   const onDrop = useCallback(
     (files: File[]) => {
       setFile(files[0]);
     },
-    [setFile],
+    [setFile]
   );
 
   const fileInfo = useMemo(() => {
-    if (!file) return getDefaultFileInfo(theme);
+    if (!file) return getDefaultFileInfo(theme, type, maxFileSize);
 
     return {
       image: {
@@ -56,13 +65,16 @@ export const WasmFileUploader = ({ file, setFile }: WasmFileUploaderProps) => {
       title: file.name,
       description: `File size: ${bytesToKb(file.size)}KB`,
     };
-  }, [file, theme]);
+  }, [file, theme, type, maxFileSize]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
-    accept: { 'application/octet-stream': ['.wasm'] },
-    maxSize: MAX_FILE_SIZE,
+    accept:
+      type === 'wasm'
+        ? { 'application/octet-stream': ['.wasm'] }
+        : { 'application/javascript': ['.js'] },
+    maxSize: maxFileSize,
   });
 
   return (

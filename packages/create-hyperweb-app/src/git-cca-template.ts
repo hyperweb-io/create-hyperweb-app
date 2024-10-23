@@ -125,6 +125,7 @@ export const createGitApp = (repo: string, version: string) => {
 
         const files = []
             .concat(glob(join(process.cwd(), folderName, template, '/**/.*')))
+            .concat(glob(join(process.cwd(), folderName, template, '/**/.*/*')))
             .concat(glob(join(process.cwd(), folderName, template, '/**/*')));
 
         for (let i = 0; i < files.length; i++) {

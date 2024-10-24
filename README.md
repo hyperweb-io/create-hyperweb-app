@@ -40,6 +40,8 @@ During the setup process, you'll be prompted to enter the name of your app. For 
 > name: my-app
 ```
 
+**Note:** You must have an SSH key added to your GitHub account to complete the setup process. For instructions on how to generate and add an SSH key, please refer to [GitHub's documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+
 Once the app is created, move into the app directory and start the development server:
 
 ```sh

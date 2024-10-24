@@ -6,3 +6,4 @@ export * from './useInstantiateTx';
 export * from './useMyContracts';
 export * from './useCodeDetails';
 export * from './useJsContractInfo';
+export * from './useQueryJsContract';

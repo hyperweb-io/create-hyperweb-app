@@ -1,11 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
-import { Box, Text } from '@interchain-ui/react';
+import { Box, Text, TextField } from '@interchain-ui/react';
 
 import { InputField } from './InputField';
 import { JsonInput } from './JsonInput';
 import { Button } from '../common';
 import { JsonEditor } from './JsonEditor';
-import { useQueryContract } from '@/hooks';
+import { useQueryJsContract } from '@/hooks';
 import { countJsonLines, validateJson } from '@/utils';
 import { ContractIndexField } from './ContractIndexField';
 
@@ -24,16 +24,18 @@ export const QueryJsContract = ({
   onIndexInput,
 }: QueryJsContractProps) => {
   const [contractIndex, setContractIndex] = useState('');
-  const [queryMsg, setQueryMsg] = useState('');
+  const [fnName, setFnName] = useState('');
+  const [arg, setArg] = useState('');
 
   const {
     data: queryResult,
-    refetch: queryContract,
-    error: queryContractError,
+    refetch: queryJsContract,
+    error: queryJsContractError,
     isFetching,
-  } = useQueryContract({
-    contractAddress: contractIndex,
-    queryMsg,
+  } = useQueryJsContract({
+    contractIndex,
+    fnName,
+    arg,
     enabled: false,
   });
 
@@ -45,8 +47,8 @@ export const QueryJsContract = ({
     } else {
       const newResult = queryResult
         ? JSON.stringify(queryResult, null, 2)
-        : queryContractError
-        ? (queryContractError as Error)?.message || 'Unknown error'
+        : queryJsContractError
+        ? (queryJsContractError as Error)?.message || 'Unknown error'
         : '';
 
       prevResultRef.current = newResult;
@@ -63,9 +65,9 @@ export const QueryJsContract = ({
     return Math.max(OUTPUT_LINES, countJsonLines(res));
   }, [res]);
 
-  const isMsgValid = validateJson(queryMsg) === null;
+  const isArgValid = validateJson(arg) === null || arg.length === 0;
 
-  const isQueryButtonDisabled = !contractIndex || !isMsgValid;
+  const isQueryButtonDisabled = !contractIndex || !fnName || !isArgValid;
 
   return (
     <Box
@@ -88,17 +90,28 @@ export const QueryJsContract = ({
         onIndexInput={onIndexInput}
         onValidIndexChange={setContractIndex}
       />
-      <InputField title="Query Message">
+      <InputField title="Function Name" required>
+        <TextField
+          id="fnName"
+          value={fnName}
+          onChange={(e) => setFnName(e.target.value)}
+          autoComplete="off"
+        />
+        <InputField.Description>
+          Provide the name of the function to call.
+        </InputField.Description>
+      </InputField>
+      <InputField title="Argument (optional)">
         <JsonInput
-          value={queryMsg}
-          setValue={setQueryMsg}
+          value={arg}
+          setValue={setArg}
           minLines={INPUT_LINES}
           height="250px"
         />
       </InputField>
       <Button
         disabled={isQueryButtonDisabled}
-        onClick={queryContract}
+        onClick={queryJsContract}
         isLoading={isFetching}
         width="100%"
         variant="primary"

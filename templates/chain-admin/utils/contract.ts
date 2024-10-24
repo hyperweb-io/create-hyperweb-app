@@ -33,6 +33,12 @@ export const validateContractAddress = (
   return null;
 };
 
+export const validateContractIndex = (index: string) => {
+  if (!index.length) return 'Contract index is required';
+  if (!isPositiveInt(index)) return 'Invalid contract index';
+  return null;
+};
+
 export const validateJson = (text: string) => {
   try {
     if (text.trim().length === 0)

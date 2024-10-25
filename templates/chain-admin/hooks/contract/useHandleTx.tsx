@@ -25,13 +25,13 @@ export const useHandleTx = (chainName: string) => {
       onTxSucceed = () => {},
       onTxFailed = () => {},
     }: HandleTxParams<T>) => {
-      setToastId(
-        toast({
-          title: 'Sending Transaction',
-          type: 'loading',
-          duration: 999999,
-        })
-      );
+      const toastId = toast({
+        title: 'Sending Transaction',
+        type: 'loading',
+        duration: 999999,
+      });
+
+      setToastId(toastId);
 
       try {
         const result = await txFunction();

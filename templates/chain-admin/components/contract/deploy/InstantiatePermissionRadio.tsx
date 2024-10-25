@@ -5,17 +5,16 @@ import { LuPlus } from 'react-icons/lu';
 import { cosmwasm } from 'interchain-query';
 import { useChain } from '@cosmos-kit/react';
 import { GrGroup } from 'react-icons/gr';
-import { MdOutlineHowToVote } from 'react-icons/md';
-import { MdChecklistRtl } from 'react-icons/md';
+import { MdOutlineHowToVote, MdChecklistRtl } from 'react-icons/md';
 
-import { Button, Radio, RadioGroup } from '../common';
-import { InputField } from './InputField';
+import { Button, Radio, RadioGroup } from '../../common';
+import { InputField } from '../common';
 import { validateChainAddress } from '@/utils';
 import { useChainStore } from '@/contexts';
 
 export const AccessType = cosmwasm.wasm.v1.AccessType;
 
-export type Permission = (typeof AccessType)[keyof typeof AccessType];
+export type Permission = typeof AccessType[keyof typeof AccessType];
 
 export type Address = {
   value: string;

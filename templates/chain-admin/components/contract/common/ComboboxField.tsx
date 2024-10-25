@@ -10,7 +10,11 @@ import {
 } from '@interchain-ui/react';
 
 import { InputField } from './InputField';
-import { InputStatus } from './CodeIdField';
+
+export type InputStatus = {
+  state: 'init' | 'loading' | 'success' | 'error';
+  message?: string;
+};
 
 type StatusDisplay = {
   icon?: React.ReactNode;

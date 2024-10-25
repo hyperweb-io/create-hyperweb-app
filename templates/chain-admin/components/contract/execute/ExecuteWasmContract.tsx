@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react';
 import { Box, Text } from '@interchain-ui/react';
 import { Coin } from '@cosmjs/amino';
 
-import { ContractAddressField } from './ContractAddressField';
-import { InputField } from './InputField';
-import { JsonInput } from './JsonInput';
-import { AttachFundsRadio } from './AttachFundsRadio';
-import { Button } from '../common';
+import {
+  JsonInput,
+  InputField,
+  AttachFundsRadio,
+  ContractAddressField,
+} from '../common';
+import { Button } from '../../common';
 import { useChainStore } from '@/contexts';
 import {
   useConnectChain,

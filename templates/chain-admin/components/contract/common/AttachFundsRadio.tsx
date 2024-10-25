@@ -10,10 +10,10 @@ import { VscJson } from 'react-icons/vsc';
 import { JsonInput } from './JsonInput';
 import { SelectAssetContent } from './SelectAssetContent';
 import { getExponentFromAsset, prettifyJson } from '@/utils';
-import { Radio, RadioGroup } from '../common';
+import { Radio, RadioGroup } from '../../common';
 
 const defaultAssetListJson = prettifyJson(
-  JSON.stringify([{ denom: '', amount: '' }]),
+  JSON.stringify([{ denom: '', amount: '' }])
 );
 
 export type SelectedAssetWithAmount = {

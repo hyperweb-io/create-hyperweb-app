@@ -9,7 +9,7 @@ import {
   useMyContracts,
   WasmContractInfo,
 } from '@/hooks';
-import { Button, Table } from '../common';
+import { Button, Table } from '../../common';
 import { shortenAddress } from '@/utils';
 import { TabLabel } from '@/pages/contract';
 import { EmptyState } from './EmptyState';

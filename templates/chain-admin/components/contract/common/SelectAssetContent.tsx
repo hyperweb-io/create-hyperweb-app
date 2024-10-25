@@ -31,7 +31,7 @@ export const SelectAssetContent = ({
           ({ type_asset, base }) =>
             type_asset !== 'cw20' &&
             type_asset !== 'ics20' &&
-            !base.startsWith('factory/'),
+            !base.startsWith('factory/')
         ) || []
     );
   }, [selectedChain]);

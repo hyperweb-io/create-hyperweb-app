@@ -9,9 +9,9 @@ import {
   shortenAddress,
   readFileContent,
 } from '@/utils';
-import { InputField } from './InputField';
+import { InputField } from '../common';
 import { useChainStore } from '@/contexts';
-import { Button } from '../common';
+import { Button } from '../../common';
 import { useInstantiateTx, useMyContracts } from '@/hooks';
 import { TxInfoItem, TxSuccessDisplay } from './TxSuccessDisplay';
 import { TabLabel } from '@/pages/contract';
@@ -21,7 +21,6 @@ type DeployJsContractProps = {
   show?: boolean;
   switchTab?: (addressValue: string, tabId: number) => void;
   onSuccess?: () => void;
-  defaultCodeId?: string;
   onCreateNewContract?: () => void;
   onViewMyContracts?: () => void;
 };
@@ -30,7 +29,6 @@ export const DeployJsContract = ({
   show = true,
   onSuccess,
   switchTab,
-  defaultCodeId,
   onCreateNewContract,
   onViewMyContracts,
 }: DeployJsContractProps) => {
@@ -74,11 +72,13 @@ export const DeployJsContract = ({
     const txFee =
       txResult.events.find((e) => e.type === 'tx')?.attributes[0].value ?? '';
 
+    const contractIndex = getContractIndex(txResult);
+
     const infoItems: TxInfoItem[] = [
       {
         label: 'Contract Index',
-        value: getContractIndex(txResult),
-        copyValue: getContractIndex(txResult),
+        value: contractIndex,
+        copyValue: contractIndex,
         showCopy: true,
       },
       {
@@ -109,7 +109,7 @@ export const DeployJsContract = ({
               width="$full"
               variant="primary"
               onClick={() => {
-                // switchTab?.(txResult.contractAddress, TabLabel.Query);
+                switchTab?.(contractIndex, TabLabel.Query);
               }}
             >
               Query
@@ -118,7 +118,7 @@ export const DeployJsContract = ({
               width="$full"
               variant="primary"
               onClick={() => {
-                // switchTab?.(txResult.contractAddress, TabLabel.Execute);
+                switchTab?.(contractIndex, TabLabel.Execute);
               }}
             >
               Execute

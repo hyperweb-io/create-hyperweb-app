@@ -3,8 +3,7 @@ import { Text } from '@interchain-ui/react';
 
 import { useJsContractInfo, useMyContracts } from '@/hooks';
 import { validateContractIndex } from '@/utils';
-import { InputStatus } from './CodeIdField';
-import { ComboboxField } from './ComboboxField';
+import { ComboboxField, InputStatus } from './ComboboxField';
 
 type ContractIndexFieldProps = {
   indexValue?: string;

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Box } from '@interchain-ui/react';
 
 import { UploadContract } from './UploadContract';
-import { BackButton } from './BackButton';
-import { Stepper } from '../common';
+import { BackButton } from '../common';
+import { Stepper } from '../../common';
 import { InstantiateContract } from './InstantiateContract';
 import { useDetectBreakpoints } from '@/hooks';
 

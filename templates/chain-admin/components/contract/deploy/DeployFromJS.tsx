@@ -1,6 +1,6 @@
 import { Box } from '@interchain-ui/react';
 
-import { BackButton } from './BackButton';
+import { BackButton } from '../common';
 import { useDetectBreakpoints } from '@/hooks';
 import { DeployJsContract } from './DeployJsContract';
 

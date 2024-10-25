@@ -1,13 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Box, Text, TextField } from '@interchain-ui/react';
 
-import { InputField } from './InputField';
-import { JsonInput } from './JsonInput';
-import { Button } from '../common';
+import { InputField, JsonInput, ContractIndexField } from '../common';
+import { Button } from '../../common';
 import { validateJson } from '@/utils';
 import { useChainStore } from '@/contexts';
 import { useConnectChain, useExecuteContractTx } from '@/hooks';
-import { ContractIndexField } from './ContractIndexField';
 
 const INPUT_LINES = 12;
 

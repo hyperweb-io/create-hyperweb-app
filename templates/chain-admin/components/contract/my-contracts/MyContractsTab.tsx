@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { Box } from '@interchain-ui/react';
 
-import { Button } from '../common';
+import { Button } from '../../common';
 import { PopoverSelect } from './PopoverSelect';
 import { MyContractsTable } from './MyContractsTable';
-import { CreateFromUpload } from './CreateFromUpload';
-import { CreateFromCodeId } from './CreateFromCodeId';
 import { useIsHyperwebChain } from '@/hooks';
-import { DeployFromJS } from './DeployFromJS';
+import { DeployFromJS, CreateFromUpload, CreateFromCodeId } from '../deploy';
 
 const ContentViews = {
   MY_CONTRACTS: 'my_contracts',

@@ -3,14 +3,14 @@ import { Box, Text } from '@interchain-ui/react';
 import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
 import { useChain } from '@cosmos-kit/react';
 
-import { InputField } from './InputField';
+import { InputField } from '../common';
 import { FileUploader } from './FileUploader';
 import {
   Address,
   Permission,
   InstantiatePermissionRadio,
 } from './InstantiatePermissionRadio';
-import { Button } from '../common';
+import { Button } from '../../common';
 import { useChainStore } from '@/contexts';
 import { useDetectBreakpoints, useStoreCodeTx } from '@/hooks';
 

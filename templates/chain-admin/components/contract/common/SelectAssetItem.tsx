@@ -53,7 +53,7 @@ export const SelectAssetItem = ({
 
   const handleAmountInput = (
     e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
+    index: number
   ) => {
     const amount = e.target.value;
     setSelectedAssetsWithAmount((prev) => {

@@ -1,41 +1,38 @@
 import { useMemo, useRef, useState } from 'react';
-import { Box, Text, TextField } from '@interchain-ui/react';
+import { Box, Text } from '@interchain-ui/react';
 
-import { InputField } from './InputField';
-import { JsonInput } from './JsonInput';
-import { Button } from '../common';
-import { JsonEditor } from './JsonEditor';
-import { useQueryJsContract } from '@/hooks';
+import {
+  ContractAddressField,
+  InputField,
+  JsonInput,
+  JsonEditor,
+} from '../common';
+import { Button } from '../../common';
+import { useQueryContract } from '@/hooks';
 import { countJsonLines, validateJson } from '@/utils';
-import { ContractIndexField } from './ContractIndexField';
+import { QueryTabProps } from './QueryTab';
 
 const INPUT_LINES = 12;
 const OUTPUT_LINES = 12;
 
-type QueryJsContractProps = {
-  show: boolean;
-  indexValue: string;
-  onIndexInput: (input: string) => void;
-};
+type QueryWasmContractProps = QueryTabProps;
 
-export const QueryJsContract = ({
+export const QueryWasmContract = ({
   show,
-  indexValue,
-  onIndexInput,
-}: QueryJsContractProps) => {
-  const [contractIndex, setContractIndex] = useState('');
-  const [fnName, setFnName] = useState('');
-  const [arg, setArg] = useState('');
+  addressValue,
+  onAddressInput,
+}: QueryWasmContractProps) => {
+  const [contractAddress, setContractAddress] = useState('');
+  const [queryMsg, setQueryMsg] = useState('');
 
   const {
     data: queryResult,
-    refetch: queryJsContract,
-    error: queryJsContractError,
+    refetch: queryContract,
+    error: queryContractError,
     isFetching,
-  } = useQueryJsContract({
-    contractIndex,
-    fnName,
-    arg,
+  } = useQueryContract({
+    contractAddress,
+    queryMsg,
     enabled: false,
   });
 
@@ -47,8 +44,8 @@ export const QueryJsContract = ({
     } else {
       const newResult = queryResult
         ? JSON.stringify(queryResult, null, 2)
-        : queryJsContractError
-        ? (queryJsContractError as Error)?.message || 'Unknown error'
+        : queryContractError
+        ? (queryContractError as Error)?.message || 'Unknown error'
         : '';
 
       prevResultRef.current = newResult;
@@ -65,9 +62,9 @@ export const QueryJsContract = ({
     return Math.max(OUTPUT_LINES, countJsonLines(res));
   }, [res]);
 
-  const isArgValid = validateJson(arg) === null || arg.length === 0;
+  const isMsgValid = validateJson(queryMsg) === null;
 
-  const isQueryButtonDisabled = !contractIndex || !fnName || !isArgValid;
+  const isQueryButtonDisabled = !contractAddress || !isMsgValid;
 
   return (
     <Box
@@ -85,33 +82,22 @@ export const QueryJsContract = ({
       >
         Query Contract
       </Text>
-      <ContractIndexField
-        indexValue={indexValue}
-        onIndexInput={onIndexInput}
-        onValidIndexChange={setContractIndex}
+      <ContractAddressField
+        addressValue={addressValue}
+        onAddressInput={onAddressInput}
+        onValidAddressChange={setContractAddress}
       />
-      <InputField title="Function Name">
-        <TextField
-          id="fnName"
-          value={fnName}
-          onChange={(e) => setFnName(e.target.value)}
-          autoComplete="off"
-        />
-        <InputField.Description>
-          Provide the name of the function to call.
-        </InputField.Description>
-      </InputField>
-      <InputField title="Argument (optional)">
+      <InputField title="Query Message">
         <JsonInput
-          value={arg}
-          setValue={setArg}
+          value={queryMsg}
+          setValue={setQueryMsg}
           minLines={INPUT_LINES}
           height="250px"
         />
       </InputField>
       <Button
         disabled={isQueryButtonDisabled}
-        onClick={queryJsContract}
+        onClick={queryContract}
         isLoading={isFetching}
         width="100%"
         variant="primary"

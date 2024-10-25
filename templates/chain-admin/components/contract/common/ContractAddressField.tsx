@@ -4,9 +4,8 @@ import { Text } from '@interchain-ui/react';
 
 import { useContractInfo, useDetectBreakpoints, useMyContracts } from '@/hooks';
 import { shortenAddress, validateContractAddress } from '@/utils';
-import { InputStatus } from './CodeIdField';
 import { useChainStore } from '@/contexts';
-import { ComboboxField } from './ComboboxField';
+import { ComboboxField, InputStatus } from './ComboboxField';
 
 type ContractAddressFieldProps = {
   addressValue?: string;

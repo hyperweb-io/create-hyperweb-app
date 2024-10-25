@@ -1,6 +1,6 @@
 import { Box, Divider, Icon, Text } from '@interchain-ui/react';
 import { useCopyToClipboard, useDetectBreakpoints } from '@/hooks';
-import { JsonEditor } from './JsonEditor';
+import { JsonEditor } from '../common';
 
 type TxSuccessDisplayProps = {
   title?: string;

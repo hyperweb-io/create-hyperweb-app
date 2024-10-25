@@ -19,11 +19,9 @@ import {
   shortenAddress,
   validateChainAddress,
 } from '@/utils';
-import { InputField } from './InputField';
-import { JsonInput } from './JsonInput';
+import { InputField, AttachFundsRadio, JsonInput } from '../common';
 import { useChainStore } from '@/contexts';
-import { AttachFundsRadio } from './AttachFundsRadio';
-import { Button } from '../common';
+import { Button } from '../../common';
 import {
   useDetectBreakpoints,
   useInstantiateTx,

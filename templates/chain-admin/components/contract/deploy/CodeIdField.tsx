@@ -1,16 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Box, Icon, Spinner, TextField } from '@interchain-ui/react';
 import { useChain } from '@cosmos-kit/react';
+import { Box, Icon, Spinner, TextField } from '@interchain-ui/react';
 
-import { InputField } from './InputField';
-import { useCodeDetails } from '@/hooks';
 import { useChainStore } from '@/contexts';
+import { useCodeDetails } from '@/hooks';
 import { CodeInfo, isValidCodeId, resolvePermission } from '@/utils';
-
-export type InputStatus = {
-  state: 'init' | 'loading' | 'success' | 'error';
-  message?: string;
-};
+import { InputField, InputStatus } from '../common';
 
 export const CodeIdField = ({
   codeId,
@@ -61,7 +56,7 @@ export const CodeIdField = ({
           const hasPermission = resolvePermission(
             address || '',
             data.permission,
-            data.addresses,
+            data.addresses
           );
 
           hasPermission

@@ -60,9 +60,12 @@ export const prettifyJson = (text: string) => {
 
 export const countJsonLines = (text: string) => text.split(/\n/).length;
 
-export const getExplorerLink = (chain: Chain, txHash: string) => {
-  const txPageLink = chain.explorers?.[0].tx_page ?? '';
-  return `${txPageLink.replace('${txHash}', txHash)}`;
+export const getExplorerLink = (
+  chain: Chain,
+  txHash: string | undefined
+): string | null => {
+  const txPageLink = chain.explorers?.[0]?.tx_page;
+  return txPageLink && txHash ? txPageLink.replace('${txHash}', txHash) : null;
 };
 
 export const bytesToKb = (bytes: number) => {

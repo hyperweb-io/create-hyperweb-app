@@ -90,7 +90,7 @@ export const QueryJsContract = ({
         onIndexInput={onIndexInput}
         onValidIndexChange={setContractIndex}
       />
-      <InputField title="Function Name" required>
+      <InputField title="Function Name">
         <TextField
           id="fnName"
           value={fnName}

@@ -1,10 +1,7 @@
-import Link from 'next/link';
 import { Coin, StdFee } from '@cosmjs/amino';
 import { useChain } from '@cosmos-kit/react';
-
-import { useToast } from '../common';
-import { Box, Text, Icon } from '@interchain-ui/react';
-import { getExplorerLink } from '@/utils';
+import { getSigningJsdClient, jsd } from 'hyperwebjs';
+import { useHandleTx } from './useHandleTx';
 
 interface ExecuteTxParams {
   address: string;
@@ -16,8 +13,19 @@ interface ExecuteTxParams {
   onTxFailed?: () => void;
 }
 
+interface ExecuteJsdTxParams {
+  address: string;
+  contractIndex: string;
+  fnName: string;
+  arg: string;
+  onTxSucceed?: () => void;
+  onTxFailed?: () => void;
+}
+
 export const useExecuteContractTx = (chainName: string) => {
-  const { getSigningCosmWasmClient, chain } = useChain(chainName);
+  const { getSigningCosmWasmClient, getRpcEndpoint, getOfflineSigner } =
+    useChain(chainName);
+  const handleTx = useHandleTx(chainName);
 
   const executeTx = async ({
     address,
@@ -28,57 +36,54 @@ export const useExecuteContractTx = (chainName: string) => {
     onTxFailed = () => {},
     onTxSucceed = () => {},
   }: ExecuteTxParams) => {
-    const client = await getSigningCosmWasmClient();
-    const { toast } = useToast();
+    await handleTx({
+      txFunction: async () => {
+        const client = await getSigningCosmWasmClient();
 
-    const toastId = toast({
-      title: 'Sending Transaction',
-      type: 'loading',
-      duration: 999999,
+        return client.execute(
+          address,
+          contractAddress,
+          msg,
+          fee,
+          undefined,
+          funds
+        );
+      },
+      onTxSucceed,
+      onTxFailed,
     });
-
-    try {
-      const result = await client.execute(
-        address,
-        contractAddress,
-        msg,
-        fee,
-        undefined,
-        funds
-      );
-      onTxSucceed();
-      toast.close(toastId);
-      toast({
-        title: 'Transaction Successful',
-        type: 'success',
-        description: (
-          <Link
-            href={getExplorerLink(chain, result.transactionHash)}
-            target="_blank"
-          >
-            <Box display="flex" gap="6px" alignItems="center" color="$text">
-              <Text fontSize="14px">View tx details</Text>
-              <Icon name="externalLinkLine" />
-            </Box>
-          </Link>
-        ),
-      });
-    } catch (e: any) {
-      console.error(e);
-      onTxFailed();
-      toast.close(toastId);
-      toast({
-        title: 'Transaction Failed',
-        type: 'error',
-        description: (
-          <Box width="300px" wordBreak="break-all">
-            {e.message}
-          </Box>
-        ),
-        duration: 10000,
-      });
-    }
   };
 
-  return { executeTx };
+  const executeJsdTx = async ({
+    address,
+    contractIndex,
+    fnName,
+    arg,
+    onTxFailed = () => {},
+    onTxSucceed = () => {},
+  }: ExecuteJsdTxParams) => {
+    const msg = jsd.jsd.MessageComposer.fromPartial.eval({
+      creator: address,
+      index: BigInt(contractIndex),
+      fnName,
+      arg,
+    });
+
+    const fee = { amount: [], gas: '550000' };
+
+    await handleTx({
+      txFunction: async () => {
+        const signingClient = await getSigningJsdClient({
+          rpcEndpoint: await getRpcEndpoint(),
+          signer: getOfflineSigner(),
+        });
+
+        return signingClient.signAndBroadcast(address, [msg], fee);
+      },
+      onTxSucceed,
+      onTxFailed,
+    });
+  };
+
+  return { executeTx, executeJsdTx };
 };

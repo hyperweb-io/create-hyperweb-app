@@ -1,11 +1,9 @@
-import { Box } from '@interchain-ui/react';
 import { useChain } from '@cosmos-kit/react';
 import { Coin, StdFee } from '@cosmjs/amino';
 import { InstantiateResult } from '@cosmjs/cosmwasm-stargate';
 import { DeliverTxResponse, getSigningJsdClient, jsd } from 'hyperwebjs';
-import { useState, useCallback } from 'react';
 
-import { useToast } from '../common';
+import { useHandleTx } from './useHandleTx';
 
 interface InstantiateTxParams {
   address: string;
@@ -25,60 +23,10 @@ interface InstantiateJsdTxParams {
   onTxFailed?: () => void;
 }
 
-interface HandleTxParams<T> {
-  executeTx: () => Promise<T>;
-  successMessage: string;
-  onTxSucceed?: (result: T) => void;
-  onTxFailed?: () => void;
-}
-
 export const useInstantiateTx = (chainName: string) => {
   const { getSigningCosmWasmClient } = useChain(chainName);
   const { getRpcEndpoint, getOfflineSigner } = useChain(chainName);
-  const { toast } = useToast();
-  const [toastId, setToastId] = useState<string | number | undefined>();
-
-  const handleTx = useCallback(
-    async <T,>({
-      executeTx,
-      successMessage,
-      onTxSucceed = () => {},
-      onTxFailed = () => {},
-    }: HandleTxParams<T>) => {
-      setToastId(
-        toast({
-          title: 'Sending Transaction',
-          type: 'loading',
-          duration: 999999,
-        })
-      );
-
-      try {
-        const result = await executeTx();
-        onTxSucceed(result);
-        toast.close(toastId);
-        toast({
-          title: successMessage,
-          type: 'success',
-        });
-      } catch (e: any) {
-        console.error(e);
-        onTxFailed();
-        toast.close(toastId);
-        toast({
-          title: 'Transaction Failed',
-          type: 'error',
-          description: (
-            <Box width="300px" wordBreak="break-all">
-              {e.message}
-            </Box>
-          ),
-          duration: 10000,
-        });
-      }
-    },
-    [toast, toastId]
-  );
+  const handleTx = useHandleTx(chainName);
 
   const instantiateTx = async ({
     address,
@@ -90,11 +38,11 @@ export const useInstantiateTx = (chainName: string) => {
     onTxSucceed,
     onTxFailed,
   }: InstantiateTxParams) => {
-    const client = await getSigningCosmWasmClient();
     const fee: StdFee = { amount: [], gas: '300000' };
 
     await handleTx<InstantiateResult>({
-      executeTx: () => {
+      txFunction: async () => {
+        const client = await getSigningCosmWasmClient();
         return client.instantiate(address, codeId, initMsg, label, fee, {
           admin,
           funds,
@@ -115,7 +63,7 @@ export const useInstantiateTx = (chainName: string) => {
     const fee: StdFee = { amount: [], gas: '550000' };
 
     await handleTx<DeliverTxResponse>({
-      executeTx: async () => {
+      txFunction: async () => {
         const signingClient = await getSigningJsdClient({
           rpcEndpoint: await getRpcEndpoint(),
           signer: getOfflineSigner(),

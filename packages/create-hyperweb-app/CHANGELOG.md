@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.8](https://github.com/hyperweb-io/create-hyperweb-app/compare/create-hyperweb-app@0.0.6...create-hyperweb-app@0.0.8) (2024-10-24)
+
+**Note:** Version bump only for package create-hyperweb-app
+
+
+
+
+
 ## [0.0.7](https://github.com/hyperweb-io/create-hyperweb-app/compare/create-hyperweb-app@0.0.6...create-hyperweb-app@0.0.7) (2024-10-21)
 
 **Note:** Version bump only for package create-hyperweb-app

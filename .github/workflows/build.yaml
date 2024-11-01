@@ -67,7 +67,12 @@ jobs:
         with:
           path: |
             ${{ env.EXAMPLE_DIR }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ matrix.example }}-${{ hashFiles(format('{0}/{1}/**/*.{js,jsx,ts,tsx}', matrix.path, matrix.example)) }}
+          key: ${{ runner.os }}-nextjs-${{ matrix.example }}-${{ hashFiles(
+            '${{ env.EXAMPLE_DIR }}/**/*.{js,jsx,ts,tsx}',
+            '!${{ env.EXAMPLE_DIR }}/node_modules/**',
+            '!${{ env.EXAMPLE_DIR }}/.next/**',
+            '!${{ env.EXAMPLE_DIR }}/.yarn/**'
+            ) }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ matrix.example }}-
 

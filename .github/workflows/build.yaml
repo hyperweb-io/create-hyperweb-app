@@ -79,5 +79,5 @@ jobs:
 
           cd ${{ env.EXAMPLE_DIR }}
           ls -la
-          yarn install --immutable=false
+          yarn install --no-immutable
           yarn build

@@ -39,6 +39,7 @@ jobs:
         include: ${{fromJson(needs.setup.outputs.matrix)}}
     env:
       EXAMPLE_DIR: ${{ github.workspace }}/dest/${{ matrix.example }}
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
     steps:
       - name: Checkout repository

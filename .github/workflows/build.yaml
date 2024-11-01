@@ -1,0 +1,83 @@
+name: Build templates
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  matrix-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get examples from directories
+        id: get-matrix
+        env:
+          DIRS: '[templates]' # add more dirs here if needed
+        run: |
+          # Get examples from each directory
+          all_examples=$(for dir in $(echo $DIRS | jq -r '.[]'); do
+            for example in $(ls ./$dir/); do
+              echo "{\"example\": \"$example\", \"path\": \"$dir\"}"
+            done
+          done | jq -s -c '.')
+
+          echo "matrix=$all_examples" >> $GITHUB_OUTPUT
+
+    outputs:
+      matrix: ${{ steps.get-matrix.outputs.matrix }}
+
+  build:
+    needs: [matrix-setup]
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      fail-fast: true
+      matrix:
+        include: ${{fromJson(needs.matrix-setup.outputs.matrix)}}
+    env:
+      EXAMPLE_DIR: ${{ github.workspace }}/dest/${{ matrix.example }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Yarn
+        uses: threeal/setup-yarn-action@v2.0.0
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.EXAMPLE_DIR }}/node_modules
+          key: ${{ runner.os }}-modules-${{ matrix.example }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-${{ matrix.example }}-
+
+      - name: Cache NextJS
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.EXAMPLE_DIR }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ matrix.example }}-${{ hashFiles(format('{0}/{1}/**/*.{js,jsx,ts,tsx}', matrix.path, matrix.example)) }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ matrix.example }}-
+
+      - name: Build example
+        run: |
+          echo "Building example: ${{ matrix.example }} from /${{ matrix.path }}"
+
+          mkdir -p ${{ env.EXAMPLE_DIR }}
+          cp -r ./${{ matrix.path }}/${{ matrix.example }}/ ${{ env.EXAMPLE_DIR }}
+
+          cd ${{ env.EXAMPLE_DIR }}
+          ls -la
+          yarn install
+          yarn build

@@ -81,9 +81,9 @@ jobs:
           echo "Building example: ${{ matrix.example }} from /${{ matrix.path }}"
 
           mkdir -p ${{ env.EXAMPLE_DIR }}
-          cp -r ./${{ matrix.path }}/${{ matrix.example }}/ ${{ env.EXAMPLE_DIR }}
-
+          cp -r ./${{ matrix.path }}/${{ matrix.example }}/* ${{ env.EXAMPLE_DIR }}/
           cd ${{ env.EXAMPLE_DIR }}
           ls -la
-          yarn install --no-immutable
+
+          yarn install
           yarn build

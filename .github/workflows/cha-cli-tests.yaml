@@ -1,0 +1,39 @@
+name: Run Tests Prod
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Yarn
+        uses: threeal/setup-yarn-action@v2.0.0
+        with:
+          cache: false
+
+      - name: Install Dependencies
+        run: |
+          echo "YARN_ENABLE_IMMUTABLE_INSTALLS=false" >> $GITHUB_ENV
+          npm install -g create-hyperweb-app
+
+      - name: hyperweb
+        run: |
+          cha --template hyperweb --name hyperweb
+          cd hyperweb
+          yarn build
+
+      - name: chain-admin
+        run: |
+          cha --template chain-admin --name chain-admin
+          cd chain-admin
+          yarn build

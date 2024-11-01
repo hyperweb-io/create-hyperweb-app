@@ -15,7 +15,7 @@ jobs:
       - name: Get examples from directories
         id: get-matrix
         env:
-          DIRS: '[templates]' # add more dirs here if needed
+          DIRS: '["templates"]' # Add more dirs here if needed
         run: |
           # Get examples from each directory
           all_examples=$(for dir in $(echo $DIRS | jq -r '.[]'); do

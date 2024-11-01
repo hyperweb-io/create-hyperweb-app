@@ -2300,21 +2300,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@keplr-wallet/types@npm:0.12.121":
+  version: 0.12.121
+  resolution: "@keplr-wallet/types@npm:0.12.121"
+  dependencies:
+    long: "npm:^4.0.0"
+  checksum: 10c0/8e7927b70cea95f9f78550a27f1233bde9b929edf1b1e4fe387be4e5e46f064dd26227a2217acb0130c49730825b28a5f583028ab6bb24a370087c65ca9a36eb
+  languageName: node
+  linkType: hard
+
 "@keplr-wallet/types@npm:0.12.28":
   version: 0.12.28
   resolution: "@keplr-wallet/types@npm:0.12.28"
   dependencies:
     long: "npm:^4.0.0"
   checksum: 10c0/a541088e55ee0a57ac0e5a9c56e8b788d6325f438fcb4f0a478ba4ce76e336660774d8373a2c3dc6b53e4c6d7b5d91be3128102f340728c71a25448d35245980
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/types@npm:^0.12.111":
-  version: 0.12.111
-  resolution: "@keplr-wallet/types@npm:0.12.111"
-  dependencies:
-    long: "npm:^4.0.0"
-  checksum: 10c0/45988cafc2ae3197509c78545b50f8e37bb47290ed566ea85f501eb47c608f0b67339f3a7badae6e79e04db7dbd5c6f8ef6904ad6e518c900650fdb984d41338
   languageName: node
   linkType: hard
 
@@ -5886,7 +5886,7 @@ __metadata:
     "@cosmos-kit/react": "npm:2.18.0"
     "@interchain-ui/react": "npm:1.23.31"
     "@interchain-ui/react-no-ssr": "npm:0.1.2"
-    "@keplr-wallet/types": "npm:^0.12.111"
+    "@keplr-wallet/types": "npm:0.12.121"
     "@starship-ci/cli": "npm:^2.10.2"
     "@tanstack/react-query": "npm:4.32.0"
     "@tanstack/react-query-devtools": "npm:4.32.0"

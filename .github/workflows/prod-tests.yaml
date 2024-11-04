@@ -20,6 +20,7 @@ jobs:
         uses: threeal/setup-yarn-action@v2.0.0
         with:
           cache: false
+          version: 4.1.0
 
       - name: Install Dependencies
         run: |

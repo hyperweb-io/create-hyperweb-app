@@ -26,12 +26,6 @@ jobs:
           echo "YARN_ENABLE_IMMUTABLE_INSTALLS=false" >> $GITHUB_ENV
           npm install -g create-hyperweb-app
 
-      - name: hyperweb
-        run: |
-          cha --template hyperweb --name hyperweb
-          cd hyperweb
-          yarn build
-
       - name: chain-admin
         run: |
           cha --template chain-admin --name chain-admin

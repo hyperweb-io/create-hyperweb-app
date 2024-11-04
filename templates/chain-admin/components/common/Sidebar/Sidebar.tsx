@@ -22,7 +22,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   const desktopSidebar = (
     <Box
-      width="240px"
+      width="$fit"
+      minWidth="240px"
       px="30px"
       pt="30px"
       pb="24px"

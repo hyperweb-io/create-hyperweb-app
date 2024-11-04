@@ -17,14 +17,11 @@ export const Header = ({ onOpenSidebar }: HeaderProps) => {
   const { isDesktop, isMobile } = useDetectBreakpoints();
 
   const brandLogo = useColorModeValue(
-    '/logos/brand-logo.svg',
-    '/logos/brand-logo-dark.svg'
+    '/logos/hyperweb-logo.svg',
+    '/logos/hyperweb-logo-dark.svg'
   );
 
-  const brandLogoSm = useColorModeValue(
-    '/logos/brand-logo-sm.svg',
-    '/logos/brand-logo-sm-dark.svg'
-  );
+  const brandLogoSm = '/logos/hyperweb-logo-sm.svg';
 
   return (
     <Box
@@ -40,7 +37,7 @@ export const Header = ({ onOpenSidebar }: HeaderProps) => {
             alt="your logo"
             width="0"
             height="0"
-            style={{ width: isMobile ? '40px' : '180px', height: 'auto' }}
+            style={{ width: isMobile ? '30px' : '150px', height: 'auto' }}
           />
         </Link>
       )}

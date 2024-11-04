@@ -3,10 +3,11 @@ import { useChain } from '@cosmos-kit/react';
 import { UseQueryResult } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useEffect, useMemo } from 'react';
+import osmosis from 'chain-registry/mainnet/osmosis/chain';
+import { Pool } from 'osmo-query/dist/codegen/osmosis/gamm/pool-models/balancer/balancerPool';
+
 import { useChainUtils } from './useChainUtils';
 import { useChainAssetsPrices } from './useChainAssetsPrices';
-import { osmosisChainName } from '@/config';
-import { Pool } from 'osmo-query/dist/codegen/osmosis/gamm/pool-models/balancer/balancerPool';
 import { convertGammTokenToDollarValue } from '@/utils';
 import { useOsmoQueryHooks } from './useOsmoQueryHooks';
 
@@ -28,7 +29,7 @@ export const useTotalAssets = (chainName: string) => {
   const { cosmosQuery, osmoQuery, isReady, isFetching } =
     useOsmoQueryHooks(chainName);
 
-  const isOsmosisChain = chainName === osmosisChainName;
+  const isOsmosisChain = chainName === osmosis.chain_name;
 
   const allBalancesQuery: UseQueryResult<Coin[]> =
     cosmosQuery.bank.v1beta1.useAllBalances({

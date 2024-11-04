@@ -45,13 +45,6 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
           },
         }}
         signerOptions={getSignerOptions()}
-        endpointOptions={{
-          endpoints: {
-            osmosis: {
-              rpc: ['http://localhost:26657'],
-            },
-          },
-        }}
       >
         <QueryClientProvider client={queryClient}>
           <Box className={themeClass}>

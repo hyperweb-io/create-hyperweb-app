@@ -45,7 +45,7 @@ const TextDivider = () => {
 const socialLinks = [
   {
     icon: <Icon name="github" color="$blackAlpha600" />,
-    href: 'https://github.com/cosmology-tech',
+    href: 'https://github.com/hyperweb-io',
   },
   {
     icon: <Icon name="discord" color="$blackAlpha600" />,
@@ -57,7 +57,7 @@ const socialLinks = [
         <FaXTwitter size="16px" />
       </Box>
     ),
-    href: 'https://x.com/cosmology_tech',
+    href: 'https://x.com/Hyperweb_',
   },
   {
     icon: <Icon name="youtube" color="$blackAlpha600" />,

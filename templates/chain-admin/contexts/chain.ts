@@ -1,18 +1,21 @@
 import { create } from 'zustand';
-import { chainOptions } from '@/config';
+import { HYPERWEB_CHAIN_NAME } from '@/config';
 
 interface ChainStore {
   selectedChain: string;
+  isHyperwebAdded: boolean;
 }
 
-export const defaultChain = chainOptions[0].chain_name;
-
 export const useChainStore = create<ChainStore>()(() => ({
-  selectedChain: defaultChain,
+  selectedChain: HYPERWEB_CHAIN_NAME,
+  isHyperwebAdded: false,
 }));
 
 export const chainStore = {
   setSelectedChain: (chainName: string) => {
     useChainStore.setState({ selectedChain: chainName });
+  },
+  setIsHyperwebAdded: (isAdded: boolean) => {
+    useChainStore.setState({ isHyperwebAdded: isAdded });
   },
 };

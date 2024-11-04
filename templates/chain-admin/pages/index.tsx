@@ -3,13 +3,15 @@ import { Box, Text, useColorModeValue } from '@interchain-ui/react';
 
 import { Button } from '@/components';
 import { useChainStore } from '@/contexts';
-import { useConnectChain, useDetectBreakpoints } from '@/hooks';
+import {
+  useConnectChain,
+  useDetectBreakpoints,
+  useAddHyperwebChain,
+} from '@/hooks';
 
 export default function Home() {
   const { isMobile } = useDetectBreakpoints();
-  const { selectedChain } = useChainStore();
-  const { connect, isWalletConnected, openView } =
-    useConnectChain(selectedChain);
+  const { isHyperwebAdded } = useAddHyperwebChain();
 
   const chainsImageSrc = useColorModeValue(
     '/images/chains.png',
@@ -35,14 +37,7 @@ export default function Home() {
         Welcome to <HighlightText>Cosmos Kit</HighlightText> +{' '}
         <HighlightText>Next.js</HighlightText>
       </Text>
-      <Button
-        variant="primary"
-        leftIcon="walletFilled"
-        mx="auto"
-        onClick={isWalletConnected ? openView : connect}
-      >
-        {isWalletConnected ? 'My Wallet' : 'Connect Wallet'}
-      </Button>
+      {isHyperwebAdded && <ConnectButton />}
       <Box
         display="flex"
         justifyContent="center"
@@ -66,8 +61,25 @@ export default function Home() {
 
 const HighlightText = ({ children }: { children: string }) => {
   return (
-    <Text as="span" color="$purple600">
+    <Text as="span" color="$purple600" fontSize="inherit">
       {children}
     </Text>
+  );
+};
+
+const ConnectButton = () => {
+  const { selectedChain } = useChainStore();
+  const { connect, isWalletConnected, openView } =
+    useConnectChain(selectedChain);
+
+  return (
+    <Button
+      variant="primary"
+      leftIcon="walletFilled"
+      mx="auto"
+      onClick={isWalletConnected ? openView : connect}
+    >
+      {isWalletConnected ? 'My Wallet' : 'Connect Wallet'}
+    </Button>
   );
 };

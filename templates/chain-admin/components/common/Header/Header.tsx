@@ -5,7 +5,7 @@ import { RxHamburgerMenu } from 'react-icons/rx';
 
 import { ChainDropdown } from './ChainDropdown';
 import { Button } from '../Button';
-import { useDetectBreakpoints } from '@/hooks';
+import { useDetectBreakpoints, useAddHyperwebChain } from '@/hooks';
 import { AddressButton } from './AddressButton';
 
 interface HeaderProps {
@@ -15,16 +15,14 @@ interface HeaderProps {
 export const Header = ({ onOpenSidebar }: HeaderProps) => {
   const { theme, setTheme } = useTheme();
   const { isDesktop, isMobile } = useDetectBreakpoints();
+  const { isHyperwebAdded } = useAddHyperwebChain();
 
   const brandLogo = useColorModeValue(
-    '/logos/brand-logo.svg',
-    '/logos/brand-logo-dark.svg'
+    '/logos/hyperweb-logo.svg',
+    '/logos/hyperweb-logo-dark.svg'
   );
 
-  const brandLogoSm = useColorModeValue(
-    '/logos/brand-logo-sm.svg',
-    '/logos/brand-logo-sm-dark.svg'
-  );
+  const brandLogoSm = '/logos/hyperweb-logo-sm.svg';
 
   return (
     <Box
@@ -40,13 +38,13 @@ export const Header = ({ onOpenSidebar }: HeaderProps) => {
             alt="your logo"
             width="0"
             height="0"
-            style={{ width: isMobile ? '40px' : '180px', height: 'auto' }}
+            style={{ width: isMobile ? '30px' : '150px', height: 'auto' }}
           />
         </Link>
       )}
       <Box display="flex" alignItems="center" gap="10px">
-        <AddressButton />
-        <ChainDropdown />
+        {isHyperwebAdded && <AddressButton />}
+        {isHyperwebAdded && <ChainDropdown />}
         <Button
           leftIcon={theme === 'dark' ? 'moonLine' : 'sunLine'}
           px="10px"

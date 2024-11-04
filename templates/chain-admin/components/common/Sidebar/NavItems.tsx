@@ -13,41 +13,51 @@ type NavItem = {
   href: string;
 };
 
+export const ROUTES = {
+  HOME: '/',
+  STAKING: '/staking',
+  GOVERNANCE: '/governance',
+  ASSET_LIST: '/asset-list',
+  FAUCET: '/faucet',
+  CONTRACT: '/contract',
+  DOCS: '/docs',
+} as const;
+
 const navItems: NavItem[] = [
   {
     icon: <RiHome7Line size="20px" />,
     label: 'Home',
-    href: '/',
+    href: ROUTES.HOME,
   },
   {
     icon: <RiStackLine size="20px" />,
     label: 'Staking',
-    href: '/staking',
+    href: ROUTES.STAKING,
   },
   {
     icon: <MdOutlineHowToVote size="20px" />,
     label: 'Governance',
-    href: '/governance',
+    href: ROUTES.GOVERNANCE,
   },
   {
     icon: 'coinsLine',
     label: 'Asset List',
-    href: '/asset-list',
+    href: ROUTES.ASSET_LIST,
   },
   {
     icon: <MdOutlineWaterDrop size="20px" />,
     label: 'Faucet',
-    href: '/faucet',
+    href: ROUTES.FAUCET,
   },
   {
     icon: <LuFileJson size="20px" />,
     label: 'Contract',
-    href: '/contract',
+    href: ROUTES.CONTRACT,
   },
   {
     icon: 'document',
     label: 'Docs',
-    href: '/docs',
+    href: ROUTES.DOCS,
   },
 ];
 

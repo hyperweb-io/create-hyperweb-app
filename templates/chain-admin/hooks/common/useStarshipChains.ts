@@ -4,13 +4,18 @@ import { AssetList, Chain } from '@chain-registry/types';
 import { StarshipConfig } from '@/starship';
 import config from '@/starship/configs/config.yaml';
 
+export type StarshipChains = {
+  chains: Chain[];
+  assets: AssetList[];
+};
+
 export const useStarshipChains = () => {
   const { registry } = config as StarshipConfig;
   const baseUrl = `http://localhost:${registry.ports.rest}`;
 
   return useQuery({
     queryKey: ['starship-chains'],
-    queryFn: async () => {
+    queryFn: async (): Promise<StarshipChains | null> => {
       try {
         const { chains = [] } =
           (await fetcher<{ chains: Chain[] }>(`${baseUrl}/chains`)) ?? {};

@@ -7,14 +7,14 @@ import { NavItems } from './NavItems';
 import { Button } from '@/components';
 import { useChainStore } from '@/contexts';
 import { shortenAddress } from '@/utils';
-import { useCopyToClipboard, useConnectChain } from '@/hooks';
+import {
+  useCopyToClipboard,
+  useConnectChain,
+  useAddHyperwebChain,
+} from '@/hooks';
 
 export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
-  const { selectedChain } = useChainStore();
-  const { isCopied, copyToClipboard } = useCopyToClipboard();
-  const { connect, disconnect, address, isWalletConnected, wallet } =
-    useConnectChain(selectedChain);
-
+  const { isHyperwebAdded } = useAddHyperwebChain();
   const poweredByLogoSrc = useColorModeValue(
     '/logos/cosmology.svg',
     '/logos/cosmology-dark.svg'
@@ -30,56 +30,7 @@ export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
     >
       <NavItems onItemClick={onClose} />
       <Box mt="$auto">
-        {isWalletConnected && address ? (
-          <Box display="flex" alignItems="center" justifyContent="center">
-            <Button
-              variant="outline"
-              px="10px"
-              borderTopRightRadius={0}
-              borderBottomRightRadius={0}
-              leftIcon={
-                wallet?.logo ? (
-                  <Image
-                    src={
-                      typeof wallet.logo === 'string'
-                        ? wallet.logo
-                        : wallet.logo.major || wallet.logo.minor
-                    }
-                    alt={wallet.prettyName}
-                    width="0"
-                    height="0"
-                    style={{ width: '20px', height: 'auto' }}
-                  />
-                ) : (
-                  'checkboxCircle'
-                )
-              }
-              rightIcon={isCopied ? 'checkLine' : 'copy'}
-              iconColor={isCopied ? '$textSuccess' : 'inherit'}
-              iconSize="$lg"
-              onClick={() => copyToClipboard(address)}
-            >
-              {shortenAddress(address, 4)}&nbsp;
-            </Button>
-            <Button
-              leftIcon={<FiLogOut />}
-              variant="outline"
-              px="10px"
-              borderLeftWidth={0}
-              borderTopLeftRadius={0}
-              borderBottomLeftRadius={0}
-              onClick={disconnect}
-            />
-          </Box>
-        ) : (
-          <Button
-            variant="outline"
-            leftIcon={<MdOutlineAccountBalanceWallet size="20px" />}
-            onClick={connect}
-          >
-            Connect Wallet
-          </Button>
-        )}
+        {isHyperwebAdded && <ConnectButton />}
         <Box
           mt="10px"
           display="flex"
@@ -101,5 +52,67 @@ export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
         </Box>
       </Box>
     </Box>
+  );
+};
+
+const ConnectButton = () => {
+  const { selectedChain } = useChainStore();
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const { connect, disconnect, address, isWalletConnected, wallet } =
+    useConnectChain(selectedChain);
+
+  return (
+    <>
+      {isWalletConnected && address ? (
+        <Box display="flex" alignItems="center" justifyContent="center">
+          <Button
+            variant="outline"
+            px="10px"
+            borderTopRightRadius={0}
+            borderBottomRightRadius={0}
+            leftIcon={
+              wallet?.logo ? (
+                <Image
+                  src={
+                    typeof wallet.logo === 'string'
+                      ? wallet.logo
+                      : wallet.logo.major || wallet.logo.minor
+                  }
+                  alt={wallet.prettyName}
+                  width="0"
+                  height="0"
+                  style={{ width: '20px', height: 'auto' }}
+                />
+              ) : (
+                'checkboxCircle'
+              )
+            }
+            rightIcon={isCopied ? 'checkLine' : 'copy'}
+            iconColor={isCopied ? '$textSuccess' : 'inherit'}
+            iconSize="$lg"
+            onClick={() => copyToClipboard(address)}
+          >
+            {shortenAddress(address, 4)}&nbsp;
+          </Button>
+          <Button
+            leftIcon={<FiLogOut />}
+            variant="outline"
+            px="10px"
+            borderLeftWidth={0}
+            borderTopLeftRadius={0}
+            borderBottomLeftRadius={0}
+            onClick={disconnect}
+          />
+        </Box>
+      ) : (
+        <Button
+          variant="outline"
+          leftIcon={<MdOutlineAccountBalanceWallet size="20px" />}
+          onClick={connect}
+        >
+          Connect Wallet
+        </Button>
+      )}
+    </>
   );
 };

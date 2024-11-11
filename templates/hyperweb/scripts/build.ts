@@ -9,13 +9,13 @@ interface BuildConfig {
 
 const configs: BuildConfig[] = [
   {
-    entryFile: 'src/contract1/index.ts',
-    outFile: 'dist/contracts/bundle1.js',
+    entryFile: 'src/simple-state/index.ts',
+    outFile: 'dist/contracts/simpleState.js',
     externalPackages: ['otherpackage', '~somepackage']
   },
   {
-    entryFile: 'src/contract2/index.ts',
-    outFile: 'dist/contracts/bundle2.js',
+    entryFile: 'src/amm-contract/index.ts',
+    outFile: 'dist/contracts/ammContract.js',
     externalPackages: ['~bank'],
   }
 ];

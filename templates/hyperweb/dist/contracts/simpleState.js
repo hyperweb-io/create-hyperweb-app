@@ -1,4 +1,4 @@
-// src/contract1/index.ts
+// src/simple-state/index.ts
 function reset(state) {
   const newValue = 0;
   state.set("value", newValue);
@@ -25,4 +25,4 @@ export {
   read,
   reset
 };
-//# sourceMappingURL=bundle1.js.map
+//# sourceMappingURL=simpleState.js.map

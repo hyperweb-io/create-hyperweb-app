@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "sources": ["../../src/contract1/index.ts"],
+  "sources": ["../../src/simple-state/index.ts"],
   "sourcesContent": ["export interface State {\n  get(key: string): string;\n  set(key: string, value: any): void;\n}\n\nexport function reset(state: State) {\n  const newValue = 0;\n  state.set('value', newValue);\n  return newValue\n}\nexport function inc(state: State, { x }: { x: number }) {\n  const oldValue = Number(state.get('value')) || 0;\n  const newValue = oldValue + x;\n  state.set('value', newValue);\n  return newValue\n}\nexport function dec(state: State, { x }: { x: number }) {\n  const oldValue = Number(state.get('value')) || 0;\n  const newValue = oldValue - x;\n  state.set('value', newValue);\n  return newValue\n}\n\nexport function read(state: State) {\n  return state.get('value');\n}\n"],
   "mappings": ";AAKO,SAAS,MAAM,OAAc;AAClC,QAAM,WAAW;AACjB,QAAM,IAAI,SAAS,QAAQ;AAC3B,SAAO;AACT;AACO,SAAS,IAAI,OAAc,EAAE,EAAE,GAAkB;AACtD,QAAM,WAAW,OAAO,MAAM,IAAI,OAAO,CAAC,KAAK;AAC/C,QAAM,WAAW,WAAW;AAC5B,QAAM,IAAI,SAAS,QAAQ;AAC3B,SAAO;AACT;AACO,SAAS,IAAI,OAAc,EAAE,EAAE,GAAkB;AACtD,QAAM,WAAW,OAAO,MAAM,IAAI,OAAO,CAAC,KAAK;AAC/C,QAAM,WAAW,WAAW;AAC5B,QAAM,IAAI,SAAS,QAAQ;AAC3B,SAAO;AACT;AAEO,SAAS,KAAK,OAAc;AACjC,SAAO,MAAM,IAAI,OAAO;AAC1B;",
   "names": []

@@ -1,4 +1,4 @@
-// src/contract2/sdk.ts
+// src/amm-contract/sdk.ts
 function useStore(key, defaultValue) {
   return (state) => [
     () => state.get(key) ?? defaultValue,
@@ -27,7 +27,7 @@ function useMapping(keys, defaultValue) {
   ];
 }
 
-// src/contract2/amm.ts
+// src/amm-contract/amm.ts
 import { getBalance, sendCoins } from "~bank";
 var totalSupply = useStore("totalSupply", 0);
 var balance = useMapping(["balance", "address"], 0);
@@ -162,12 +162,12 @@ var Contract = class {
   }
 };
 
-// src/contract2/index.ts
-var contract2_default = Contract;
+// src/amm-contract/index.ts
+var amm_contract_default = Contract;
 export {
   Contract,
-  contract2_default as default,
+  amm_contract_default as default,
   useMapping,
   useStore
 };
-//# sourceMappingURL=bundle2.js.map
+//# sourceMappingURL=ammContract.js.map

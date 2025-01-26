@@ -33,8 +33,6 @@ export function Wallet() {
     openView,
   } = useChain(CHAIN_NAME);
 
-  console.log({ status });
-
   const ConnectButton = {
     [WalletStatus.Connected]: <ButtonConnected onClick={openView} />,
     [WalletStatus.Connecting]: <ButtonConnecting />,

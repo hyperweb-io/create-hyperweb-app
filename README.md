@@ -15,7 +15,7 @@ Set up a Hyperweb app by running one command ⚛️
 - [Overview](#overview)
 - [Education & Resources](#education--resources)
 - [Creating an App](#creating-an-app)
-- [Examples](#examples)
+- [Templates](#templates)
 - [Options](#options)
 - [Development](#development)
 
@@ -53,15 +53,15 @@ Now your app should be running on `http://localhost:3000`!
 
 ### Get Started Immediately
 
-You don’t need to install or configure cosmjs, keplr, nextjs, webpack or Babel.
+You don't need to install or configure cosmjs, keplr, nextjs, webpack or Babel.
 
 Everything is preconfigured, ready-to-go, so you can focus on your code!
 
-- ⚡️ Connect easily to 20+ wallets via [Cosmos Kit](https://github.com/cosmology-tech/cosmos-kit) — including Ledger, Keplr, Cosmostation, Leap, Trust Wallet, OKX, XDEFI, Exodus, Wallet Connect and more!
+- ⚡️ Connect easily to 20+ wallets via [Cosmos Kit](https://github.com/cosmology-tech/cosmos-kit) — including Ledger, Keplr, Cosmostation, Leap, Trust Wallet, OKX, XDEFI, Exodus, Wallet Connect and more!
 - ⚛️ Sign and broadcast with [cosmjs](https://github.com/cosmos/cosmjs) stargate + cosmwasm signers
 <!-- - 🎨 Build awesome UI with [Interchain UI](https://cosmology.zone/products/interchain-ui) and [Explore Components](https://cosmology.zone/components) -->
 - 🛠 Render pages with [next.js](https://nextjs.org/) hybrid static & server rendering
-<!-- - 📝 Leverage [chain-registry](https://github.com/cosmology-tech/chain-registry) for Chain and Asset info for all Cosmos chains -->
+<!-- - 📝 Leverage [chain-registry](https://github.com/cosmology-tech/chain-registry) for Chain and Asset info for all Cosmos chains -->
 - 🚀 Ensure reliability with [Starship](https://github.com/cosmology-tech/starship), our end-to-end testing CI/CD project for GitHub Actions, streamlining continuous integration and delivery across the interchain ecosystem.
 
 <!-- ## Education & Resources
@@ -110,18 +110,63 @@ npm init hyperweb-app
 yarn create hyperweb-app
 ```
 
+## Templates
+
+The `create-hyperweb-app` tool provides carefully crafted templates to help you understand and test various features and integrations. By executing the templates, you can quickly see how to implement specific functionalities in your Cosmos app.
+
+```
+cha --template
+```
+
+If you know the template name, you can do
+
+```
+cha --template <template-name>
+```
+
+Alternatively, you can use the shorthand `-t` flag to achieve the same:
+
+```
+cha -t <template-name>
+```
+
+This command will generate a new project configured with the selected template, allowing you to dive into the code and functionality right away.
+
+### Hyperweb
+
+<p align="center" width="100%">
+    <img height="48" src="https://user-images.githubusercontent.com/545047/186589196-e75c9540-86a7-4a71-8096-207be9a4216f.svg" />
+</p>
+
+Facilitate the development of decentralized applications by enabling developers to write and compile TypeScript smart contracts locally.
+
+```
+cha --name hyperweb-template --template hyperweb
+```
+
+### Chain Admin
+
+<p align="center" width="100%">
+    <img height="48" src="https://user-images.githubusercontent.com/545047/186589196-e75c9540-86a7-4a71-8096-207be9a4216f.svg" />
+</p>
+
+Manage and integrate multiple modules such as staking, voting and asset-list within your application. This template provides a comprehensive setup for building robust and feature-rich Cosmos apps.
+
+```
+cha --name chain-admin-template --template chain-admin
+```
+
 ## Options
 
-| Argument             | Description                                    | Default    |
-|----------------------|------------------------------------------------|------------|
-| `--repo`             | Set custom repository for cha templates        | None       |
-| `--install`          | Automatically install dependencies             | `true`     |
-| `--printCmd`         | Print the command to run after setup           | `true`     |
-| `-n`, `--name`       | Provide a project name                         | None       |
-| `-e`, `--example`    | Provide an example name                        | None       |
-| `-t`, `--template`   | Define the template to use                     | None       |
-| `-b`, `--fromBranch` | Specify the branch to use for cloning          | None       |
-
+| Argument             | Description                             | Default |
+| -------------------- | --------------------------------------- | ------- |
+| `--repo`             | Set custom repository for cha templates | None    |
+| `--install`          | Automatically install dependencies      | `true`  |
+| `--printCmd`         | Print the command to run after setup    | `true`  |
+| `-n`, `--name`       | Provide a project name                  | None    |
+| `-e`, `--example`    | Provide an example name                 | None    |
+| `-t`, `--template`   | Define the template to use              | None    |
+| `-b`, `--fromBranch` | Specify the branch to use for cloning   | None    |
 
 ## Related
 
@@ -137,10 +182,10 @@ Checkout these related projects:
 
 ## Credits
 
-🛠 Built by Hyperweb (formerly Cosmology) — if you like our tools, please checkout and contribute to [our github ⚛️](https://github.com/hyperweb-io)
+🛠 Built by Hyperweb (formerly Cosmology) — if you like our tools, please checkout and contribute to [our github ⚛️](https://github.com/hyperweb-io)
 
 ## Disclaimer
 
-AS DESCRIBED IN THE LICENSES, THE SOFTWARE IS PROVIDED “AS IS”, AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND.
+AS DESCRIBED IN THE LICENSES, THE SOFTWARE IS PROVIDED "AS IS", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND.
 
 No developer or entity involved in creating this software will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of the code, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.

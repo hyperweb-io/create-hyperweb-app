@@ -4,3 +4,6 @@
 lerna-debug.log
 
 **/.idea
+
+**/.next
+next-env.d.ts

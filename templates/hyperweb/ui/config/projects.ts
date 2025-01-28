@@ -8,27 +8,17 @@ export const products: Project[] = [
   {
     name: 'Interchain Kit',
     desc: 'A wallet adapter for react with mobile WalletConnect support for the Cosmos ecosystem.',
-    link: 'https://github.com/cosmology-tech/interchain-kit',
+    link: 'https://github.com/hyperweb-io/interchain-kit',
   },
   {
     name: 'Telescope',
     desc: 'A TypeScript Transpiler for Cosmos Protobufs to generate libraries for Cosmos blockchains.',
-    link: 'https://github.com/cosmology-tech/telescope',
-  },
-  {
-    name: 'TS Codegen',
-    desc: 'The quickest and easiest way to convert CosmWasm Contracts into dev-friendly TypeScript classes.',
-    link: 'https://github.com/CosmWasm/ts-codegen',
-  },
-  {
-    name: 'CosmWasm Academy',
-    desc: 'Master CosmWasm and build your secure, multi-chain dApp on any CosmWasm chain!',
-    link: 'https://academy.cosmwasm.com/',
+    link: 'https://github.com/hyperweb-io/telescope',
   },
   {
     name: 'Chain Registry',
     desc: 'Get chain and asset list information from the npm package for the Official Cosmos chain registry.',
-    link: 'https://github.com/cosmology-tech/chain-registry',
+    link: 'https://github.com/hyperweb-io/chain-registry',
   },
   {
     name: 'Videos',
@@ -38,11 +28,6 @@ export const products: Project[] = [
 ];
 
 export const dependencies: Project[] = [
-  {
-    name: 'OsmoJS',
-    desc: 'OsmosJS makes it easy to compose and broadcast Osmosis and Cosmos messages',
-    link: 'https://github.com/osmosis-labs/osmojs',
-  },
   {
     name: 'Interchain UI',
     desc: 'A simple, modular and cross-framework Component Library for Cosmos',

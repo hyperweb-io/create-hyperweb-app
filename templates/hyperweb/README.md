@@ -11,7 +11,7 @@
   </a>
   <br />
    <a href="https://github.com/__USERNAME__/__REPONAME__/blob/main/LICENSE"><img height="20" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-   <a href="https://github.com/cosmology-tech/starshipjs"><img height="20" src="https://img.shields.io/badge/CI-Starship-blue"></a>
+   <a href="https://github.com/hyperweb-io/starshipjs"><img height="20" src="https://img.shields.io/badge/CI-Starship-blue"></a>
 </p>
 
 # Hyperweb Boilerplate
@@ -79,7 +79,7 @@ This bundles the contracts from src/** into dist/contracts/.
 ## Infrastructure Setup
 
 ### Option 1: Using Starship
-[Starship](https://github.com/cosmology-tech/starship) is a Kubernetes-based blockchain orchestrator. It sets up a local blockchain environment with full cross-chain compatibility.
+[Starship](https://github.com/hyperweb-io/starship) is a Kubernetes-based blockchain orchestrator. It sets up a local blockchain environment with full cross-chain compatibility.
 
 #### Enable Kubernetes in Docker Desktop
 Docker Desktop includes a standalone Kubernetes server and client, as well as Docker CLI integration that runs on your machine.

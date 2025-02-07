@@ -4,7 +4,7 @@ import {
   PopoverTrigger,
   useColorModeValue,
 } from '@interchain-ui/react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { MdOutlineAccountBalanceWallet } from 'react-icons/md';
 
 import { Button, WalletConnect } from '@/components';

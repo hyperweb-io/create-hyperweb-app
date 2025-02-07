@@ -1,5 +1,4 @@
-import { GasPrice } from '@cosmjs/stargate';
-import { SignerOptions, Wallet } from '@cosmos-kit/core';
+import { Wallet } from '@cosmos-kit/core';
 import { Asset, AssetList } from '@chain-registry/types';
 
 export const getNativeAsset = (assets: AssetList) => {
@@ -23,25 +22,31 @@ export const getWalletLogo = (wallet: Wallet) => {
     : wallet.logo.major || wallet.logo.minor;
 };
 
-export const getSignerOptions = (): SignerOptions => {
-  const defaultGasPrice = GasPrice.fromString('0.025uosmo');
+function toCamelCase(key: string) {
+  return (
+    key
+      // First, remove all leading non-alphabet characters except $
+      .replace(/^[^a-zA-Z$]+/, '')
+      // Convert what follows a separator into upper case
+      .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
+      // Ensure the first character of the result is always lowercase
+      .replace(/^./, (c) => c.toLowerCase())
+  );
+}
 
-  return {
-    // @ts-ignore
-    signingStargate: (chain) => {
-      if (typeof chain === 'string') {
-        return { gasPrice: defaultGasPrice };
-      }
-      let gasPrice;
-      try {
-        const feeToken = chain.fees?.fee_tokens[0];
-        const fee = `${feeToken?.average_gas_price || 0.025}${feeToken?.denom}`;
-        gasPrice = GasPrice.fromString(fee);
-      } catch (error) {
-        gasPrice = defaultGasPrice;
-      }
-      return { gasPrice };
-    },
-    preferredSignType: () => 'direct',
-  };
-};
+export function convertKeysToCamelCase(obj: any): any {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => convertKeysToCamelCase(item));
+  }
+
+  return Object.keys(obj).reduce((result, key) => {
+    const camelKey = toCamelCase(key);
+    const value = convertKeysToCamelCase(obj[key]);
+    result[camelKey as keyof typeof result] = value;
+    return result;
+  }, {} as Record<string, any>);
+}

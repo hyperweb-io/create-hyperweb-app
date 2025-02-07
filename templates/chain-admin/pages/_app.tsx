@@ -1,16 +1,17 @@
 import '../styles/globals.css';
 import '@interchain-ui/react/styles';
+import '@interchain-ui/react/globalStyles';
 
 import type { AppProps } from 'next/app';
-import { ChainProvider } from '@cosmos-kit/react';
+import { ChainProvider } from '@interchain-kit/react';
+import { chains, assetLists } from '@chain-registry/v2';
+import { keplrWallet } from '@interchain-kit/keplr-extension';
+import { leapWallet } from '@interchain-kit/leap-extension';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Box, Toaster, useTheme } from '@interchain-ui/react';
-import { chains, assets } from 'chain-registry';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { CustomThemeProvider, Layout } from '@/components';
-import { wallets } from '@/config';
-import { getSignerOptions } from '@/utils';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,27 +30,15 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
     <CustomThemeProvider>
       <ChainProvider
         chains={chains}
-        // @ts-ignore
-        assetLists={assets}
-        wallets={wallets}
-        walletConnectOptions={{
-          signClient: {
-            projectId: 'a8510432ebb71e6948cfd6cde54b70f7',
-            relayUrl: 'wss://relay.walletconnect.org',
-            metadata: {
-              name: 'CosmosKit Template',
-              description: 'CosmosKit dapp template',
-              url: 'https://docs.cosmology.zone/cosmos-kit/',
-              icons: [],
-            },
-          },
+        assetLists={assetLists}
+        wallets={[keplrWallet, leapWallet]}
+        signerOptions={{
+          preferredSignType: () => 'direct',
         }}
-        signerOptions={getSignerOptions()}
       >
         <QueryClientProvider client={queryClient}>
           <Box className={themeClass}>
             <Layout>
-              {/* @ts-ignore */}
               <Component {...pageProps} />
               <Toaster position="top-right" closeButton={true} />
             </Layout>

@@ -2,16 +2,13 @@ import Image from 'next/image';
 import { Box, useColorModeValue, Text } from '@interchain-ui/react';
 import { MdOutlineAccountBalanceWallet } from 'react-icons/md';
 import { FiLogOut } from 'react-icons/fi';
+import { useChain } from '@interchain-kit/react';
 
 import { NavItems } from './NavItems';
 import { Button } from '@/components';
 import { useChainStore } from '@/contexts';
 import { shortenAddress } from '@/utils';
-import {
-  useCopyToClipboard,
-  useConnectChain,
-  useAddHyperwebChain,
-} from '@/hooks';
+import { useCopyToClipboard, useAddHyperwebChain } from '@/hooks';
 
 export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
   const { isHyperwebAdded } = useAddHyperwebChain();
@@ -58,12 +55,11 @@ export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
 const ConnectButton = () => {
   const { selectedChain } = useChainStore();
   const { isCopied, copyToClipboard } = useCopyToClipboard();
-  const { connect, disconnect, address, isWalletConnected, wallet } =
-    useConnectChain(selectedChain);
+  const { connect, disconnect, address, wallet } = useChain(selectedChain);
 
   return (
     <>
-      {isWalletConnected && address ? (
+      {address ? (
         <Box display="flex" alignItems="center" justifyContent="center">
           <Button
             variant="outline"

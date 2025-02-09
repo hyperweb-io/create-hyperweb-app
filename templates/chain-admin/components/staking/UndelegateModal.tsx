@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { cosmos } from 'interchain-query';
-import { useChain } from '@cosmos-kit/react';
-import { ChainName } from 'cosmos-kit';
+import { useChain } from '@interchain-kit/react';
 import BigNumber from 'bignumber.js';
 import {
   BasicModal,
@@ -10,10 +8,19 @@ import {
   Box,
   Button,
 } from '@interchain-ui/react';
+import { useUndelegate } from '@interchainjs/react/cosmos/staking/v1beta1/tx.rpc.react';
+import { MsgUndelegate } from '@interchainjs/react/cosmos/staking/v1beta1/tx';
+import { defaultContext } from '@tanstack/react-query';
 
-import { getExponentFromAsset, getNativeAsset } from '@/utils';
-import { Prices, UseDisclosureReturn, useTx } from '@/hooks';
 import {
+  Prices,
+  UseDisclosureReturn,
+  useSigningClient,
+  useToastHandlers,
+} from '@/hooks';
+import {
+  getExponentFromAsset,
+  getNativeAsset,
   calcDollarValue,
   formatValidatorMetaInfo,
   getAssetLogoUrl,
@@ -21,8 +28,7 @@ import {
   toBaseAmount,
   type ExtendedValidator as Validator,
 } from '@/utils';
-
-const { undelegate } = cosmos.staking.v1beta1.MessageComposer.fromPartial;
+import { StdFee } from '@interchainjs/react/types';
 
 export const UndelegateModal = ({
   updateData,
@@ -36,7 +42,7 @@ export const UndelegateModal = ({
 }: {
   updateData: () => void;
   unbondingDays: string;
-  chainName: ChainName;
+  chainName: string;
   selectedValidator: Validator;
   closeOuterModal: () => void;
   modalControl: UseDisclosureReturn;
@@ -44,26 +50,31 @@ export const UndelegateModal = ({
   prices: Prices;
 }) => {
   const [amount, setAmount] = useState<number | undefined>(0);
-  const [isUndelegating, setIsUndelegating] = useState(false);
 
-  const { address, assets } = useChain(chainName);
-  const { tx } = useTx(chainName);
+  const { address, assetList } = useChain(chainName);
 
-  const coin = getNativeAsset(assets!);
+  const coin = getNativeAsset(assetList);
   const exp = getExponentFromAsset(coin);
+
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(chainName);
+  const { mutate: undelegate, isLoading: isUndelegating } = useUndelegate({
+    clientResolver: signingClient,
+    options: {
+      context: defaultContext,
+      ...toastHandlers,
+    },
+  });
 
   const closeUndelegateModal = () => {
     setAmount(0);
-    setIsUndelegating(false);
     modalControl.onClose();
   };
 
-  const onUndelegateClick = async () => {
+  const onUndelegateClick = () => {
     if (!address || !amount) return;
 
-    setIsUndelegating(true);
-
-    const msg = undelegate({
+    const msg = MsgUndelegate.fromPartial({
       delegatorAddress: address,
       validatorAddress: selectedValidator.address,
       amount: {
@@ -72,15 +83,31 @@ export const UndelegateModal = ({
       },
     });
 
-    await tx([msg], {
-      onSuccess: () => {
-        updateData();
-        closeOuterModal();
-        closeUndelegateModal();
-      },
-    });
+    const fee: StdFee = {
+      amount: [
+        {
+          denom: coin.base,
+          amount: '0',
+        },
+      ],
+      gas: '200000',
+    };
 
-    setIsUndelegating(false);
+    undelegate(
+      {
+        signerAddress: address,
+        message: msg,
+        fee,
+        memo: 'Undelegate',
+      },
+      {
+        onSuccess: () => {
+          updateData();
+          closeOuterModal();
+          closeUndelegateModal();
+        },
+      }
+    );
   };
 
   const maxAmount = selectedValidator.delegation;

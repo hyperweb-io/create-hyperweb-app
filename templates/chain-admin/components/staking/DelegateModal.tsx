@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { cosmos } from 'interchain-query';
-import { StdFee } from '@cosmjs/amino';
-import { useChain } from '@cosmos-kit/react';
-import { ChainName } from 'cosmos-kit';
+import { StdFee } from '@interchainjs/cosmos-types/types';
+import { useChain } from '@interchain-kit/react';
 import BigNumber from 'bignumber.js';
 import {
   BasicModal,
@@ -12,26 +10,29 @@ import {
   Callout,
   Text,
 } from '@interchain-ui/react';
+import { useDelegate } from '@interchainjs/react/cosmos/staking/v1beta1/tx.rpc.react';
+import { MsgDelegate } from '@interchainjs/react/cosmos/staking/v1beta1/tx';
+import { defaultContext } from '@tanstack/react-query';
 
 import {
   type ExtendedValidator as Validator,
   formatValidatorMetaInfo,
   getAssetLogoUrl,
   isGreaterThanZero,
-  shiftDigits,
   calcDollarValue,
   toBaseAmount,
   getExponentFromAsset,
   getNativeAsset,
+  convertGasToTokenAmount,
 } from '@/utils';
-import { Prices, UseDisclosureReturn, useTx } from '@/hooks';
+import {
+  Prices,
+  UseDisclosureReturn,
+  useSigningClient,
+  useToastHandlers,
+} from '@/hooks';
 
-const { delegate } = cosmos.staking.v1beta1.MessageComposer.fromPartial;
-
-export type MaxAmountAndFee = {
-  maxAmount: number;
-  fee: StdFee;
-};
+const DEFAULT_DELEGATION_GAS = '200000';
 
 export const DelegateModal = ({
   balance,
@@ -49,7 +50,7 @@ export const DelegateModal = ({
   balance: string;
   updateData: () => void;
   unbondingDays: string;
-  chainName: ChainName;
+  chainName: string;
   modalControl: UseDisclosureReturn;
   selectedValidator: Validator;
   logoUrl: string;
@@ -59,87 +60,78 @@ export const DelegateModal = ({
   showDescription?: boolean;
 }) => {
   const { isOpen, onClose } = modalControl;
-  const { address, estimateFee, assets } = useChain(chainName);
+  const { address, assetList, chain } = useChain(chainName);
 
   const [amount, setAmount] = useState<number | undefined>(0);
-  const [isDelegating, setIsDelegating] = useState(false);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [maxAmountAndFee, setMaxAmountAndFee] = useState<MaxAmountAndFee>();
 
-  const coin = getNativeAsset(assets!);
+  const coin = getNativeAsset(assetList);
   const exp = getExponentFromAsset(coin);
-  const { tx } = useTx(chainName);
+
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(chainName);
+  const { mutate: delegate, isLoading: isDelegating } = useDelegate({
+    clientResolver: signingClient,
+    options: {
+      context: defaultContext,
+      ...toastHandlers,
+    },
+  });
 
   const onModalClose = () => {
     onClose();
     setAmount(0);
-    setIsDelegating(false);
-    setIsSimulating(false);
   };
 
-  const onDelegateClick = async () => {
+  const onDelegateClick = () => {
     if (!address || !amount) return;
 
-    setIsDelegating(true);
-
-    const msg = delegate({
+    const msg = MsgDelegate.fromPartial({
       delegatorAddress: address,
       validatorAddress: selectedValidator.address,
       amount: {
-        amount: toBaseAmount(amount, exp), // shiftDigits(amount, exp),
+        amount: toBaseAmount(amount, exp),
         denom: coin.base,
       },
     });
 
-    const isMaxAmountAndFeeExists =
-      maxAmountAndFee &&
-      new BigNumber(amount).isEqualTo(maxAmountAndFee.maxAmount);
+    const fee: StdFee = {
+      amount: [
+        {
+          denom: coin.base,
+          amount: '0',
+        },
+      ],
+      gas: DEFAULT_DELEGATION_GAS,
+    };
 
-    await tx([msg], {
-      fee: isMaxAmountAndFeeExists ? maxAmountAndFee.fee : null,
-      onSuccess: () => {
-        setMaxAmountAndFee(undefined);
-        closeOuterModal && closeOuterModal();
-        updateData();
-        onModalClose();
+    delegate(
+      {
+        signerAddress: address,
+        message: msg,
+        fee,
+        memo: 'Delegate',
       },
-    });
-
-    setIsDelegating(false);
+      {
+        onSuccess: () => {
+          closeOuterModal?.();
+          updateData();
+          onModalClose();
+        },
+      }
+    );
   };
 
-  const handleMaxClick = async () => {
-    if (!address) return;
-
-    if (Number(balance) === 0) {
-      setAmount(0);
-      return;
-    }
-
-    setIsSimulating(true);
-
-    const msg = delegate({
-      delegatorAddress: address,
-      validatorAddress: selectedValidator.address,
-      amount: {
-        amount: shiftDigits(balance, exp),
-        denom: coin.base,
-      },
-    });
-
-    try {
-      const fee = await estimateFee([msg]);
-      const feeAmount = new BigNumber(fee.amount[0].amount).shiftedBy(-exp);
-      const balanceAfterFee = new BigNumber(balance)
-        .minus(feeAmount)
-        .toNumber();
-      setMaxAmountAndFee({ fee, maxAmount: balanceAfterFee });
-      setAmount(balanceAfterFee);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSimulating(false);
-    }
+  const handleMaxClick = () => {
+    const feeAmount = convertGasToTokenAmount(
+      DEFAULT_DELEGATION_GAS,
+      chain,
+      exp
+    );
+    const balanceAfterFee = Math.max(
+      new BigNumber(balance).minus(feeAmount).toNumber(),
+      0
+    );
+    setAmount(balanceAfterFee);
   };
 
   const headerExtra = (
@@ -195,7 +187,7 @@ export const DelegateModal = ({
               ? calcDollarValue(coin.base, amount, prices)
               : undefined,
             minValue: 0,
-            maxValue: maxAmountAndFee?.maxAmount ?? Number(balance),
+            maxValue: Number(balance),
             value: amount,
             onValueChange: (val) => {
               setAmount(val);
@@ -222,7 +214,7 @@ export const DelegateModal = ({
               },
               {
                 label: 'Max',
-                onClick: () => setAmount(Number(balance)),
+                onClick: handleMaxClick,
               },
             ],
           }}
@@ -230,9 +222,7 @@ export const DelegateModal = ({
             <Button
               intent="tertiary"
               onClick={onDelegateClick}
-              disabled={
-                !isGreaterThanZero(amount) || isDelegating || isSimulating
-              }
+              disabled={!isGreaterThanZero(amount) || isDelegating}
               isLoading={isDelegating}
             >
               Delegate

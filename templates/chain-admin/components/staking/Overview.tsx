@@ -1,24 +1,22 @@
-import { useState } from 'react';
 import {
   Box,
   StakingAssetHeader,
   StakingClaimHeader,
 } from '@interchain-ui/react';
-import { useChain } from '@cosmos-kit/react';
-import { ChainName } from 'cosmos-kit';
-import { cosmos } from 'interchain-query';
+import { useChain } from '@interchain-kit/react';
+import { useWithdrawDelegatorReward } from '@interchainjs/react/cosmos/distribution/v1beta1/tx.rpc.react';
+import { MsgWithdrawDelegatorReward } from '@interchainjs/react/cosmos/distribution/v1beta1/tx';
+import { defaultContext } from '@tanstack/react-query';
 
-import { getNativeAsset } from '@/utils';
-import { Prices, useTx } from '@/hooks';
+import { Prices, useSigningClient, useToastHandlers } from '@/hooks';
 import {
   sum,
+  getNativeAsset,
   calcDollarValue,
   isGreaterThanZero,
   type ParsedRewards as Rewards,
 } from '@/utils';
-
-const { withdrawDelegatorReward } =
-  cosmos.distribution.v1beta1.MessageComposer.fromPartial;
+import { StdFee } from '@interchainjs/react/types';
 
 const Overview = ({
   balance,
@@ -32,45 +30,63 @@ const Overview = ({
   rewards: Rewards;
   staked: string;
   updateData: () => void;
-  chainName: ChainName;
+  chainName: string;
   prices: Prices;
 }) => {
-  const [isClaiming, setIsClaiming] = useState(false);
-  const { address, assets } = useChain(chainName);
-  const { tx } = useTx(chainName);
+  const { address, assetList } = useChain(chainName);
+
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(chainName);
+  const { mutate: withdrawDelegatorReward, isLoading: isClaiming } =
+    useWithdrawDelegatorReward({
+      clientResolver: signingClient,
+      options: {
+        context: defaultContext,
+        ...toastHandlers,
+      },
+    });
 
   const totalAmount = sum(balance, staked, rewards?.total ?? 0);
-  const coin = getNativeAsset(assets!);
+  const coin = getNativeAsset(assetList);
 
   const onClaimRewardClick = async () => {
-    setIsClaiming(true);
-
     if (!address) return;
 
     const msgs = rewards.byValidators.map(({ validatorAddress }) =>
-      withdrawDelegatorReward({
+      MsgWithdrawDelegatorReward.fromPartial({
         delegatorAddress: address,
         validatorAddress,
       })
     );
 
-    await tx(msgs, {
-      onSuccess: updateData,
-    });
+    const fee: StdFee = {
+      amount: [
+        {
+          denom: coin.base,
+          amount: '0',
+        },
+      ],
+      gas: '200000',
+    };
 
-    setIsClaiming(false);
+    withdrawDelegatorReward(
+      {
+        signerAddress: address,
+        message: msgs,
+        fee,
+        memo: 'Claim reward',
+      },
+      {
+        onSuccess: updateData,
+      }
+    );
   };
 
   return (
     <>
       <Box mb={{ mobile: '$8', tablet: '$12' }}>
         <StakingAssetHeader
-          imgSrc={
-            coin.logo_URIs?.png ||
-            coin.logo_URIs?.svg ||
-            coin.logo_URIs?.jpeg ||
-            ''
-          }
+          imgSrc={coin.logoURIs?.png || coin.logoURIs?.svg || ''}
           symbol={coin.symbol}
           totalAmount={Number(totalAmount || 0)}
           totalPrice={calcDollarValue(coin.base, totalAmount, prices)}

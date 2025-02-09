@@ -32,9 +32,6 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         chains={chains}
         assetLists={assetLists}
         wallets={[keplrWallet, leapWallet]}
-        signerOptions={{
-          preferredSignType: () => 'direct',
-        }}
       >
         <QueryClientProvider client={queryClient}>
           <Box className={themeClass}>

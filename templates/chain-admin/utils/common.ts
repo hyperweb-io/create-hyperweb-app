@@ -1,12 +1,13 @@
-import { Wallet } from '@cosmos-kit/core';
-import { Asset, AssetList } from '@chain-registry/types';
+import { Wallet } from '@interchain-kit/core';
+import { Asset, AssetList, Chain } from '@chain-registry/v2-types';
+import BigNumber from 'bignumber.js';
 
 export const getNativeAsset = (assets: AssetList) => {
   return assets.assets[0] as Asset;
 };
 
 export const getExponentFromAsset = (asset: Asset) => {
-  const unit = asset.denom_units.find((unit) => unit.denom === asset.display);
+  const unit = asset.denomUnits.find((unit) => unit.denom === asset.display);
   return unit?.exponent ?? 6;
 };
 
@@ -50,3 +51,12 @@ export function convertKeysToCamelCase(obj: any): any {
     return result;
   }, {} as Record<string, any>);
 }
+
+export const convertGasToTokenAmount = (
+  gasAmount: string,
+  chain: Chain,
+  exponent: number
+) => {
+  const gasPrice = chain.fees?.feeTokens[0].averageGasPrice ?? 0.025;
+  return BigNumber(gasAmount).shiftedBy(-exponent).multipliedBy(gasPrice);
+};

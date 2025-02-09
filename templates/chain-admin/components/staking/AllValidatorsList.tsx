@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction, useMemo } from 'react';
-import { ChainName } from 'cosmos-kit';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import {
   Text,
   Button,
@@ -24,15 +23,15 @@ const AllValidatorsList = ({
   setSelectedValidator,
 }: {
   validators: Validator[];
-  chainName: ChainName;
+  chainName: string;
   openModal: () => void;
   setSelectedValidator: Dispatch<SetStateAction<Validator | undefined>>;
   logos: {
     [key: string]: string;
   };
 }) => {
-  const { assets } = useChain(chainName);
-  const coin = getNativeAsset(assets!);
+  const { assetList } = useChain(chainName);
+  const coin = getNativeAsset(assetList);
 
   const columns = useMemo(() => {
     const _columns: GridColumn[] = [

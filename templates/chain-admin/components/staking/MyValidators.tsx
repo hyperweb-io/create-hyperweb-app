@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Text } from '@interchain-ui/react';
-import { ChainName } from 'cosmos-kit';
 
 import MyValidatorsList from './MyValidatorsList';
 import { ValidatorInfoModal } from './ValidatorInfoModal';
@@ -26,7 +25,7 @@ export const MyValidators = ({
   balance: string;
   updateData: () => void;
   unbondingDays: string;
-  chainName: ChainName;
+  chainName: string;
   prices: Prices;
   logos: {
     [key: string]: string;

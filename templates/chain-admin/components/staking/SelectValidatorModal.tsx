@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { ChainName } from 'cosmos-kit';
 import {
   Text,
   GridColumn,
@@ -10,11 +9,14 @@ import {
   BasicModal,
   Box,
 } from '@interchain-ui/react';
+import { useChain } from '@interchain-kit/react';
 
-import { getNativeAsset } from '@/utils';
 import { UseDisclosureReturn } from '@/hooks';
-import { shiftDigits, type ExtendedValidator as Validator } from '@/utils';
-import { useChain } from '@cosmos-kit/react';
+import {
+  getNativeAsset,
+  shiftDigits,
+  type ExtendedValidator as Validator,
+} from '@/utils';
 
 export const SelectValidatorModal = ({
   allValidators,
@@ -24,15 +26,15 @@ export const SelectValidatorModal = ({
   modalControl,
 }: {
   allValidators: Validator[];
-  chainName: ChainName;
+  chainName: string;
   handleValidatorClick: (validator: Validator) => void;
   modalControl: UseDisclosureReturn;
   logos: {
     [key: string]: string;
   };
 }) => {
-  const { assets } = useChain(chainName);
-  const coin = getNativeAsset(assets!);
+  const { assetList } = useChain(chainName);
+  const coin = getNativeAsset(assetList);
 
   const columns = useMemo(() => {
     const hasApr = !!allValidators[0]?.apr;

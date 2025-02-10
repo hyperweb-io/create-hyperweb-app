@@ -4,7 +4,7 @@ import { Chain } from '@chain-registry/types';
 import {
   Proposal,
   ProposalStatus,
-} from 'interchain-query/cosmos/gov/v1beta1/gov';
+} from '@interchainjs/react/cosmos/gov/v1beta1/gov';
 
 export function getChainLogo(chain: Chain) {
   return chain.logo_URIs?.svg || chain.logo_URIs?.png || chain.logo_URIs?.jpeg;
@@ -28,10 +28,10 @@ export function paginate(limit: bigint, reverse: boolean = false) {
 export function percent(num: number | string = 0, total: number, decimals = 2) {
   return total
     ? new BigNumber(num)
-      .dividedBy(total)
-      .multipliedBy(100)
-      .decimalPlaces(decimals)
-      .toNumber()
+        .dividedBy(total)
+        .multipliedBy(100)
+        .decimalPlaces(decimals)
+        .toNumber()
     : 0;
 }
 

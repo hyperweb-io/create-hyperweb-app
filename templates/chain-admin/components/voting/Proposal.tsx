@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -13,7 +14,11 @@ import {
 import {
   Proposal as IProposal,
   ProposalStatus,
-} from 'interchain-query/cosmos/gov/v1/gov';
+} from '@interchainjs/react/cosmos/gov/v1/gov';
+import Markdown from 'react-markdown';
+import { useChain } from '@interchain-kit/react';
+
+import { useVoting, Votes } from '@/hooks';
 import {
   exponentiate,
   formatDate,
@@ -21,10 +26,6 @@ import {
   getNativeAsset,
   percent,
 } from '@/utils';
-import Markdown from 'react-markdown';
-import { useEffect, useState } from 'react';
-import { useVoting, Votes } from '@/hooks';
-import { useChain } from '@cosmos-kit/react';
 
 // export declare enum VoteOption {
 //   /** VOTE_OPTION_UNSPECIFIED - VOTE_OPTION_UNSPECIFIED defines a no-op vote option. */
@@ -64,8 +65,8 @@ export function Proposal({
   const [showMore, setShowMore] = useState(false);
   const [voteType, setVoteType] = useState<GovernanceVoteType>();
 
-  const { assets } = useChain(chainName);
-  const coin = getNativeAsset(assets!);
+  const { assetList } = useChain(chainName);
+  const coin = getNativeAsset(assetList);
   const exponent = getExponentFromAsset(coin);
   const { isVoting, onVote } = useVoting({ chainName, proposal });
 

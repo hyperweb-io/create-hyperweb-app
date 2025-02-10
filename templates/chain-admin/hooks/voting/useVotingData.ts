@@ -1,11 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useChain } from '@cosmos-kit/react';
-import { useQueries } from '@tanstack/react-query';
-import { ProposalStatus } from 'interchain-query/cosmos/gov/v1beta1/gov';
-import { Proposal as ProposalV1 } from 'interchain-query/cosmos/gov/v1/gov';
-import { useQueryHooks, useRpcQueryClient } from '.';
+import { useChain } from '@interchain-kit/react';
+import { defaultContext, useQueries } from '@tanstack/react-query';
+import { ProposalStatus } from '@interchainjs/react/cosmos/gov/v1beta1/gov';
+import { createGetVote } from '@interchainjs/react/cosmos/gov/v1beta1/query.rpc.func';
+import { Proposal as ProposalV1 } from '@interchainjs/react/cosmos/gov/v1/gov';
+import { chains } from 'chain-registry';
+import {
+  useGetProposals,
+  useGetParams as useGovParams,
+} from '@interchainjs/react/cosmos/gov/v1/query.rpc.react';
+import { useGetPool } from '@interchainjs/react/cosmos/staking/v1beta1/query.rpc.react';
+
 import { getTitle, paginate, parseQuorum } from '@/utils';
-import { chains } from 'chain-registry'
+import { useRpcEndpoint } from '../common';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -16,9 +23,7 @@ export interface Votes {
 }
 
 export function processProposals(proposals: ProposalV1[]) {
-  const sorted = proposals.sort(
-    (a, b) => Number(b.id) - Number(a.id)
-  );
+  const sorted = proposals.sort((a, b) => Number(b.id) - Number(a.id));
 
   proposals.forEach((proposal) => {
     // @ts-ignore
@@ -28,21 +33,28 @@ export function processProposals(proposals: ProposalV1[]) {
     }
   });
 
-  return sorted.filter(
-    ({ status }) => status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-  ).concat(sorted.filter(
-    ({ status }) => status !== ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-  ));
-};
+  return sorted
+    .filter(
+      ({ status }) => status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+    )
+    .concat(
+      sorted.filter(
+        ({ status }) => status !== ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
+      )
+    );
+}
 
 export function useVotingData(chainName: string) {
   const [isLoading, setIsLoading] = useState(false);
-  const { address } = useChain(chainName);
-  const { rpcQueryClient } = useRpcQueryClient(chainName);
-  const { cosmos, isReady, isFetching } = useQueryHooks(chainName);
-  const chain = chains.find((c) => c.chain_name === chainName);
 
-  const proposalsQuery = cosmos.gov.v1.useProposals({
+  const { address } = useChain(chainName);
+  const { data: rpcEndpoint, isFetching } = useRpcEndpoint(chainName);
+
+  const getVote = createGetVote(rpcEndpoint);
+  const chain = chains.find((c) => c.chain_name === chainName);
+  const isReady = !!address && !!rpcEndpoint;
+
+  const proposalsQuery = useGetProposals({
     request: {
       voter: '',
       depositor: '',
@@ -53,27 +65,34 @@ export function useVotingData(chainName: string) {
       enabled: isReady,
       staleTime: Infinity,
       select: ({ proposals }) => processProposals(proposals),
+      context: defaultContext,
     },
+    clientResolver: rpcEndpoint,
   });
 
-  const bondedTokensQuery = cosmos.staking.v1beta1.usePool({
+  const bondedTokensQuery = useGetPool({
+    request: {},
     options: {
       enabled: isReady,
       staleTime: Infinity,
       select: ({ pool }) => pool?.bondedTokens,
+      context: defaultContext,
     },
+    clientResolver: rpcEndpoint,
   });
 
-  const quorumQuery = cosmos.gov.v1.useParams({
+  const quorumQuery = useGovParams({
     request: { paramsType: 'tallying' },
     options: {
       enabled: isReady,
       staleTime: Infinity,
       select: ({ tallyParams }) => parseQuorum(tallyParams?.quorum as any),
+      context: defaultContext,
     },
+    clientResolver: rpcEndpoint,
   });
 
-  const votedProposalsQuery = cosmos.gov.v1.useProposals({
+  const votedProposalsQuery = useGetProposals({
     request: {
       voter: address || '/', // use '/' to differentiate from proposalsQuery
       depositor: '',
@@ -84,18 +103,20 @@ export function useVotingData(chainName: string) {
       enabled: isReady && Boolean(address),
       select: ({ proposals }) => proposals,
       keepPreviousData: true,
+      context: defaultContext,
     },
+    clientResolver: rpcEndpoint,
   });
 
   const votesQueries = useQueries({
     queries: (votedProposalsQuery.data || []).map(({ id }) => ({
       queryKey: ['voteQuery', id, address],
       queryFn: () =>
-        rpcQueryClient?.cosmos.gov.v1.vote({
+        getVote({
           proposalId: id,
           voter: address || '',
         }),
-      enabled: Boolean(rpcQueryClient) && Boolean(address) && Boolean(votedProposalsQuery.data),
+      enabled: isReady && !!votedProposalsQuery.data,
       keepPreviousData: true,
     })),
   });
@@ -154,28 +175,30 @@ export function useVotingData(chainName: string) {
       if (proposal.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
         (async () => {
           for (const { address } of chain?.apis?.rest || []) {
-            const api = `${address}/cosmos/gov/v1/proposals/${Number(proposal.id)}/tally`
+            const api = `${address}/cosmos/gov/v1/proposals/${Number(
+              proposal.id
+            )}/tally`;
             try {
-              const tally = (await (await fetch(api)).json()).tally
+              const tally = (await (await fetch(api)).json()).tally;
               if (!tally) {
-                continue
+                continue;
               }
               proposal.finalTallyResult = {
                 yesCount: tally.yes_count,
                 noCount: tally.no_count,
                 abstainCount: tally.abstain_count,
                 noWithVetoCount: tally.no_with_veto_count,
-              }
-              break
+              };
+              break;
             } catch (e) {
-              console.error('error fetch tally', api)
+              console.error('error fetch tally', api);
             }
           }
-        })()
+        })();
       }
-    })
+    });
 
-    return singleQueriesData
+    return singleQueriesData;
   }, [isStaticQueriesFetching, isReady]);
 
   const votes = useMemo(() => {

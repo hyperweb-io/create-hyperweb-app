@@ -1,13 +1,12 @@
-import { useState } from 'react';
-import { cosmos } from 'interchain-query';
-import { toast } from '@interchain-ui/react';
-import { useChain } from '@cosmos-kit/react';
-import { coins, StdFee } from '@cosmjs/stargate';
-import { Proposal } from 'interchain-query/cosmos/gov/v1/gov';
-import { getNativeAsset } from '@/utils';
-import { useVotingTx } from './useVotingTx';
+import { useChain } from '@interchain-kit/react';
+import { Proposal } from '@interchainjs/react/cosmos/gov/v1/gov';
+import { useVote } from '@interchainjs/react/cosmos/gov/v1beta1/tx.rpc.react';
+import { MsgVote } from '@interchainjs/react/cosmos/gov/v1beta1/tx';
+import { defaultContext } from '@tanstack/react-query';
+import { StdFee } from '@interchainjs/react/types';
 
-const MessageComposer = cosmos.gov.v1beta1.MessageComposer;
+import { getNativeAsset } from '@/utils';
+import { useSigningClient, useToastHandlers } from '../common';
 
 export type useVotingOptions = {
   chainName: string;
@@ -21,11 +20,18 @@ export type onVoteOptions = {
 };
 
 export function useVoting({ chainName, proposal }: useVotingOptions) {
-  const { tx } = useVotingTx(chainName);
-  const { address, assets } = useChain(chainName);
-  const [isVoting, setIsVoting] = useState(false);
+  const { address, assetList } = useChain(chainName);
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(chainName);
+  const { mutate: vote, isLoading: isVoting } = useVote({
+    clientResolver: signingClient,
+    options: {
+      context: defaultContext,
+      ...toastHandlers,
+    },
+  });
 
-  const coin = getNativeAsset(assets!);
+  const coin = getNativeAsset(assetList);
 
   async function onVote({
     option,
@@ -34,35 +40,39 @@ export function useVoting({ chainName, proposal }: useVotingOptions) {
   }: onVoteOptions) {
     if (!address || !option) return;
 
-    const msg = MessageComposer.fromPartial.vote({
+    const msg = MsgVote.fromPartial({
       option,
       voter: address,
       proposalId: proposal.id,
     });
 
     const fee: StdFee = {
-      amount: coins('1000', coin.base),
+      amount: [
+        {
+          denom: coin.base,
+          amount: '0',
+        },
+      ],
       gas: '100000',
     };
 
-    try {
-      setIsVoting(true);
-      const res = await tx([msg], { fee });
-      if (res.error) {
-        error();
-        console.error(res.error);
-        toast.error(res.errorMsg);
-      } else {
-        success();
-        toast.success('Vote successful');
+    vote(
+      {
+        signerAddress: address,
+        message: msg,
+        fee,
+        memo: 'Vote',
+      },
+      {
+        onSuccess: () => {
+          success();
+        },
+        onError: (err) => {
+          error();
+          console.error(err);
+        },
       }
-    } catch (e) {
-      error();
-      console.error(e);
-      toast.error('Vote failed');
-    } finally {
-      setIsVoting(false);
-    }
+    );
   }
 
   return { isVoting, onVote };

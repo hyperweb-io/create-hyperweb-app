@@ -1,20 +1,20 @@
 import React from 'react';
 import { Text, Box } from '@interchain-ui/react';
+import { useChain } from '@interchain-kit/react';
+
 import AssetsOverview from './AssetsOverview';
-import { useChain } from '@cosmos-kit/react';
 import { useAssets } from '@/hooks';
-import { ChainName } from 'cosmos-kit';
 
 interface AssetListSectionProps {
-  chainName: ChainName;
+  chainName: string;
   children?: React.ReactNode;
 }
 
 export const AssetListSection = ({ chainName }: AssetListSectionProps) => {
-  const { isWalletConnected } = useChain(chainName);
+  const { address } = useChain(chainName);
   const { data, isLoading, refetch } = useAssets(chainName);
 
-  if (!isWalletConnected) {
+  if (!address) {
     return (
       <Box maxWidth="768px" marginX="auto" marginBottom="60px">
         <Text

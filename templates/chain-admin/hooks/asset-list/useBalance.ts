@@ -1,49 +1,44 @@
-import { Coin } from '@cosmjs/stargate';
-import { useChain } from '@cosmos-kit/react';
-import { UseQueryResult } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useOsmoQueryHooks } from './useOsmoQueryHooks';
+import { useChain } from '@interchain-kit/react';
+import { defaultContext } from '@tanstack/react-query';
+import { useGetBalance } from '@interchainjs/react/cosmos/bank/v1beta1/query.rpc.react';
+
+import { useRpcEndpoint } from '../common';
 
 export const useBalance = (
   chainName: string,
   enabled: boolean = true,
   displayDenom?: string
 ) => {
-  const { address, assets } = useChain(chainName);
-  let denom = assets?.assets[0].base!;
-  for (const asset of assets?.assets || []) {
+  const { address, assetList } = useChain(chainName);
+
+  let denom = assetList?.assets[0].base!;
+  for (const asset of assetList?.assets || []) {
     if (asset.display.toLowerCase() === displayDenom?.toLowerCase()) {
       denom = asset.base;
       break;
     }
   }
 
-  const { cosmosQuery, isReady, isFetching } = useOsmoQueryHooks(
-    chainName,
-    'balance'
-  );
+  const { data: rpcEndpoint, isFetching } = useRpcEndpoint(chainName);
 
-  const balanceQuery: UseQueryResult<Coin> =
-    cosmosQuery.bank.v1beta1.useBalance({
-      request: {
-        denom,
-        address: address || '',
-      },
-      options: {
-        enabled: isReady && enabled,
-        select: ({ balance }) => balance,
-      },
-    });
+  const isReady = !!address && !!rpcEndpoint;
 
-  useEffect(() => {
-    return () => {
-      balanceQuery.remove();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const balanceQuery = useGetBalance({
+    request: {
+      denom,
+      address: address || '',
+    },
+    options: {
+      enabled: isReady && enabled,
+      select: ({ balance }) => balance,
+      context: defaultContext,
+    },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['balance', address, denom],
+  });
 
   return {
     balance: balanceQuery.data,
-    isLoading: isFetching, // || !!balanceQueries.find(item => item.isFetching),
+    isLoading: isFetching || balanceQuery.isFetching,
   };
 };

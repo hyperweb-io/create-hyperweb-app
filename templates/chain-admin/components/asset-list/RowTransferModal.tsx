@@ -1,29 +1,33 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BasicModal, AssetWithdrawTokens } from '@interchain-ui/react';
-import { useChainWallet, useManager } from '@cosmos-kit/react';
+import { useChainWallet, useWalletManager } from '@interchain-kit/react';
 import BigNumber from 'bignumber.js';
-import { ChainName } from 'cosmos-kit';
-import { coins, StdFee } from '@cosmjs/amino';
-import { useDisclosure, useChainUtils, useBalance, useTx } from '@/hooks';
+import { useTransfer } from '@interchainjs/react/ibc/applications/transfer/v1/tx.rpc.react';
+import { MsgTransfer } from '@interchainjs/react/ibc/applications/transfer/v1/tx';
+import { defaultContext } from '@tanstack/react-query';
+import { StdFee } from '@interchainjs/react/types';
+
+import {
+  useDisclosure,
+  useChainUtils,
+  useBalance,
+  useToastHandlers,
+  useSigningClient,
+} from '@/hooks';
 import { keplrWalletName } from '@/config';
-import { ibc } from 'osmo-query';
 
 import { PriceHash, TransferInfo, Transfer } from './types';
-
-const { transfer } = ibc.applications.transfer.v1.MessageComposer.withTypeUrl;
 
 interface IProps {
   prices: PriceHash;
   transferInfo: TransferInfo;
   modalControl: ReturnType<typeof useDisclosure>;
   updateData: () => void;
-  selectedChainName: ChainName;
+  selectedChainName: string;
 }
 
 const TransferModalBody = (
   props: IProps & {
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     inputValue: string;
     setInputValue: React.Dispatch<React.SetStateAction<string>>;
   }
@@ -34,8 +38,6 @@ const TransferModalBody = (
     transferInfo,
     modalControl,
     updateData,
-    isLoading,
-    setIsLoading,
     inputValue,
     setInputValue,
   } = props;
@@ -70,8 +72,17 @@ const TransferModalBody = (
     transferInfo.token.symbol
   );
 
-  const { getChainLogo } = useManager();
-  const { tx } = useTx(sourceChainName);
+  const { getChainLogoUrl } = useWalletManager();
+
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(sourceChainName);
+  const { mutate: transfer, isLoading } = useTransfer({
+    clientResolver: signingClient,
+    options: {
+      context: defaultContext,
+      ...toastHandlers,
+    },
+  });
 
   const availableAmount = useMemo(() => {
     if (!isDeposit) return transferToken.available ?? 0;
@@ -107,74 +118,25 @@ const TransferModalBody = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalControl.isOpen]);
 
-  const handleClick = async () => {
-    if (!sourceAddress || !destAddress) return;
-    setIsLoading(true);
-
-    const transferAmount = new BigNumber(inputValue)
-      .shiftedBy(getExponentByDenom(symbolToDenom(transferToken.symbol)))
-      .toString();
-
-    const { sourcePort, sourceChannel } = getIbcInfo(
-      sourceChainName,
-      destChainName
-    );
-
-    const fee: StdFee = {
-      amount: coins('1000', transferToken.denom ?? ''),
-      gas: '250000',
-    };
-
-    const token = {
-      denom: transferToken.denom ?? '',
-      amount: transferAmount,
-    };
-
-    const stamp = Date.now();
-    const timeoutInNanos = (stamp + 1.2e6) * 1e6;
-
-    const msg = transfer({
-      sourcePort,
-      sourceChannel,
-      sender: sourceAddress,
-      receiver: destAddress,
-      token,
-      // @ts-ignore
-      timeoutHeight: undefined,
-      timeoutTimestamp: BigInt(timeoutInNanos),
-    });
-
-    await tx([msg], {
-      fee,
-      onSuccess: () => {
-        updateData();
-        modalControl.onClose();
-      },
-    });
-
-    setIsLoading(false);
-  };
-
   const sourceChain = useMemo(() => {
     return {
-      name: sourceChainInfo.pretty_name,
+      name: sourceChainInfo.prettyName,
       address: sourceAddress ?? '',
-      imgSrc: getChainLogo(sourceChainName) ?? '',
+      imgSrc: getChainLogoUrl(sourceChainName) ?? '',
     };
-  }, [getChainLogo, sourceAddress, sourceChainInfo, sourceChainName]);
+  }, [sourceAddress, sourceChainInfo, sourceChainName]);
 
   const destChain = useMemo(() => {
     return {
-      symbol: destChainInfo.chain_name.toUpperCase(),
-      name: destChainInfo.pretty_name,
+      symbol: destChainInfo.chainName.toUpperCase(),
+      name: destChainInfo.prettyName,
       address: destAddress ?? '',
-      imgSrc: getChainLogo(destChainName) ?? '',
+      imgSrc: getChainLogoUrl(destChainName) ?? '',
     };
-  }, [destChainInfo, destAddress, getChainLogo, destChainName]);
+  }, [destChainInfo, destAddress, destChainName]);
 
   const handleSubmitTransfer = async () => {
     if (!sourceAddress || !destAddress) return;
-    setIsLoading(true);
 
     const transferAmount = new BigNumber(inputValue)
       .shiftedBy(getExponentByDenom(symbolToDenom(transferToken.symbol)))
@@ -186,7 +148,7 @@ const TransferModalBody = (
     );
 
     const fee: StdFee = {
-      amount: coins('1000', transferToken.denom ?? ''),
+      amount: [{ denom: transferToken.denom ?? '', amount: '0' }],
       gas: '250000',
     };
 
@@ -198,36 +160,40 @@ const TransferModalBody = (
     const stamp = Date.now();
     const timeoutInNanos = (stamp + 1.2e6) * 1e6;
 
-    const msg = transfer({
+    const msg = MsgTransfer.fromPartial({
       sourcePort,
       sourceChannel,
       sender: sourceAddress,
       receiver: destAddress,
       token,
-      // @ts-ignore
       timeoutHeight: undefined,
       timeoutTimestamp: BigInt(timeoutInNanos),
     });
 
-    await tx([msg], {
-      fee,
-      onSuccess: () => {
-        updateData();
-        modalControl.onClose();
+    transfer(
+      {
+        signerAddress: sourceAddress,
+        message: msg,
+        fee,
+        memo: 'Transfer',
       },
-    });
-
-    setIsLoading(false);
+      {
+        onSuccess: () => {
+          updateData();
+          modalControl.onClose();
+        },
+      }
+    );
   };
 
   return (
     <AssetWithdrawTokens
       isDropdown={false}
       fromSymbol={transferInfo.token.symbol}
-      fromName={sourceChain.name}
+      fromName={sourceChain.name ?? ''}
       fromAddress={sourceChain.address}
       fromImgSrc={sourceChain.imgSrc}
-      toName={destChain.name}
+      toName={destChain.name ?? ''}
       toAddress={destChain.address}
       toImgSrc={destChain.imgSrc}
       isSubmitDisabled={
@@ -259,7 +225,6 @@ const TransferModalBody = (
 export const RowTransferModal = (props: IProps) => {
   const { modalControl, transferInfo } = props;
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const closeModal = () => {
     modalControl.onClose();
@@ -276,8 +241,6 @@ export const RowTransferModal = (props: IProps) => {
         {...props}
         inputValue={inputValue}
         setInputValue={setInputValue}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
         modalControl={{
           ...modalControl,
           onClose: closeModal,

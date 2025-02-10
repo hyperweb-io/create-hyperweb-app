@@ -10,8 +10,14 @@ import { convertKeysToCamelCase } from '@/utils';
 import config from '@/starship/configs/config.yaml';
 
 export type StarshipChains = {
-  chains: ChainV2[];
-  assets: AssetListV2[];
+  v1: {
+    chains: Chain[];
+    assets: AssetList[];
+  };
+  v2: {
+    chains: ChainV2[];
+    assets: AssetListV2[];
+  };
 };
 
 export const useStarshipChains = () => {
@@ -33,8 +39,14 @@ export const useStarshipChains = () => {
 
         return chains.length > 0 && assets.length > 0
           ? {
-              chains: convertKeysToCamelCase(chains) as ChainV2[],
-              assets: convertKeysToCamelCase(assets) as AssetListV2[],
+              v1: {
+                chains,
+                assets,
+              },
+              v2: {
+                chains: convertKeysToCamelCase(chains) as ChainV2[],
+                assets: convertKeysToCamelCase(assets) as AssetListV2[],
+              },
             }
           : null;
       } catch (error) {

@@ -1,15 +1,13 @@
-import { Coin } from '@cosmjs/stargate';
-import { useChain } from '@cosmos-kit/react';
-import { UseQueryResult } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { useChain } from '@interchain-kit/react';
+import { defaultContext } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { useEffect, useMemo } from 'react';
-import osmosis from 'chain-registry/mainnet/osmosis/chain';
-import { Pool } from 'osmo-query/dist/codegen/osmosis/gamm/pool-models/balancer/balancerPool';
+import { useGetAllBalances } from '@interchainjs/react/cosmos/bank/v1beta1/query.rpc.react';
+import { useGetDelegatorDelegations } from '@interchainjs/react/cosmos/staking/v1beta1/query.rpc.react';
 
 import { useChainUtils } from './useChainUtils';
 import { useChainAssetsPrices } from './useChainAssetsPrices';
-import { convertGammTokenToDollarValue } from '@/utils';
-import { useOsmoQueryHooks } from './useOsmoQueryHooks';
+import { useRpcEndpoint } from '../common';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -26,76 +24,49 @@ export const getPagination = (limit: bigint) => ({
 export const useTotalAssets = (chainName: string) => {
   const { address } = useChain(chainName);
 
-  const { cosmosQuery, osmoQuery, isReady, isFetching } =
-    useOsmoQueryHooks(chainName);
+  const { data: rpcEndpoint, isFetching } = useRpcEndpoint(chainName);
 
-  const isOsmosisChain = chainName === osmosis.chain_name;
+  const isReady = !!address && !!rpcEndpoint;
 
-  const allBalancesQuery: UseQueryResult<Coin[]> =
-    cosmosQuery.bank.v1beta1.useAllBalances({
-      request: {
-        address: address || '',
-        pagination: getPagination(100n),
-      },
-      options: {
-        enabled: isReady,
-        select: ({ balances }) => balances || [],
-      },
-    });
-
-  const delegationsQuery: UseQueryResult<Coin[]> =
-    cosmosQuery.staking.v1beta1.useDelegatorDelegations({
-      request: {
-        delegatorAddr: address || '',
-        pagination: getPagination(100n),
-      },
-      options: {
-        enabled: isReady,
-        select: ({ delegationResponses }) =>
-          delegationResponses.map(({ balance }) => balance) || [],
-      },
-    });
-
-  const lockedCoinsQuery: UseQueryResult<Coin[]> =
-    osmoQuery.lockup.useAccountLockedCoins({
-      request: {
-        owner: address || '',
-      },
-      options: {
-        enabled: isReady && isOsmosisChain,
-        select: ({ coins }) => coins || [],
-        staleTime: Infinity,
-      },
-    });
-
-  const poolsQuery: UseQueryResult<Pool[]> = osmoQuery.gamm.v1beta1.usePools({
+  const allBalancesQuery = useGetAllBalances({
     request: {
-      pagination: getPagination(5000n),
+      address: address || '',
+      pagination: getPagination(100n),
+      resolveDenom: false,
     },
     options: {
-      enabled: isReady && isOsmosisChain,
-      select: ({ pools }) => pools || [],
-      staleTime: Infinity,
+      enabled: isReady,
+      select: ({ balances }) => balances || [],
+      context: defaultContext,
     },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['allBalances', address],
+  });
+
+  const delegationsQuery = useGetDelegatorDelegations({
+    request: {
+      delegatorAddr: address || '',
+      pagination: getPagination(100n),
+    },
+    options: {
+      enabled: isReady,
+      select: ({ delegationResponses }) =>
+        delegationResponses.map(({ balance }) => balance) || [],
+      context: defaultContext,
+    },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['delegations', address],
   });
 
   const pricesQuery = useChainAssetsPrices(chainName);
 
   const dataQueries = {
-    pools: poolsQuery,
     prices: pricesQuery,
     allBalances: allBalancesQuery,
     delegations: delegationsQuery,
-    lockedCoins: lockedCoinsQuery,
   };
 
-  const queriesToReset = [dataQueries.allBalances, dataQueries.delegations];
   const queriesToRefetch = [dataQueries.allBalances];
-
-  useEffect(() => {
-    queriesToReset.forEach((query) => query.remove());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainName]);
 
   const queries = Object.values(dataQueries);
   const isInitialFetching = queries.some(({ isFetching }) => isFetching);
@@ -119,13 +90,7 @@ export const useTotalAssets = (chainName: string) => {
       Object.entries(dataQueries).map(([key, query]) => [key, query.data])
     ) as QueriesData;
 
-    const {
-      allBalances,
-      delegations,
-      lockedCoins = [],
-      pools = [],
-      prices = {},
-    } = queriesData;
+    const { allBalances, delegations, prices = {} } = queriesData;
 
     const stakedTotal = delegations
       ?.map((coin) => calcCoinDollarValue(prices, coin))
@@ -138,51 +103,7 @@ export const useTotalAssets = (chainName: string) => {
       .reduce((total, cur) => total.plus(cur), zero)
       .toString();
 
-    let bondedTotal;
-    let liquidityTotal;
-
-    if (isOsmosisChain) {
-      const liquidityCoins = (allBalances ?? []).filter(({ denom }) =>
-        denom.startsWith('gamm')
-      );
-      const gammTokenDenoms = [
-        ...(liquidityCoins ?? []),
-        ...(lockedCoins ?? []),
-      ].map(({ denom }) => denom);
-
-      const uniqueDenoms = [...new Set(gammTokenDenoms)];
-
-      const poolsMap: Record<string, Pool> = pools
-        .filter(({ totalShares }) => uniqueDenoms.includes(totalShares.denom))
-        .filter((pool) => !pool?.$typeUrl?.includes('stableswap'))
-        .filter(({ poolAssets }) => {
-          return poolAssets.every(({ token }) => {
-            const isGammToken = token.denom.startsWith('gamm/pool');
-            return !isGammToken && prices[token.denom];
-          });
-        })
-        .reduce((prev, cur) => ({ ...prev, [cur.totalShares.denom]: cur }), {});
-
-      bondedTotal = lockedCoins
-        .map((coin) => {
-          const poolData = poolsMap[coin.denom];
-          if (!poolData) return '0';
-          return convertGammTokenToDollarValue(coin, poolData, prices);
-        })
-        .reduce((total, cur) => total.plus(cur), zero)
-        .toString();
-
-      liquidityTotal = liquidityCoins
-        .map((coin) => {
-          const poolData = poolsMap[coin.denom];
-          if (!poolData) return '0';
-          return convertGammTokenToDollarValue(coin, poolData, prices);
-        })
-        .reduce((total, cur) => total.plus(cur), zero)
-        .toString();
-    }
-
-    const total = [stakedTotal, balancesTotal, bondedTotal, liquidityTotal]
+    const total = [stakedTotal, balancesTotal]
       .reduce((total, cur) => total.plus(cur || 0), zero)
       .decimalPlaces(2)
       .toString();

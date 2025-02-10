@@ -1,54 +1,50 @@
-import { PrettyAsset } from '@/components';
-import { Coin } from '@cosmjs/stargate';
-import { useChain } from '@cosmos-kit/react';
-import { UseQueryResult } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { useChain } from '@interchain-kit/react';
+import { defaultContext } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
-import { useEffect, useMemo } from 'react';
+import { useGetAllBalances } from '@interchainjs/react/cosmos/bank/v1beta1/query.rpc.react';
+import { Coin } from '@interchainjs/react/types';
+
+import { PrettyAsset } from '@/components';
 import { useChainUtils } from './useChainUtils';
-import { useOsmoQueryHooks } from './useOsmoQueryHooks';
 import { useChainAssetsPrices } from './useChainAssetsPrices';
-import { useTopTokens } from './useTopTokens';
 import { getPagination } from './useTotalAssets';
+import { useRpcEndpoint } from '../common';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
 };
 
-const MAX_TOKENS_TO_SHOW = 50;
-
 export const useAssets = (chainName: string) => {
   const { address } = useChain(chainName);
 
-  const { cosmosQuery, isReady, isFetching } = useOsmoQueryHooks(chainName);
+  const { data: rpcEndpoint, isFetching } = useRpcEndpoint(chainName);
 
-  const allBalancesQuery: UseQueryResult<Coin[]> =
-    cosmosQuery.bank.v1beta1.useAllBalances({
-      request: {
-        address: address || '',
-        pagination: getPagination(100n),
-      },
-      options: {
-        enabled: isReady,
-        select: ({ balances }) => balances || [],
-      },
-    });
+  const isReady = !!address && !!rpcEndpoint;
+
+  const allBalancesQuery = useGetAllBalances({
+    request: {
+      address: address || '',
+      pagination: getPagination(100n),
+      resolveDenom: false,
+    },
+    options: {
+      enabled: isReady,
+      select: ({ balances }) => balances || [],
+      context: defaultContext,
+    },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['allBalances', address],
+  });
 
   const pricesQuery = useChainAssetsPrices(chainName);
-  const topTokensQuery = useTopTokens();
 
   const dataQueries = {
     allBalances: allBalancesQuery,
-    topTokens: topTokensQuery,
     prices: pricesQuery,
   };
 
-  const queriesToReset = [dataQueries.allBalances];
   const queriesToRefetch = [dataQueries.allBalances];
-
-  useEffect(() => {
-    queriesToReset.forEach((query) => query.remove());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainName]);
 
   const queries = Object.values(dataQueries);
   const isInitialFetching = queries.some(({ isLoading }) => isLoading);
@@ -77,7 +73,7 @@ export const useAssets = (chainName: string) => {
       Object.entries(dataQueries).map(([key, query]) => [key, query.data])
     ) as QueriesData;
 
-    const { allBalances, prices, topTokens } = queriesData;
+    const { allBalances, prices } = queriesData;
 
     const nativeAndIbcBalances: Coin[] = allBalances?.filter(
       ({ denom }) => !denom.startsWith('gamm') && prices[denom]
@@ -90,13 +86,9 @@ export const useAssets = (chainName: string) => {
         );
         return notInBalances && prices[base];
       })
-      .filter((asset) => {
-        const isWithinLimit = ibcAssets.length <= MAX_TOKENS_TO_SHOW;
-        return isWithinLimit || topTokens.includes(asset.symbol);
-      })
       .map((asset) => ({ denom: asset.base, amount: '0' }))
-      .reduce((acc: { denom: string, amount: string }[], current) => {
-        if (!acc.some(balance => balance.denom === current.denom)) {
+      .reduce((acc: { denom: string; amount: string }[], current) => {
+        if (!acc.some((balance) => balance.denom === current.denom)) {
           acc.push(current);
         }
         return acc;

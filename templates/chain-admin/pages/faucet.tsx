@@ -17,7 +17,8 @@ export default function Faucet() {
   const { selectedChain } = useChainStore();
   const { address, chain, assetList } = useChain(selectedChain);
   const { toast } = useToast();
-  const { data: starshipData } = useStarshipChains();
+  const { data } = useStarshipChains();
+  const { v2: starshipData } = data ?? {};
 
   const checkIsChainSupported = () => {
     if (!starshipData) {

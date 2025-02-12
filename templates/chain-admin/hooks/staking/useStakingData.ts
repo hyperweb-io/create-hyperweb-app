@@ -1,12 +1,24 @@
-import { useEffect, useMemo } from 'react';
-import { useChain } from '@cosmos-kit/react';
+import { useMemo } from 'react';
+import { useChain } from '@interchain-kit/react';
 import BigNumber from 'bignumber.js';
 import {
-  cosmos,
-  useRpcClient,
-  useRpcEndpoint,
-  createRpcQueryHooks,
-} from 'interchain-query';
+  BondStatus,
+  bondStatusToJSON,
+} from '@interchainjs/react/cosmos/staking/v1beta1/staking';
+import { useGetBalance } from '@interchainjs/react/cosmos/bank/v1beta1/query.rpc.react';
+import {
+  useGetDelegatorValidators,
+  useGetDelegatorDelegations,
+  useGetValidators,
+  useGetParams as useStakingParams,
+  useGetPool,
+} from '@interchainjs/react/cosmos/staking/v1beta1/query.rpc.react';
+import {
+  useGetDelegationTotalRewards,
+  useGetParams as useDistributionParams,
+} from '@interchainjs/react/cosmos/distribution/v1beta1/query.rpc.react';
+import { useGetAnnualProvisions } from '@interchainjs/react/cosmos/mint/v1beta1/query.rpc.react';
+import { defaultContext } from '@tanstack/react-query';
 
 import { useAssetsPrices } from './useAssetsPrices';
 import {
@@ -21,81 +33,64 @@ import {
   getNativeAsset,
   getExponentFromAsset,
 } from '@/utils';
+import { useRpcEndpoint } from '../common';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
 };
 
 export const useStakingData = (chainName: string) => {
-  const { address, getRpcEndpoint, assets } = useChain(chainName);
+  const { address, assetList } = useChain(chainName);
 
-  const coin = getNativeAsset(assets!);
+  const coin = getNativeAsset(assetList);
   const exp = getExponentFromAsset(coin);
 
-  const rpcEndpointQuery = useRpcEndpoint({
-    getter: getRpcEndpoint,
-    options: {
-      enabled: !!address,
-      staleTime: Infinity,
-      queryKeyHashFn: (queryKey) => {
-        return JSON.stringify([...queryKey, chainName]);
-      },
-    },
-  });
+  const { data: rpcEndpoint } = useRpcEndpoint(chainName);
 
-  const rpcClientQuery = useRpcClient({
-    rpcEndpoint: rpcEndpointQuery.data || '',
-    options: {
-      enabled: !!address && !!rpcEndpointQuery.data,
-      staleTime: Infinity,
-    },
-  });
+  const isDataQueryEnabled = !!address && !!rpcEndpoint;
 
-  const { cosmos: cosmosQuery } = createRpcQueryHooks({
-    rpc: rpcClientQuery.data,
-  });
-
-  const isDataQueryEnabled = !!address && !!rpcClientQuery.data;
-
-  const balanceQuery = cosmosQuery.bank.v1beta1.useBalance({
+  const balanceQuery = useGetBalance({
     request: {
       address: address || '',
       denom: coin.base,
     },
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ balance }) => shiftDigits(balance?.amount || '0', -exp),
       refetchOnMount: 'always',
     },
+    clientResolver: rpcEndpoint,
   });
 
-  const myValidatorsQuery = cosmosQuery.staking.v1beta1.useDelegatorValidators({
+  const myValidatorsQuery = useGetDelegatorValidators({
     request: {
       delegatorAddr: address || '',
       pagination: undefined,
     },
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ validators }) => parseValidators(validators),
     },
+    clientResolver: rpcEndpoint,
   });
 
-  const rewardsQuery =
-    cosmosQuery.distribution.v1beta1.useDelegationTotalRewards({
-      request: {
-        delegatorAddress: address || '',
-      },
-      options: {
-        enabled: isDataQueryEnabled,
-        select: (data) => parseRewards(data, coin.base, -exp),
-      },
-    });
-
-  const validatorsQuery = cosmosQuery.staking.v1beta1.useValidators({
+  const rewardsQuery = useGetDelegationTotalRewards({
     request: {
-      status: cosmos.staking.v1beta1.bondStatusToJSON(
-        cosmos.staking.v1beta1.BondStatus.BOND_STATUS_BONDED
-      ),
+      delegatorAddress: address || '',
+    },
+    options: {
+      context: defaultContext,
+      enabled: isDataQueryEnabled,
+      select: (data) => parseRewards(data, coin.base, -exp),
+    },
+    clientResolver: rpcEndpoint,
+  });
+
+  const validatorsQuery = useGetValidators({
+    request: {
+      status: bondStatusToJSON(BondStatus.BOND_STATUS_BONDED),
       pagination: {
         key: new Uint8Array(),
         offset: 0n,
@@ -105,6 +100,7 @@ export const useStakingData = (chainName: string) => {
       },
     },
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ validators }) => {
         const sorted = validators.sort((a, b) =>
@@ -113,9 +109,11 @@ export const useStakingData = (chainName: string) => {
         return parseValidators(sorted);
       },
     },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['validators', chainName],
   });
 
-  const delegationsQuery = cosmosQuery.staking.v1beta1.useDelegatorDelegations({
+  const delegationsQuery = useGetDelegatorDelegations({
     request: {
       delegatorAddr: address || '',
       pagination: {
@@ -127,39 +125,57 @@ export const useStakingData = (chainName: string) => {
       },
     },
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ delegationResponses }) =>
         parseDelegations(delegationResponses, -exp),
     },
+    clientResolver: rpcEndpoint,
   });
 
-  const unbondingDaysQuery = cosmosQuery.staking.v1beta1.useParams({
+  const unbondingDaysQuery = useStakingParams({
+    request: {},
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ params }) => parseUnbondingDays(params),
     },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['unbondingDays', chainName],
   });
 
-  const annualProvisionsQuery = cosmosQuery.mint.v1beta1.useAnnualProvisions({
+  const annualProvisionsQuery = useGetAnnualProvisions({
+    request: {},
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: parseAnnualProvisions,
       retry: false,
     },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['annualProvisions', chainName],
   });
 
-  const poolQuery = cosmosQuery.staking.v1beta1.usePool({
+  const poolQuery = useGetPool({
+    request: {},
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ pool }) => pool,
     },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['pool', chainName],
   });
 
-  const communityTaxQuery = cosmosQuery.distribution.v1beta1.useParams({
+  const communityTaxQuery = useDistributionParams({
+    request: {},
     options: {
+      context: defaultContext,
       enabled: isDataQueryEnabled,
       select: ({ params }) => shiftDigits(params?.communityTax || '0', -18),
     },
+    clientResolver: rpcEndpoint,
+    customizedQueryKey: ['distributionParams', chainName],
   });
 
   const pricesQuery = useAssetsPrices();
@@ -177,14 +193,6 @@ export const useStakingData = (chainName: string) => {
     prices: pricesQuery,
   };
 
-  const queriesWithUnchangingKeys = [
-    allQueries.unbondingDays,
-    allQueries.annualProvisions,
-    allQueries.pool,
-    allQueries.communityTax,
-    allQueries.allValidators,
-  ];
-
   const updatableQueriesAfterMutation = [
     allQueries.balance,
     allQueries.myValidators,
@@ -192,11 +200,6 @@ export const useStakingData = (chainName: string) => {
     allQueries.allValidators,
     allQueries.delegations,
   ];
-
-  useEffect(() => {
-    queriesWithUnchangingKeys.forEach((query) => query.remove());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainName]);
 
   const isInitialFetching = Object.values(allQueries).some(
     ({ isLoading }) => isLoading

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { Text } from '@interchain-ui/react';
 
 import { useContractInfo, useDetectBreakpoints, useMyContracts } from '@/hooks';
@@ -46,7 +46,7 @@ export const ContractAddressField = ({
     onValidAddressChange?.('');
 
     if (input.length) {
-      const error = validateContractAddress(input, chain.bech32_prefix);
+      const error = validateContractAddress(input, chain.bech32Prefix ?? '');
 
       if (error) {
         return setStatus({ state: 'error', message: error });
@@ -70,7 +70,7 @@ export const ContractAddressField = ({
 
       return () => clearTimeout(timer);
     }
-  }, [input, fetchContractInfo, chain.bech32_prefix]);
+  }, [input, fetchContractInfo, chain.bech32Prefix]);
 
   const { isMobile } = useDetectBreakpoints();
 

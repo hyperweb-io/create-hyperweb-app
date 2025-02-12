@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { cosmos } from 'interchain-query';
-import { useChain } from '@cosmos-kit/react';
-import { ChainName } from 'cosmos-kit';
+import { useChain } from '@interchain-kit/react';
 import {
   BasicModal,
   Box,
@@ -11,6 +9,10 @@ import {
   Text,
 } from '@interchain-ui/react';
 import BigNumber from 'bignumber.js';
+import { useBeginRedelegate } from '@interchainjs/react/cosmos/staking/v1beta1/tx.rpc.react';
+import { MsgBeginRedelegate } from '@interchainjs/react/cosmos/staking/v1beta1/tx';
+import { defaultContext } from '@tanstack/react-query';
+import { StdFee } from '@interchainjs/react/types';
 
 import {
   calcDollarValue,
@@ -21,9 +23,12 @@ import {
   toBaseAmount,
   type ExtendedValidator as Validator,
 } from '@/utils';
-import { Prices, UseDisclosureReturn, useTx } from '@/hooks';
-
-const { beginRedelegate } = cosmos.staking.v1beta1.MessageComposer.fromPartial;
+import {
+  Prices,
+  UseDisclosureReturn,
+  useSigningClient,
+  useToastHandlers,
+} from '@/hooks';
 
 export const RedelegateModal = ({
   updateData,
@@ -34,34 +39,39 @@ export const RedelegateModal = ({
   prices,
 }: {
   updateData: () => void;
-  chainName: ChainName;
+  chainName: string;
   selectedValidator: Validator;
   validatorToRedelegate: Validator;
   modalControl: UseDisclosureReturn;
   prices: Prices;
 }) => {
-  const { address, assets } = useChain(chainName);
+  const { address, assetList } = useChain(chainName);
 
   const [amount, setAmount] = useState<number | undefined>(0);
-  const [isRedelegating, setIsRedelegating] = useState(false);
 
-  const coin = getNativeAsset(assets!);
+  const coin = getNativeAsset(assetList);
   const exp = getExponentFromAsset(coin);
 
-  const { tx } = useTx(chainName);
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(chainName);
+  const { mutate: beginRedelegate, isLoading: isRedelegating } =
+    useBeginRedelegate({
+      clientResolver: signingClient,
+      options: {
+        context: defaultContext,
+        ...toastHandlers,
+      },
+    });
 
   const closeRedelegateModal = () => {
     setAmount(0);
-    setIsRedelegating(false);
     modalControl.onClose();
   };
 
-  const onRedelegateClick = async () => {
+  const onRedelegateClick = () => {
     if (!address || !amount) return;
 
-    setIsRedelegating(true);
-
-    const msg = beginRedelegate({
+    const msg = MsgBeginRedelegate.fromPartial({
       delegatorAddress: address,
       validatorSrcAddress: selectedValidator.address,
       validatorDstAddress: validatorToRedelegate.address,
@@ -71,14 +81,30 @@ export const RedelegateModal = ({
       },
     });
 
-    await tx([msg], {
-      onSuccess: () => {
-        updateData();
-        closeRedelegateModal();
-      },
-    });
+    const fee: StdFee = {
+      amount: [
+        {
+          denom: coin.base,
+          amount: '0',
+        },
+      ],
+      gas: '200000',
+    };
 
-    setIsRedelegating(false);
+    beginRedelegate(
+      {
+        signerAddress: address,
+        message: msg,
+        fee,
+        memo: 'Redelegate',
+      },
+      {
+        onSuccess: () => {
+          updateData();
+          closeRedelegateModal();
+        },
+      }
+    );
   };
 
   const maxAmount = selectedValidator.delegation;

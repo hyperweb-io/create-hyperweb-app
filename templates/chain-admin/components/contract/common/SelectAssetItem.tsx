@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi';
-import { Asset } from '@chain-registry/types';
+import { Asset } from '@chain-registry/v2-types';
 import {
   Avatar,
   Box,
@@ -180,7 +180,7 @@ const AssetOption = ({
     >
       <Avatar
         name={asset.symbol}
-        src={asset.logo_URIs?.svg || asset.logo_URIs?.png || ''}
+        src={asset.logoURIs?.svg || asset.logoURIs?.png || ''}
         size="xs"
       />
       <Text

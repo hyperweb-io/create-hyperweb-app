@@ -1,17 +1,17 @@
-import { QueryDelegationTotalRewardsResponse } from 'interchain-query/cosmos/distribution/v1beta1/query';
+import { QueryDelegationTotalRewardsResponse } from '@interchainjs/react/cosmos/distribution/v1beta1/query';
 import {
   Pool,
   Validator,
-} from 'interchain-query/cosmos/staking/v1beta1/staking';
+} from '@interchainjs/react/cosmos/staking/v1beta1/staking';
 import { isGreaterThanZero, shiftDigits, toNumber } from '.';
 import { Coin, decodeCosmosSdkDecFromProto } from '@cosmjs/stargate';
 import {
   QueryDelegatorDelegationsResponse,
   QueryParamsResponse,
-} from 'interchain-query/cosmos/staking/v1beta1/query';
+} from '@interchainjs/react/cosmos/staking/v1beta1/query';
 import BigNumber from 'bignumber.js';
-import { QueryAnnualProvisionsResponse } from 'interchain-query/cosmos/mint/v1beta1/query';
-import type { Asset } from '@chain-registry/types';
+import { QueryAnnualProvisionsResponse } from '@interchainjs/react/cosmos/mint/v1beta1/query';
+import type { Asset } from '@chain-registry/v2-types';
 
 const DAY_TO_SECONDS = 24 * 60 * 60;
 const ZERO = '0';
@@ -167,7 +167,7 @@ export const parseAnnualProvisions = (data: QueryAnnualProvisionsResponse) => {
 };
 
 export const getAssetLogoUrl = (asset: Asset): string => {
-  return Object.values(asset?.logo_URIs || {})?.[0] || '';
+  return Object.values(asset?.logoURIs || {})?.[0] || '';
 };
 
 export const formatValidatorMetaInfo = (

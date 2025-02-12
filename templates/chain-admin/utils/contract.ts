@@ -1,11 +1,11 @@
-import { AssetList, Chain } from '@chain-registry/types';
+import { AssetList, Chain } from '@chain-registry/v2-types';
 import { toBech32, fromBech32 } from '@cosmjs/encoding';
-import { DeliverTxResponse } from '@cosmjs/cosmwasm-stargate';
 import { Coin, logs, parseCoins } from '@cosmjs/stargate';
-import { CodeInfoResponse } from 'interchain-query/cosmwasm/wasm/v1/query';
-import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
 import BigNumber from 'bignumber.js';
 import { jsd, DeliverTxResponse as DeliverJsdTxResponse } from 'hyperwebjs';
+import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
+import { CodeInfoResponse } from '@interchainjs/react/cosmwasm/wasm/v1/query';
+import { DeliverTxResponse } from '@interchainjs/react/types';
 
 import { getExponentFromAsset } from './common';
 
@@ -64,7 +64,7 @@ export const getExplorerLink = (
   chain: Chain,
   txHash: string | undefined
 ): string | null => {
-  const txPageLink = chain.explorers?.[0]?.tx_page;
+  const txPageLink = chain.explorers?.[0]?.txPage;
   return txPageLink && txHash ? txPageLink.replace('${txHash}', txHash) : null;
 };
 
@@ -210,4 +210,14 @@ export const readFileContent = (file: File): Promise<string> => {
     reader.onerror = (error) => reject(error);
     reader.readAsText(file);
   });
+};
+
+export const fromUint8Array = <T>(uint8Array: Uint8Array): T => {
+  return JSON.parse(String.fromCharCode.apply(null, Array.from(uint8Array)));
+};
+
+export const toUint8Array = (json: any): Uint8Array => {
+  return new Uint8Array(
+    Array.from(JSON.stringify(json)).map((char) => char.charCodeAt(0))
+  );
 };

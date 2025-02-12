@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import BigNumber from 'bignumber.js';
-import { ChainName } from 'cosmos-kit';
 import { SingleChain, SingleChainProps } from '@interchain-ui/react';
 
 import { useDisclosure, useChainUtils, useTotalAssets } from '@/hooks';
@@ -14,14 +13,13 @@ import {
 
 import { DropdownTransferModal } from './DropdownTransferModal';
 import { RowTransferModal } from './RowTransferModal';
-
 import { PrettyAsset, Transfer, TransferInfo } from './types';
 
 interface AssetsOverviewProps {
   isLoading?: boolean;
   assets: PrettyAsset[];
   prices: Record<string, number>;
-  selectedChainName: ChainName;
+  selectedChainName: string;
   refetch?: () => void;
 }
 
@@ -150,13 +148,13 @@ const AssetsOverview = ({
       <SingleChain
         isLoading={isLoading || isLoadingTotalAssets}
         title="Your assets"
-        listTitle={`On ${chain.pretty_name}`}
+        listTitle={`On ${chain.prettyName}`}
         showDeposit={ibcAssets.length > 0}
         showWithdraw={hasBalance}
         onDeposit={onDepositAsset}
         onWithdraw={onWithdrawAsset}
         singleChainHeader={{
-          label: `Total on ${chain.pretty_name}`,
+          label: `Total on ${chain.prettyName}`,
           value: `${data?.total ?? 0}`,
         }}
         list={assetsToShow}

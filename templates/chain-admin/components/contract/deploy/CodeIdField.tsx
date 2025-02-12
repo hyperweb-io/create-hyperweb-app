@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { Box, Icon, Spinner, TextField } from '@interchain-ui/react';
 
 import { useChainStore } from '@/contexts';
@@ -44,14 +44,14 @@ export const CodeIdField = ({
 
       const timer = setTimeout(() => {
         refetch().then(({ data }) => {
-          setCodeInfo(data);
-
           if (!data) {
             return setStatus({
               state: 'error',
               message: 'This code ID does not exist',
             });
           }
+
+          setCodeInfo(data);
 
           const hasPermission = resolvePermission(
             address || '',

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import {
   Proposal as IProposal,
   ProposalStatus,
   TallyResult,
-} from 'interchain-query/cosmos/gov/v1/gov';
+} from '@interchainjs/react/cosmos/gov/v1/gov';
 import {
   BasicModal,
   Box,
@@ -13,10 +13,11 @@ import {
   Text,
   useColorModeValue,
 } from '@interchain-ui/react';
+import { chains } from 'chain-registry';
+
 import { useModal, useVotingData } from '@/hooks';
 import { Proposal } from '@/components';
 import { formatDate } from '@/utils';
-import { chains } from 'chain-registry';
 
 function status(s: ProposalStatus) {
   switch (s) {
@@ -65,7 +66,9 @@ export function Voting({ chainName }: VotingProps) {
       if (proposal.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
         (async () => {
           for (const { address } of chain?.apis?.rest || []) {
-            const api = `${address}/cosmos/gov/v1/proposals/${Number(proposal.id)}/tally`;
+            const api = `${address}/cosmos/gov/v1/proposals/${Number(
+              proposal.id
+            )}/tally`;
             try {
               const tally = (await (await fetch(api)).json()).tally;
               if (!tally) {

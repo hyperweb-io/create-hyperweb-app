@@ -50,7 +50,7 @@ export const useAssetsPrices = () => {
   const { selectedChain } = useChainStore();
   const { data: starshipData } = useStarshipChains();
   const { chains: starshipChains = [], assets: starshipAssets = [] } =
-    starshipData ?? {};
+    starshipData?.v1 ?? {};
 
   const isStarshipChain = starshipChains.some(
     (chain) => chain.chain_name === selectedChain

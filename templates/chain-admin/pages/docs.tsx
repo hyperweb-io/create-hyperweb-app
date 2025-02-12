@@ -17,10 +17,6 @@ const tabs: Tab[] = [
     category: null,
   },
   {
-    label: 'CosmWasm',
-    category: 'cosmwasm',
-  },
-  {
     label: 'Cosmos SDK',
     category: 'cosmos-sdk',
   },

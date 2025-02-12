@@ -5,5 +5,5 @@ export const useIsHyperwebChain = () => {
   const { selectedChain } = useChainStore();
   const { data: starshipData } = useStarshipChains();
 
-  return starshipData?.chains[0].chain_name === selectedChain;
+  return starshipData?.v2.chains[0].chainName === selectedChain;
 };

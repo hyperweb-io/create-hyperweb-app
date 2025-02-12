@@ -1,14 +1,15 @@
-import { useChain } from '@cosmos-kit/react';
-import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
-import { cosmwasm } from 'interchain-query';
-import { gzip } from 'node-gzip';
-import { StdFee } from '@cosmjs/amino';
+import { useChain } from '@interchain-kit/react';
+import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
+import { useStoreCode } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.react';
+import { MsgStoreCode } from '@interchainjs/react/cosmwasm/wasm/v1/tx';
+import { StdFee } from '@interchainjs/react/types';
 import { Box } from '@interchain-ui/react';
+import { defaultContext } from '@tanstack/react-query';
+import { gzip } from 'node-gzip';
 
-import { useToast } from '../common';
 import { prettyStoreCodeTxResult } from '@/utils';
 
-const { storeCode } = cosmwasm.wasm.v1.MessageComposer.fromPartial;
+import { useToast, useCustomSigningClient } from '../common';
 
 type StoreCodeTxParams = {
   wasmFile: File;
@@ -19,8 +20,15 @@ type StoreCodeTxParams = {
 };
 
 export const useStoreCodeTx = (chainName: string) => {
-  const { getSigningCosmWasmClient, address } = useChain(chainName);
+  const { address } = useChain(chainName);
   const { toast } = useToast();
+  const { data: signingClient } = useCustomSigningClient();
+  const { mutate: storeCode, isLoading } = useStoreCode({
+    clientResolver: signingClient,
+    options: {
+      context: defaultContext,
+    },
+  });
 
   const storeCodeTx = async ({
     wasmFile,
@@ -40,7 +48,7 @@ export const useStoreCodeTx = (chainName: string) => {
     const wasmCode = await wasmFile.arrayBuffer();
     const wasmByteCode = new Uint8Array(await gzip(new Uint8Array(wasmCode)));
 
-    const message = storeCode({
+    const message = MsgStoreCode.fromPartial({
       sender: address,
       wasmByteCode,
       instantiatePermission: {
@@ -51,31 +59,43 @@ export const useStoreCodeTx = (chainName: string) => {
 
     const fee: StdFee = { amount: [], gas: '5800000' };
 
-    try {
-      const client = await getSigningCosmWasmClient();
-      const result = await client.signAndBroadcast(address, [message], fee);
-      onTxSucceed(prettyStoreCodeTxResult(result).codeId);
-      toast.close(toastId);
-      toast({
-        title: 'Contract uploaded successfully',
-        type: 'success',
-      });
-    } catch (error: any) {
-      console.error('Failed to upload contract:', error);
-      onTxFailed();
-      toast.close(toastId);
-      toast({
-        title: 'Transaction Failed',
-        type: 'error',
-        description: (
-          <Box width="300px" wordBreak="break-all">
-            {error.message}
-          </Box>
-        ),
-        duration: 10000,
-      });
-    }
+    storeCode(
+      {
+        signerAddress: address,
+        message,
+        fee,
+        memo: 'Store Code',
+      },
+      {
+        onSuccess: (res) => {
+          if (res.code !== 0) {
+            throw new Error(res.rawLog || 'Failed to upload contract');
+          }
+          onTxSucceed(prettyStoreCodeTxResult(res).codeId);
+          toast.close(toastId);
+          toast({
+            title: 'Contract uploaded successfully',
+            type: 'success',
+          });
+        },
+        onError: (error) => {
+          console.error('Failed to upload contract:', error);
+          onTxFailed();
+          toast.close(toastId);
+          toast({
+            title: 'Transaction Failed',
+            type: 'error',
+            description: (
+              <Box width="300px" wordBreak="break-all">
+                {error.message}
+              </Box>
+            ),
+            duration: 10000,
+          });
+        },
+      }
+    );
   };
 
-  return { storeCodeTx };
+  return { storeCodeTx, isLoading };
 };

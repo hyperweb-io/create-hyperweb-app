@@ -1,8 +1,4 @@
-export type ProductCategory =
-  | 'cosmwasm'
-  | 'cosmos-sdk'
-  | 'frontend'
-  | 'testing';
+export type ProductCategory = 'cosmos-sdk' | 'frontend' | 'testing';
 
 export type Product = {
   name: string;
@@ -13,10 +9,10 @@ export type Product = {
 
 export const products: Product[] = [
   {
-    name: 'Cosmos Kit',
+    name: 'Interchain Kit',
     description:
       'A wallet adapter for react with mobile WalletConnect support for the Cosmos ecosystem.',
-    link: 'https://hyperweb.io/stack/cosmos-kit',
+    link: 'https://hyperweb.io/stack/interchain-kit',
     category: 'frontend',
   },
   {

@@ -1,5 +1,4 @@
-import { useChain } from '@cosmos-kit/react';
-import { ChainName } from 'cosmos-kit';
+import { useChain } from '@interchain-kit/react';
 import { Box, Spinner, Text } from '@interchain-ui/react';
 
 import Overview from './Overview';
@@ -7,8 +6,8 @@ import { MyValidators } from './MyValidators';
 import { AllValidators } from './AllValidators';
 import { useStakingData, useValidatorLogos } from '@/hooks';
 
-export const StakingSection = ({ chainName }: { chainName: ChainName }) => {
-  const { isWalletConnected } = useChain(chainName);
+export const StakingSection = ({ chainName }: { chainName: string }) => {
+  const { address } = useChain(chainName);
   const { data, isLoading, refetch } = useStakingData(chainName);
   const { data: logos, isLoading: isFetchingLogos } = useValidatorLogos(
     chainName,
@@ -17,7 +16,7 @@ export const StakingSection = ({ chainName }: { chainName: ChainName }) => {
 
   return (
     <Box my="$16" maxWidth="$containerMd" mx="auto">
-      {!isWalletConnected ? (
+      {!address ? (
         <Box
           height="$28"
           display="flex"

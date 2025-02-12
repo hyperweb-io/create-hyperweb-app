@@ -4,14 +4,22 @@ import {
   OverviewTransfer,
   OverviewTransferProps,
 } from '@interchain-ui/react';
-import { useChainWallet, useManager } from '@cosmos-kit/react';
+import { useChainWallet, useWalletManager } from '@interchain-kit/react';
 import BigNumber from 'bignumber.js';
-import { ibc } from 'osmo-query';
-import { StdFee, coins } from '@cosmjs/amino';
-import { ChainName } from 'cosmos-kit';
-import { keplrWalletName } from '@/config';
-import { useDisclosure, useChainUtils, useTx, useBalance } from '@/hooks';
+import { useTransfer } from '@interchainjs/react/ibc/applications/transfer/v1/tx.rpc.react';
+import { MsgTransfer } from '@interchainjs/react/ibc/applications/transfer/v1/tx';
+import { defaultContext } from '@tanstack/react-query';
+import { StdFee } from '@interchainjs/react/types';
+
 import { truncDecimals } from '@/utils';
+import { keplrWalletName } from '@/config';
+import {
+  useDisclosure,
+  useChainUtils,
+  useBalance,
+  useToastHandlers,
+  useSigningClient,
+} from '@/hooks';
 
 import {
   PrettyAsset,
@@ -20,8 +28,6 @@ import {
   Transfer,
   Unpacked,
 } from './types';
-
-const { transfer } = ibc.applications.transfer.v1.MessageComposer.withTypeUrl;
 
 const ZERO_AMOUNT = '0';
 
@@ -36,13 +42,11 @@ interface OverviewTransferWrapperProps {
       React.SetStateAction<TransferInfo | undefined>
     >;
   };
-  selectedChainName: ChainName;
+  selectedChainName: string;
 }
 
 const OverviewTransferWrapper = (
   props: OverviewTransferWrapperProps & {
-    isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     inputValue: string;
     setInputValue: React.Dispatch<React.SetStateAction<string>>;
   }
@@ -54,8 +58,6 @@ const OverviewTransferWrapper = (
     transferInfoState,
     updateData,
     selectedChainName,
-    isLoading,
-    setIsLoading,
     inputValue,
     setInputValue,
   } = props;
@@ -92,8 +94,17 @@ const OverviewTransferWrapper = (
     keplrWalletName
   );
 
-  const { getChainLogo } = useManager();
-  const { tx } = useTx(sourceChainName);
+  const { getChainLogoUrl } = useWalletManager();
+
+  const toastHandlers = useToastHandlers();
+  const { data: signingClient } = useSigningClient(sourceChainName);
+  const { mutate: transfer, isLoading } = useTransfer({
+    clientResolver: signingClient,
+    options: {
+      context: defaultContext,
+      ...toastHandlers,
+    },
+  });
 
   const availableAmount = useMemo((): number => {
     if (!isDeposit) {
@@ -125,12 +136,10 @@ const OverviewTransferWrapper = (
   const closeModal = () => {
     modalControl.onClose();
     setInputValue('');
-    setIsLoading(false);
   };
 
   const handleTransferSubmit = async () => {
     if (!sourceAddress || !destAddress) return;
-    setIsLoading(true);
 
     const transferAmount = new BigNumber(inputValue)
       .shiftedBy(getExponentByDenom(symbolToDenom(transferToken.symbol)))
@@ -142,7 +151,7 @@ const OverviewTransferWrapper = (
     );
 
     const fee: StdFee = {
-      amount: coins('1000', transferToken.denom ?? ''),
+      amount: [{ denom: transferToken.denom ?? '', amount: '0' }],
       gas: '250000',
     };
 
@@ -154,49 +163,55 @@ const OverviewTransferWrapper = (
     const stamp = Date.now();
     const timeoutInNanos = (stamp + 1.2e6) * 1e6;
 
-    const msg = transfer({
+    const msg = MsgTransfer.fromPartial({
       sourcePort,
       sourceChannel,
       sender: sourceAddress,
       receiver: destAddress,
       token,
-      // @ts-ignore
       timeoutHeight: undefined,
       timeoutTimestamp: BigInt(timeoutInNanos),
     });
 
-    await tx([msg], {
-      fee,
-      onSuccess: () => {
-        updateData();
-        closeModal();
+    transfer(
+      {
+        signerAddress: sourceAddress,
+        message: msg,
+        fee,
+        memo: 'Transfer',
       },
-    });
-
-    setIsLoading(false);
+      {
+        onSuccess: () => {
+          updateData();
+          closeModal();
+        },
+      }
+    );
   };
 
   const assetOptions: OverviewTransferProps['dropdownList'] = useMemo(() => {
-    return assets
-      .filter((asset) => {
-        if (isDeposit) {
-          return true;
-        }
-        return new BigNumber(asset.amount).gt(0);
-      })
-      // .filter((asset) => {
-      //   return asset.symbol !== transferToken.symbol;
-      // })
-      .map((asset) => ({
-        available: new BigNumber(asset.displayAmount).toNumber(),
-        symbol: asset.symbol,
-        name: asset.prettyChainName,
-        denom: asset.denom,
-        imgSrc: asset.logoUrl ?? '',
-        priceDisplayAmount: new BigNumber(
-          truncDecimals(asset.dollarValue, 2)
-        ).toNumber(),
-      }));
+    return (
+      assets
+        .filter((asset) => {
+          if (isDeposit) {
+            return true;
+          }
+          return new BigNumber(asset.amount).gt(0);
+        })
+        // .filter((asset) => {
+        //   return asset.symbol !== transferToken.symbol;
+        // })
+        .map((asset) => ({
+          available: new BigNumber(asset.displayAmount).toNumber(),
+          symbol: asset.symbol,
+          name: asset.prettyChainName,
+          denom: asset.denom,
+          imgSrc: asset.logoUrl ?? '',
+          priceDisplayAmount: new BigNumber(
+            truncDecimals(asset.dollarValue, 2)
+          ).toNumber(),
+        }))
+    );
   }, [assets, isDeposit, transferToken]);
   console.log('assetOptions', assetOptions);
 
@@ -240,8 +255,10 @@ const OverviewTransferWrapper = (
         new BigNumber(inputValue).isEqualTo(0) ||
         isNaN(Number(inputValue))
       }
-      fromChainLogoUrl={getChainLogo(transferInfo?.sourceChainName ?? '') ?? ''}
-      toChainLogoUrl={getChainLogo(transferInfo?.destChainName ?? '') ?? ''}
+      fromChainLogoUrl={
+        getChainLogoUrl(transferInfo?.sourceChainName ?? '') ?? ''
+      }
+      toChainLogoUrl={getChainLogoUrl(transferInfo?.destChainName ?? '') ?? ''}
       dropdownList={assetOptions}
       onTransfer={() => {
         handleTransferSubmit();
@@ -259,12 +276,10 @@ export const DropdownTransferModal = (props: OverviewTransferWrapperProps) => {
   const { modalControl, transferInfoState } = props;
 
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const closeModal = () => {
     modalControl.onClose();
     setInputValue('');
-    setIsLoading(false);
   };
 
   return (
@@ -280,8 +295,6 @@ export const DropdownTransferModal = (props: OverviewTransferWrapperProps) => {
             ...props.modalControl,
             onClose: closeModal,
           }}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
           inputValue={inputValue}
           setInputValue={setInputValue}
         />

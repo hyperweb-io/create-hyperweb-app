@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
-import { assets } from 'chain-registry';
+import { assetLists } from '@chain-registry/v2';
 import { LuPlus } from 'react-icons/lu';
 
 import {
@@ -25,12 +25,12 @@ export const SelectAssetContent = ({
 
   const nativeAssets = useMemo(() => {
     return (
-      assets
-        .find(({ chain_name }) => chain_name === selectedChain)
+      assetLists
+        .find(({ chainName }) => chainName === selectedChain)
         ?.assets.filter(
-          ({ type_asset, base }) =>
-            type_asset !== 'cw20' &&
-            type_asset !== 'ics20' &&
+          ({ typeAsset, base }) =>
+            typeAsset !== 'cw20' &&
+            typeAsset !== 'ics20' &&
             !base.startsWith('factory/')
         ) || []
     );

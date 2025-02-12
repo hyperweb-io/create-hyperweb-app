@@ -1,12 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
 import { AssetList, Chain } from '@chain-registry/types';
+import {
+  Chain as ChainV2,
+  AssetList as AssetListV2,
+} from '@chain-registry/v2-types';
 
 import { StarshipConfig } from '@/starship';
+import { convertKeysToCamelCase } from '@/utils';
 import config from '@/starship/configs/config.yaml';
 
 export type StarshipChains = {
-  chains: Chain[];
-  assets: AssetList[];
+  v1: {
+    chains: Chain[];
+    assets: AssetList[];
+  };
+  v2: {
+    chains: ChainV2[];
+    assets: AssetListV2[];
+  };
 };
 
 export const useStarshipChains = () => {
@@ -27,7 +38,16 @@ export const useStarshipChains = () => {
         ).then((assetLists) => assetLists.filter(Boolean))) as AssetList[];
 
         return chains.length > 0 && assets.length > 0
-          ? { chains, assets }
+          ? {
+              v1: {
+                chains,
+                assets,
+              },
+              v2: {
+                chains: convertKeysToCamelCase(chains) as ChainV2[],
+                assets: convertKeysToCamelCase(assets) as AssetListV2[],
+              },
+            }
           : null;
       } catch (error) {
         console.error(error);

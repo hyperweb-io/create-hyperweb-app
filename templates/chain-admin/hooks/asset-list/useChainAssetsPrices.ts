@@ -1,7 +1,6 @@
 import { Asset } from '@chain-registry/types';
 import { useQuery } from '@tanstack/react-query';
 import { useChainUtils } from './useChainUtils';
-import { handleError } from './useTopTokens';
 import { DEFAULT_HYPERWEB_TOKEN_PRICE } from '@/config';
 
 type CoinGeckoId = string;
@@ -24,6 +23,11 @@ const formatPrices = (
     const denom = assets.find((asset) => asset.coingecko_id === cur[0])!.base;
     return { ...priceHash, [denom]: cur[1].usd };
   }, {});
+};
+
+const handleError = (resp: Response) => {
+  if (!resp.ok) throw Error(resp.statusText);
+  return resp;
 };
 
 const fetchPrices = async (

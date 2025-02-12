@@ -1,7 +1,12 @@
-import { Coin, StdFee } from '@cosmjs/amino';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { getSigningJsdClient, jsd } from 'hyperwebjs';
+import { createExecuteContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
+import { Coin, StdFee } from '@interchainjs/react/types';
+
+import { toUint8Array } from '@/utils';
+
 import { useHandleTx } from './useHandleTx';
+import { useCustomSigningClient, useRpcEndpoint } from '../common';
 
 interface ExecuteTxParams {
   address: string;
@@ -23,8 +28,9 @@ interface ExecuteJsdTxParams {
 }
 
 export const useExecuteContractTx = (chainName: string) => {
-  const { getSigningCosmWasmClient, getRpcEndpoint, getOfflineSigner } =
-    useChain(chainName);
+  const { data: signingClient } = useCustomSigningClient();
+  const { data: rpcEndpoint } = useRpcEndpoint(chainName);
+  const { chain, wallet } = useChain(chainName);
   const handleTx = useHandleTx(chainName);
 
   const executeTx = async ({
@@ -38,16 +44,19 @@ export const useExecuteContractTx = (chainName: string) => {
   }: ExecuteTxParams) => {
     await handleTx({
       txFunction: async () => {
-        const client = await getSigningCosmWasmClient();
-
-        return client.execute(
+        const executeContract = createExecuteContract(signingClient);
+        const res = await executeContract(
           address,
-          contractAddress,
-          msg,
+          {
+            sender: address,
+            contract: contractAddress,
+            msg: toUint8Array(msg),
+            funds,
+          },
           fee,
-          undefined,
-          funds
+          ''
         );
+        return res;
       },
       onTxSucceed,
       onTxFailed,
@@ -74,8 +83,8 @@ export const useExecuteContractTx = (chainName: string) => {
     await handleTx({
       txFunction: async () => {
         const signingClient = await getSigningJsdClient({
-          rpcEndpoint: await getRpcEndpoint(),
-          signer: getOfflineSigner(),
+          rpcEndpoint: rpcEndpoint!,
+          signer: wallet.getOfflineSignerDirect(chain.chainId ?? ''),
         });
 
         return signingClient.signAndBroadcast(address, [msg], fee);

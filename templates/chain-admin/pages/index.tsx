@@ -1,13 +1,10 @@
 import Image from 'next/image';
 import { Box, Text, useColorModeValue } from '@interchain-ui/react';
+import { useChain } from '@interchain-kit/react';
 
 import { Button } from '@/components';
 import { useChainStore } from '@/contexts';
-import {
-  useConnectChain,
-  useDetectBreakpoints,
-  useAddHyperwebChain,
-} from '@/hooks';
+import { useDetectBreakpoints, useAddHyperwebChain } from '@/hooks';
 
 export default function Home() {
   const { isMobile } = useDetectBreakpoints();
@@ -34,7 +31,7 @@ export default function Home() {
         fontWeight="500"
         attributes={{ mb: '20px' }}
       >
-        Welcome to <HighlightText>Cosmos Kit</HighlightText> +{' '}
+        Welcome to <HighlightText>Interchain Kit</HighlightText> +{' '}
         <HighlightText>Next.js</HighlightText>
       </Text>
       {isHyperwebAdded && <ConnectButton />}
@@ -69,17 +66,16 @@ const HighlightText = ({ children }: { children: string }) => {
 
 const ConnectButton = () => {
   const { selectedChain } = useChainStore();
-  const { connect, isWalletConnected, openView } =
-    useConnectChain(selectedChain);
+  const { connect, address, openView } = useChain(selectedChain);
 
   return (
     <Button
       variant="primary"
       leftIcon="walletFilled"
       mx="auto"
-      onClick={isWalletConnected ? openView : connect}
+      onClick={address ? openView : connect}
     >
-      {isWalletConnected ? 'My Wallet' : 'Connect Wallet'}
+      {address ? 'My Wallet' : 'Connect Wallet'}
     </Button>
   );
 };

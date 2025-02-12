@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Text } from '@interchain-ui/react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { DeliverTxResponse } from 'hyperwebjs';
 
 import {
@@ -37,7 +37,7 @@ export const DeployJsContract = ({
   const [txResult, setTxResult] = useState<DeliverTxResponse>();
 
   const { selectedChain } = useChainStore();
-  const { address, assets } = useChain(selectedChain);
+  const { address, assetList } = useChain(selectedChain);
   const { instantiateJsdTx } = useInstantiateTx(selectedChain);
   const { refetch: updateMyContracts } = useMyContracts();
 
@@ -89,7 +89,7 @@ export const DeployJsContract = ({
       },
       {
         label: 'Tx Fee',
-        value: formatTxFee(txFee, assets!),
+        value: formatTxFee(txFee, assetList),
       },
     ];
 

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Box, Text } from '@interchain-ui/react';
-import { Coin } from '@cosmjs/amino';
+import { useChain } from '@interchain-kit/react';
+import { Coin } from '@interchainjs/react/types';
 
 import {
   JsonInput,
@@ -10,11 +11,7 @@ import {
 } from '../common';
 import { Button } from '../../common';
 import { useChainStore } from '@/contexts';
-import {
-  useConnectChain,
-  useDetectBreakpoints,
-  useExecuteContractTx,
-} from '@/hooks';
+import { useDetectBreakpoints, useExecuteContractTx } from '@/hooks';
 import { validateJson } from '@/utils';
 import { ExecuteTabProps } from './ExecuteTab';
 
@@ -34,7 +31,7 @@ export const ExecuteWasmContract = ({
   const [isAssetListJsonValid, setIsAssetListJsonValid] = useState(true);
 
   const { selectedChain } = useChainStore();
-  const { address, connect } = useConnectChain(selectedChain);
+  const { address, connect } = useChain(selectedChain);
   const { executeTx } = useExecuteContractTx(selectedChain);
 
   const handleExecuteMsg = () => {

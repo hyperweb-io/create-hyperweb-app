@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Text, TextField, TextFieldAddon } from '@interchain-ui/react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 
 import { Button } from '@/components';
 import { useChainStore } from '@/contexts';
@@ -15,9 +15,10 @@ export default function Faucet() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { selectedChain } = useChainStore();
-  const { address, chain, assets } = useChain(selectedChain);
+  const { address, chain, assetList } = useChain(selectedChain);
   const { toast } = useToast();
-  const { data: starshipData } = useStarshipChains();
+  const { data } = useStarshipChains();
+  const { v2: starshipData } = data ?? {};
 
   const checkIsChainSupported = () => {
     if (!starshipData) {
@@ -30,7 +31,7 @@ export default function Faucet() {
     }
 
     const isStarshipChain = starshipData?.chains?.some(
-      (c) => c.chain_id === chain.chain_id
+      (c) => c.chainId === chain.chainId
     );
 
     if (!isStarshipChain) {
@@ -46,17 +47,17 @@ export default function Faucet() {
   };
 
   const inputErrMsg = input
-    ? validateChainAddress(input, chain.bech32_prefix)
+    ? validateChainAddress(input, chain.bech32Prefix ?? '')
     : null;
 
   const handleGetTokens = async () => {
-    if (!assets || !checkIsChainSupported()) return;
+    if (!assetList || !checkIsChainSupported()) return;
 
     setIsLoading(true);
 
-    const asset = assets.assets[0];
+    const asset = assetList.assets[0];
     const port = (config as StarshipConfig).chains.find(
-      (c) => c.id === chain.chain_id
+      (c) => c.id === chain.chainId
     )!.ports.faucet;
 
     try {

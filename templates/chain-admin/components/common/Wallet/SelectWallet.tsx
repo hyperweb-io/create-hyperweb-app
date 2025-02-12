@@ -1,37 +1,18 @@
 import Image from 'next/image';
 import { Dispatch, SetStateAction } from 'react';
-import { MainWalletBase, ChainWalletBase } from '@cosmos-kit/core';
 import { Box, Text, useColorModeValue } from '@interchain-ui/react';
-import { Keplr } from '@keplr-wallet/types';
+import { Wallet } from '@interchain-kit/core';
 
 import { darkColors, lightColors, wallets } from '@/config';
-import { getWalletLogo, makeKeplrChainInfo } from '@/utils';
-import { useChainStore } from '@/contexts';
+import { getWalletLogo } from '@/utils';
 
 export const SelectWallet = ({
-  setSelectedWallet,
+  setSelectedWalletName,
 }: {
-  setSelectedWallet: Dispatch<SetStateAction<ChainWalletBase | null>>;
+  setSelectedWalletName: Dispatch<SetStateAction<string | null>>;
 }) => {
-  const { selectedChain } = useChainStore();
-
-  const handleSelectWallet = (wallet: MainWalletBase) => async () => {
-    const chainWallet = wallet.getChainWallet(selectedChain)!;
-    const { chain, assets, connect, client } = chainWallet;
-    const chainInfo = makeKeplrChainInfo(chain, assets[0]);
-
-    try {
-      if (wallet.walletName.startsWith('keplr')) {
-        // @ts-ignore
-        await (client?.client as Keplr).experimentalSuggestChain(chainInfo);
-      }
-      connect();
-      setTimeout(() => {
-        setSelectedWallet(chainWallet);
-      }, 100);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleSelectWallet = (wallet: Wallet) => () => {
+    setSelectedWalletName(wallet.name);
   };
 
   const boxShadowColor = useColorModeValue(
@@ -63,15 +44,15 @@ export const SelectWallet = ({
           borderColor="$blackAlpha200"
           backgroundColor={{ base: '$background', hover: '$blackAlpha100' }}
           cursor="pointer"
-          attributes={{ onClick: handleSelectWallet(w) }}
-          key={w.walletName}
+          attributes={{ onClick: handleSelectWallet(w.info!) }}
+          key={w.info?.name}
         >
           <Text color="$blackAlpha600" fontSize="14px" fontWeight="500">
-            {w.walletPrettyName}
+            {w.info?.prettyName}
           </Text>
           <Image
-            src={getWalletLogo(w.walletInfo)}
-            alt={w.walletPrettyName}
+            src={getWalletLogo(w?.info)}
+            alt={w?.info?.prettyName ?? ''}
             width="0"
             height="0"
             style={{ width: '20px', height: 'auto' }}

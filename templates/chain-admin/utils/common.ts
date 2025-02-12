@@ -1,13 +1,13 @@
-import { GasPrice } from '@cosmjs/stargate';
-import { SignerOptions, Wallet } from '@cosmos-kit/core';
-import { Asset, AssetList } from '@chain-registry/types';
+import { Wallet } from '@interchain-kit/core';
+import { Asset, AssetList, Chain } from '@chain-registry/v2-types';
+import BigNumber from 'bignumber.js';
 
 export const getNativeAsset = (assets: AssetList) => {
   return assets.assets[0] as Asset;
 };
 
 export const getExponentFromAsset = (asset: Asset) => {
-  const unit = asset.denom_units.find((unit) => unit.denom === asset.display);
+  const unit = asset.denomUnits.find((unit) => unit.denom === asset.display);
   return unit?.exponent ?? 6;
 };
 
@@ -15,7 +15,7 @@ export const shortenAddress = (address: string, partLength = 6) => {
   return `${address.slice(0, partLength)}...${address.slice(-partLength)}`;
 };
 
-export const getWalletLogo = (wallet: Wallet) => {
+export const getWalletLogo = (wallet?: Wallet) => {
   if (!wallet?.logo) return '';
 
   return typeof wallet.logo === 'string'
@@ -23,25 +23,40 @@ export const getWalletLogo = (wallet: Wallet) => {
     : wallet.logo.major || wallet.logo.minor;
 };
 
-export const getSignerOptions = (): SignerOptions => {
-  const defaultGasPrice = GasPrice.fromString('0.025uosmo');
+function toCamelCase(key: string) {
+  return (
+    key
+      // First, remove all leading non-alphabet characters except $
+      .replace(/^[^a-zA-Z$]+/, '')
+      // Convert what follows a separator into upper case
+      .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
+      // Ensure the first character of the result is always lowercase
+      .replace(/^./, (c) => c.toLowerCase())
+  );
+}
 
-  return {
-    // @ts-ignore
-    signingStargate: (chain) => {
-      if (typeof chain === 'string') {
-        return { gasPrice: defaultGasPrice };
-      }
-      let gasPrice;
-      try {
-        const feeToken = chain.fees?.fee_tokens[0];
-        const fee = `${feeToken?.average_gas_price || 0.025}${feeToken?.denom}`;
-        gasPrice = GasPrice.fromString(fee);
-      } catch (error) {
-        gasPrice = defaultGasPrice;
-      }
-      return { gasPrice };
-    },
-    preferredSignType: () => 'direct',
-  };
+export function convertKeysToCamelCase(obj: any): any {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => convertKeysToCamelCase(item));
+  }
+
+  return Object.keys(obj).reduce((result, key) => {
+    const camelKey = toCamelCase(key);
+    const value = convertKeysToCamelCase(obj[key]);
+    result[camelKey as keyof typeof result] = value;
+    return result;
+  }, {} as Record<string, any>);
+}
+
+export const convertGasToTokenAmount = (
+  gasAmount: string,
+  chain: Chain,
+  exponent: number
+) => {
+  const gasPrice = chain.fees?.feeTokens[0].averageGasPrice ?? 0.025;
+  return BigNumber(gasAmount).shiftedBy(-exponent).multipliedBy(gasPrice);
 };

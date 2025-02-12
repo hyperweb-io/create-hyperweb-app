@@ -1,20 +1,21 @@
-import { useManager } from '@cosmos-kit/react';
 import { useMemo } from 'react';
+import { useWalletManager } from '@interchain-kit/react';
 import { Asset, AssetList } from '@chain-registry/types';
 import { asset_lists as ibcAssetLists } from '@chain-registry/assets';
 import { assets as chainAssets, ibc } from 'chain-registry';
-import { CoinDenom, CoinSymbol, Exponent, PriceHash } from '@/utils';
+import { Coin } from '@interchainjs/react/types';
 import BigNumber from 'bignumber.js';
-import { Coin } from '@cosmjs/amino';
+
 import { PrettyAsset } from '@/components';
-import { ChainName } from 'cosmos-kit';
+import { CoinDenom, CoinSymbol, Exponent, PriceHash } from '@/utils';
+
 import { useStarshipChains } from '../common';
 
 export const useChainUtils = (chainName: string) => {
-  const { getChainRecord } = useManager();
+  const { chains, assetLists } = useWalletManager();
   const { data: starshipData } = useStarshipChains();
   const { chains: starshipChains = [], assets: starshipAssets = [] } =
-    starshipData ?? {};
+    starshipData?.v1 ?? {};
 
   const isStarshipChain = starshipChains.some(
     (chain) => chain.chain_name === chainName
@@ -109,29 +110,25 @@ export const useChainUtils = (chainName: string) => {
 
   const getPrettyChainName = (ibcDenom: CoinDenom) => {
     const chainName = getChainName(ibcDenom);
-    try {
-      const chainRecord = getChainRecord(chainName);
-      // @ts-ignore
-      return chainRecord.chain.pretty_name;
-    } catch (e) {
-      return 'CHAIN_INFO_NOT_FOUND';
-    }
+    const chain = chains.find((chain) => chain.chainName === chainName);
+    if (!chain) throw Error('chain not found');
+    return chain.prettyName;
   };
 
   const isNativeAsset = ({ denom }: PrettyAsset) => {
     return !!nativeAssets.find((asset) => asset.base === denom);
   };
 
-  const getNativeDenom = (chainName: ChainName) => {
-    const chainRecord = getChainRecord(chainName);
-    const denom = chainRecord.assetList?.assets[0].base;
+  const getNativeDenom = (chainName: string) => {
+    const assetList = assetLists.find((chain) => chain.chainName === chainName);
+    const denom = assetList?.assets?.[0]?.base;
     if (!denom) throw Error('denom not found');
     return denom;
   };
 
-  const getDenomBySymbolAndChain = (chainName: ChainName, symbol: string) => {
-    const chainRecord = getChainRecord(chainName);
-    const denom = chainRecord.assetList?.assets.find(
+  const getDenomBySymbolAndChain = (chainName: string, symbol: string) => {
+    const assetList = assetLists.find((chain) => chain.chainName === chainName);
+    const denom = assetList?.assets.find(
       (asset) => asset.symbol === symbol
     )?.base;
     if (!denom) throw Error('denom not found');

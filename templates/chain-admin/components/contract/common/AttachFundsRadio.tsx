@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Coin } from '@cosmjs/amino';
 import { Box } from '@interchain-ui/react';
-import { Asset } from '@chain-registry/types';
+import { Asset } from '@chain-registry/v2-types';
 import BigNumber from 'bignumber.js';
 import { TbCurrencyDollarOff } from 'react-icons/tb';
 import { LuListPlus } from 'react-icons/lu';
 import { VscJson } from 'react-icons/vsc';
+import { Coin } from '@interchainjs/react/types';
 
 import { JsonInput } from './JsonInput';
 import { SelectAssetContent } from './SelectAssetContent';

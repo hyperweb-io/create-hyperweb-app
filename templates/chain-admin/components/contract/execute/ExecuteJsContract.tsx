@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Box, Text, TextField } from '@interchain-ui/react';
+import { useChain } from '@interchain-kit/react';
 
 import { InputField, JsonInput, ContractIndexField } from '../common';
 import { Button } from '../../common';
 import { validateJson } from '@/utils';
 import { useChainStore } from '@/contexts';
-import { useConnectChain, useExecuteContractTx } from '@/hooks';
+import { useExecuteContractTx } from '@/hooks';
 
 const INPUT_LINES = 12;
 
@@ -26,7 +27,7 @@ export const ExecuteJsContract = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const { selectedChain } = useChainStore();
-  const { address, connect } = useConnectChain(selectedChain);
+  const { address, connect } = useChain(selectedChain);
   const { executeJsdTx } = useExecuteContractTx(selectedChain);
 
   const handleExecute = () => {

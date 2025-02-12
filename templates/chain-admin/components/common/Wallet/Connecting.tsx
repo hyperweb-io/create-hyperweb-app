@@ -1,57 +1,66 @@
-import Link from 'next/link';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Box, Icon, Text, useColorModeValue } from '@interchain-ui/react';
-import { ChainWalletBase, WalletStatus } from '@cosmos-kit/core';
+import { useChainWallet } from '@interchain-kit/react';
+import { Wallet, WalletState } from '@interchain-kit/core';
 
 import { darkColors, lightColors } from '@/config';
 import { getWalletLogo } from '@/utils';
 import { RingLoader } from './RingLoader';
-import { Button } from '../Button';
+import { useChainStore } from '@/contexts';
 
 export const Connecting = ({
-  selectedWallet,
+  selectedWalletName,
   clearSelectedWallet,
 }: {
-  selectedWallet: ChainWalletBase;
+  selectedWalletName: string;
   clearSelectedWallet: () => void;
 }) => {
-  const { walletInfo, downloadInfo, message, walletStatus } = selectedWallet;
+  const { selectedChain } = useChainStore();
+
+  const { wallet, connect, status, message } = useChainWallet(
+    selectedChain,
+    selectedWalletName
+  );
+
+  useEffect(() => {
+    connect();
+  }, []);
 
   const content = useMemo(() => {
-    if (walletStatus === WalletStatus.NotExist) {
-      return (
-        <>
-          <WalletLogoWithRing wallet={walletInfo} intent="warning" />
-          <StatusText>{walletInfo.prettyName} Not Installed</StatusText>
-          {downloadInfo?.link && (
-            <Link href={downloadInfo.link} target="_blank">
-              <Button
-                leftIcon="arrowDownload"
-                fontSize="14px"
-                color="$blackAlpha600"
-              >
-                Install {walletInfo.prettyName}
-              </Button>
-            </Link>
-          )}
-        </>
-      );
-    }
+    // if (status === WalletStatus.NotExist) {
+    //   return (
+    //     <>
+    //       <WalletLogoWithRing wallet={walletInfo} intent="warning" />
+    //       <StatusText>{walletInfo.prettyName} Not Installed</StatusText>
+    //       {downloadInfo?.link && (
+    //         <Link href={downloadInfo.link} target="_blank">
+    //           <Button
+    //             leftIcon="arrowDownload"
+    //             fontSize="14px"
+    //             color="$blackAlpha600"
+    //           >
+    //             Install {walletInfo.prettyName}
+    //           </Button>
+    //         </Link>
+    //       )}
+    //     </>
+    //   );
+    // }
 
-    if (walletStatus === WalletStatus.Connecting) {
+    if (status === WalletState.Connecting) {
       return (
         <>
-          <WalletLogoWithRing wallet={walletInfo} intent="connecting" />
+          <WalletLogoWithRing wallet={wallet.info} intent="connecting" />
           <StatusText>Requesting Connection</StatusText>
         </>
       );
     }
 
-    if (walletStatus === WalletStatus.Rejected) {
+    if (status === WalletState.Rejected) {
       return (
         <>
-          <WalletLogoWithRing wallet={walletInfo} intent="warning" />
+          <WalletLogoWithRing wallet={wallet.info} intent="warning" />
           <StatusText>Request Rejected</StatusText>
         </>
       );
@@ -59,12 +68,12 @@ export const Connecting = ({
 
     return (
       <>
-        <WalletLogoWithRing wallet={walletInfo} intent="warning" />
+        <WalletLogoWithRing wallet={wallet.info} intent="warning" />
         <StatusText>Connection Error</StatusText>
         {message && <StatusDescription>{message}</StatusDescription>}
       </>
     );
-  }, [walletInfo, walletStatus, message]);
+  }, [wallet.info, status, message]);
 
   const boxShadowColor = useColorModeValue(
     lightColors?.blackAlpha200 as string,
@@ -98,7 +107,7 @@ export const Connecting = ({
           <Icon name="arrowLeftSLine" color="$blackAlpha500" size="$xl" />
         </Box>
         <Text color="$blackAlpha600" fontSize="16px" fontWeight="600">
-          {walletInfo.prettyName}
+          {wallet.info.prettyName}
         </Text>
         <Icon
           size="$xl"
@@ -137,7 +146,7 @@ const WalletLogoWithRing = ({
   wallet,
   intent,
 }: {
-  wallet: ChainWalletBase['walletInfo'];
+  wallet: Wallet;
   intent: 'connecting' | 'warning';
 }) => {
   const isConnecting = intent === 'connecting';

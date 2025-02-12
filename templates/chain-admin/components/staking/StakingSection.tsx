@@ -1,5 +1,4 @@
 import { useChain } from '@interchain-kit/react';
-import { ChainName } from 'cosmos-kit';
 import { Box, Spinner, Text } from '@interchain-ui/react';
 
 import Overview from './Overview';
@@ -7,7 +6,7 @@ import { MyValidators } from './MyValidators';
 import { AllValidators } from './AllValidators';
 import { useStakingData, useValidatorLogos } from '@/hooks';
 
-export const StakingSection = ({ chainName }: { chainName: ChainName }) => {
+export const StakingSection = ({ chainName }: { chainName: string }) => {
   const { address } = useChain(chainName);
   const { data, isLoading, refetch } = useStakingData(chainName);
   const { data: logos, isLoading: isFetchingLogos } = useValidatorLogos(

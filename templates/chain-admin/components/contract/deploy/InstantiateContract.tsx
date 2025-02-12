@@ -6,10 +6,9 @@ import {
   TextField,
   TextFieldAddon,
 } from '@interchain-ui/react';
-import { Coin } from '@cosmjs/stargate';
 import { IoChevronDown } from 'react-icons/io5';
-import { useChain } from '@cosmos-kit/react';
-import { InstantiateResult } from '@cosmjs/cosmwasm-stargate';
+import { useChain } from '@interchain-kit/react';
+import { Coin, DeliverTxResponse } from '@interchainjs/react/types';
 
 import { CodeIdField } from './CodeIdField';
 import {
@@ -57,10 +56,10 @@ export const InstantiateContract = ({
   const [isAssetListJsonValid, setIsAssetListJsonValid] = useState(true);
   const [isShowMore, setIsShowMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [txResult, setTxResult] = useState<InstantiateResult>();
+  const [txResult, setTxResult] = useState<DeliverTxResponse>();
 
   const { selectedChain } = useChainStore();
-  const { address, chain, assets } = useChain(selectedChain);
+  const { address, chain, assetList } = useChain(selectedChain);
   const { instantiateTx } = useInstantiateTx(selectedChain);
   const { refetch: updateMyContracts } = useMyContracts();
 
@@ -99,7 +98,8 @@ export const InstantiateContract = ({
   };
 
   const adminInputErr =
-    adminAddress && validateChainAddress(adminAddress, chain.bech32_prefix);
+    adminAddress &&
+    validateChainAddress(adminAddress, chain.bech32Prefix ?? '');
 
   const canInstantiate =
     !!address &&
@@ -119,22 +119,29 @@ export const InstantiateContract = ({
     const txFee =
       txResult.events.find((e) => e.type === 'tx')?.attributes[0].value ?? '';
 
+    const contractAddress =
+      txResult.events.find((e) => e.type === 'instantiate')?.attributes[0]
+        .value ?? '';
+
+    // @ts-expect-error
+    const transactionHash = txResult?.hash || txResult?.transactionHash || '';
+
     const infoItems: TxInfoItem[] = [
       {
         label: 'Tx Hash',
-        value: shortenAddress(txResult.transactionHash),
-        copyValue: txResult.transactionHash,
+        value: shortenAddress(transactionHash),
+        copyValue: transactionHash,
         showCopy: true,
       },
       {
         label: 'Contract Address',
-        value: shortenAddress(txResult.contractAddress),
-        copyValue: txResult.contractAddress,
+        value: shortenAddress(contractAddress),
+        copyValue: contractAddress,
         showCopy: true,
       },
       {
         label: 'Tx Fee',
-        value: formatTxFee(txFee, assets!),
+        value: formatTxFee(txFee, assetList),
       },
     ];
 
@@ -154,7 +161,7 @@ export const InstantiateContract = ({
               width="$full"
               variant="primary"
               onClick={() => {
-                switchTab?.(txResult.contractAddress, TabLabel.Query);
+                switchTab?.(contractAddress, TabLabel.Query);
               }}
             >
               Query
@@ -163,7 +170,7 @@ export const InstantiateContract = ({
               width="$full"
               variant="primary"
               onClick={() => {
-                switchTab?.(txResult.contractAddress, TabLabel.Execute);
+                switchTab?.(contractAddress, TabLabel.Execute);
               }}
             >
               Execute

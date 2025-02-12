@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Text } from '@interchain-ui/react';
-import { AccessType } from 'interchain-query/cosmwasm/wasm/v1/types';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
+import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
 
 import { InputField } from '../common';
 import { FileUploader } from './FileUploader';
@@ -25,11 +25,10 @@ export const UploadContract = ({ show, onSuccess }: UploadContractProps) => {
   const [permission, setPermission] = useState<Permission>(
     AccessType.ACCESS_TYPE_EVERYBODY
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   const { selectedChain } = useChainStore();
   const { address } = useChain(selectedChain);
-  const { storeCodeTx } = useStoreCodeTx(selectedChain);
+  const { storeCodeTx, isLoading } = useStoreCodeTx(selectedChain);
 
   const resetStates = () => {
     setWasmFile(null);
@@ -40,17 +39,11 @@ export const UploadContract = ({ show, onSuccess }: UploadContractProps) => {
   const handleUpload = () => {
     if (!address || !wasmFile) return;
 
-    setIsLoading(true);
-
     storeCodeTx({
       wasmFile,
       permission,
       addresses: addresses.map((addr) => addr.value),
-      onTxFailed() {
-        setIsLoading(false);
-      },
       onTxSucceed(codeId) {
-        setIsLoading(false);
         onSuccess?.(codeId);
         resetStates();
       },

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useState, useCallback } from 'react';
 import { Box, Text, Icon } from '@interchain-ui/react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 
 import { useToast } from '../common';
 import { getExplorerLink } from '@/utils';
@@ -34,11 +34,13 @@ export const useHandleTx = (chainName: string) => {
       setToastId(toastId);
 
       try {
-        const result = await txFunction();
+        const result: any = await txFunction();
+        if (result.code !== 0) {
+          throw new Error(result.rawLog);
+        }
         onTxSucceed(result);
         toast.close(toastId);
 
-        // @ts-ignore
         const explorerLink = getExplorerLink(chain, result?.transactionHash);
 
         toast({
@@ -61,7 +63,7 @@ export const useHandleTx = (chainName: string) => {
           title: 'Transaction Failed',
           type: 'error',
           description: (
-            <Box width="300px" wordBreak="break-all">
+            <Box width="300px" wordBreak="break-word">
               {e.message}
             </Box>
           ),

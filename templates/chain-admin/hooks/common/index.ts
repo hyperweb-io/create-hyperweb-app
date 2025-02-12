@@ -1,4 +1,3 @@
-export * from './useTx';
 export * from './useToast';
 export * from './useDisclosure';
 export * from './useCopyToClipboard';
@@ -11,3 +10,4 @@ export * from './useAddHyperwebChain';
 export * from './useRpcEndpoint';
 export * from './useSigningClient';
 export * from './useToastHandlers';
+export * from './useCustomSigningClient';

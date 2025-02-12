@@ -1,9 +1,12 @@
-import { useChain } from '@cosmos-kit/react';
-import { Coin, StdFee } from '@cosmjs/amino';
-import { InstantiateResult } from '@cosmjs/cosmwasm-stargate';
 import { DeliverTxResponse, getSigningJsdClient, jsd } from 'hyperwebjs';
+import { createInstantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
+import { Coin, StdFee } from '@interchainjs/react/types';
+import { useChain } from '@interchain-kit/react';
+
+import { toUint8Array } from '@/utils';
 
 import { useHandleTx } from './useHandleTx';
+import { useCustomSigningClient, useRpcEndpoint } from '../common';
 
 interface InstantiateTxParams {
   address: string;
@@ -12,7 +15,7 @@ interface InstantiateTxParams {
   label: string;
   admin: string;
   funds: Coin[];
-  onTxSucceed?: (txInfo: InstantiateResult) => void;
+  onTxSucceed?: (txInfo: DeliverTxResponse) => void;
   onTxFailed?: () => void;
 }
 
@@ -24,8 +27,9 @@ interface InstantiateJsdTxParams {
 }
 
 export const useInstantiateTx = (chainName: string) => {
-  const { getSigningCosmWasmClient } = useChain(chainName);
-  const { getRpcEndpoint, getOfflineSigner } = useChain(chainName);
+  const { data: signingClient } = useCustomSigningClient();
+  const { data: rpcEndpoint } = useRpcEndpoint(chainName);
+  const { chain, wallet } = useChain(chainName);
   const handleTx = useHandleTx(chainName);
 
   const instantiateTx = async ({
@@ -40,13 +44,23 @@ export const useInstantiateTx = (chainName: string) => {
   }: InstantiateTxParams) => {
     const fee: StdFee = { amount: [], gas: '300000' };
 
-    await handleTx<InstantiateResult>({
+    await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        const client = await getSigningCosmWasmClient();
-        return client.instantiate(address, codeId, initMsg, label, fee, {
-          admin,
-          funds,
-        });
+        const instantiateContract = createInstantiateContract(signingClient);
+        const res = await instantiateContract(
+          address,
+          {
+            sender: address,
+            codeId: BigInt(codeId),
+            admin,
+            funds,
+            label,
+            msg: toUint8Array(initMsg),
+          },
+          fee,
+          ''
+        );
+        return res;
       },
       successMessage: 'Instantiate Success',
       onTxSucceed,
@@ -65,8 +79,8 @@ export const useInstantiateTx = (chainName: string) => {
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
         const signingClient = await getSigningJsdClient({
-          rpcEndpoint: await getRpcEndpoint(),
-          signer: getOfflineSigner(),
+          rpcEndpoint: rpcEndpoint!,
+          signer: wallet.getOfflineSignerDirect(chain.chainId ?? ''),
         });
 
         const msg = jsd.jsd.MessageComposer.fromPartial.instantiate({

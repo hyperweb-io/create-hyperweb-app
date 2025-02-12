@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { Box, Icon, Spinner, Text, TextField } from '@interchain-ui/react';
 
 import {

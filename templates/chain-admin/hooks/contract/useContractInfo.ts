@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
-import { useCosmWasmClient } from './useCosmWasmClient';
+import { defaultContext } from '@tanstack/react-query';
+import { useGetContractInfo } from '@interchainjs/react/cosmwasm/wasm/v1/query.rpc.react';
+
 import { useChainStore } from '@/contexts';
-import { useChain } from '@cosmos-kit/react';
+import { useRpcEndpoint } from '../common';
 
 export const useContractInfo = ({
   contractAddress,
@@ -10,16 +11,17 @@ export const useContractInfo = ({
   contractAddress: string;
   enabled?: boolean;
 }) => {
-  const { data: cwClient } = useCosmWasmClient();
   const { selectedChain } = useChainStore();
-  const { getCosmWasmClient } = useChain(selectedChain);
+  const { data: rpcEndpoint } = useRpcEndpoint(selectedChain);
 
-  return useQuery({
-    queryKey: ['useContractInfo', contractAddress],
-    queryFn: async () => {
-      const client = cwClient ?? (await getCosmWasmClient());
-      return client.getContract(contractAddress);
+  return useGetContractInfo({
+    request: {
+      address: contractAddress,
     },
-    enabled: !!contractAddress && enabled,
+    options: {
+      enabled: !!contractAddress && !!rpcEndpoint && enabled,
+      context: defaultContext,
+    },
+    clientResolver: rpcEndpoint,
   });
 };

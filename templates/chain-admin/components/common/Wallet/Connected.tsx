@@ -1,20 +1,26 @@
 import Image from 'next/image';
 import { Box, Icon, Text, useColorModeValue } from '@interchain-ui/react';
 import { FiLogOut } from 'react-icons/fi';
-import { ChainWalletBase } from '@cosmos-kit/core';
+import { useChainWallet } from '@interchain-kit/react';
 
 import { darkColors, lightColors } from '@/config';
 import { useCopyToClipboard } from '@/hooks';
 import { getWalletLogo, shortenAddress } from '@/utils';
+import { useChainStore } from '@/contexts';
 
 export const Connected = ({
-  selectedWallet,
+  selectedWalletName,
   clearSelectedWallet,
 }: {
-  selectedWallet: ChainWalletBase;
+  selectedWalletName: string;
   clearSelectedWallet: () => void;
 }) => {
-  const { walletInfo, disconnect, address } = selectedWallet;
+  const { selectedChain } = useChainStore();
+
+  const { wallet, disconnect, address } = useChainWallet(
+    selectedChain,
+    selectedWalletName
+  );
 
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
@@ -39,10 +45,10 @@ export const Connected = ({
       boxShadow={`0px 0px 20px 0px ${boxShadowColor}`}
     >
       <Box display="flex" alignItems="center" gap="4px">
-        {walletInfo && (
+        {wallet && (
           <Image
-            src={getWalletLogo(walletInfo)}
-            alt={walletInfo.prettyName}
+            src={getWalletLogo(wallet.info)}
+            alt={wallet.info.prettyName}
             width="0"
             height="0"
             style={{ width: '20px', height: 'auto' }}

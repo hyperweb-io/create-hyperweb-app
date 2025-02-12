@@ -1,4 +1,4 @@
-import { useChain } from '@cosmos-kit/react';
+import { useChain } from '@interchain-kit/react';
 import { useQuery } from '@tanstack/react-query';
 import { jsd } from 'hyperwebjs';
 

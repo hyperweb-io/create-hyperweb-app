@@ -1,3 +1,6 @@
-import { wallets as _wallets } from 'cosmos-kit';
+import { keplrExtensionInfo } from '@interchain-kit/keplr-extension';
+import { keplrWallet } from '@interchain-kit/keplr-extension';
+import { leapWallet } from '@interchain-kit/leap-extension';
 
-export const keplrWalletName = _wallets.keplr.extension?.walletName!;
+export const keplrWalletName = keplrExtensionInfo.name;
+export const wallets = [keplrWallet, leapWallet];

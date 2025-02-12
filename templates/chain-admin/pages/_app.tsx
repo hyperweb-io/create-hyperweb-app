@@ -5,13 +5,12 @@ import '@interchain-ui/react/globalStyles';
 import type { AppProps } from 'next/app';
 import { ChainProvider } from '@interchain-kit/react';
 import { chains, assetLists } from '@chain-registry/v2';
-import { keplrWallet } from '@interchain-kit/keplr-extension';
-import { leapWallet } from '@interchain-kit/leap-extension';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Box, Toaster, useTheme } from '@interchain-ui/react';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { CustomThemeProvider, Layout } from '@/components';
+import { wallets } from '@/config';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,11 +27,7 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
 
   return (
     <CustomThemeProvider>
-      <ChainProvider
-        chains={chains}
-        assetLists={assetLists}
-        wallets={[keplrWallet, leapWallet]}
-      >
+      <ChainProvider chains={chains} assetLists={assetLists} wallets={wallets}>
         <QueryClientProvider client={queryClient}>
           <Box className={themeClass}>
             <Layout>

@@ -1,6 +1,5 @@
 import '../styles/globals.css';
 import '@interchain-ui/react/styles';
-import '@interchain-ui/react/globalStyles';
 
 import type { AppProps } from 'next/app';
 import { ChainProvider } from '@interchain-kit/react';

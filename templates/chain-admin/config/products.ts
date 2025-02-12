@@ -1,8 +1,4 @@
-export type ProductCategory =
-  | 'cosmwasm'
-  | 'cosmos-sdk'
-  | 'frontend'
-  | 'testing';
+export type ProductCategory = 'cosmos-sdk' | 'frontend' | 'testing';
 
 export type Product = {
   name: string;

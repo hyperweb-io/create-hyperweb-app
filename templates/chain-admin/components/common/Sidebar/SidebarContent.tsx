@@ -13,8 +13,8 @@ import { useCopyToClipboard, useAddHyperwebChain } from '@/hooks';
 export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
   const { isHyperwebAdded } = useAddHyperwebChain();
   const poweredByLogoSrc = useColorModeValue(
-    '/logos/cosmology.svg',
-    '/logos/cosmology-dark.svg'
+    '/logos/hyperweb-logo.svg',
+    '/logos/hyperweb-logo-dark.svg'
   );
 
   return (
@@ -44,7 +44,7 @@ export const SidebarContent = ({ onClose }: { onClose: () => void }) => {
             alt="cosmology"
             width="0"
             height="0"
-            style={{ width: '100px', height: 'auto' }}
+            style={{ width: '90px', height: 'auto' }}
           />
         </Box>
       </Box>
@@ -57,6 +57,12 @@ const ConnectButton = () => {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
   const { connect, disconnect, address, wallet } = useChain(selectedChain);
 
+  const walletInfo = wallet?.info;
+  const walletLogo =
+    typeof walletInfo?.logo === 'string'
+      ? walletInfo.logo
+      : walletInfo.logo.major || walletInfo.logo.minor;
+
   return (
     <>
       {address ? (
@@ -67,21 +73,15 @@ const ConnectButton = () => {
             borderTopRightRadius={0}
             borderBottomRightRadius={0}
             leftIcon={
-              wallet?.logo ? (
+              walletInfo && walletLogo ? (
                 <Image
-                  src={
-                    typeof wallet.logo === 'string'
-                      ? wallet.logo
-                      : wallet.logo.major || wallet.logo.minor
-                  }
-                  alt={wallet.prettyName}
+                  src={walletLogo}
+                  alt={walletInfo.prettyName}
                   width="0"
                   height="0"
                   style={{ width: '20px', height: 'auto' }}
                 />
-              ) : (
-                'checkboxCircle'
-              )
+              ) : undefined
             }
             rightIcon={isCopied ? 'checkLine' : 'copy'}
             iconColor={isCopied ? '$textSuccess' : 'inherit'}

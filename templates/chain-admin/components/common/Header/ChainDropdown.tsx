@@ -48,7 +48,7 @@ export const ChainDropdown = () => {
         width: isMobile ? '130px' : '260px',
       }}
     >
-      {(starshipChains?.chains ?? []).map((c) => (
+      {(starshipChains?.v2.chains ?? []).map((c) => (
         <Combobox.Item key={c.chainName} textValue={c.prettyName}>
           <Stack
             direction="horizontal"

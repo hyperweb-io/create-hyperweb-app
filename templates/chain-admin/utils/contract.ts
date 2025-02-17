@@ -1,11 +1,12 @@
 import { AssetList, Chain } from '@chain-registry/v2-types';
-import { toBech32, fromBech32 } from '@cosmjs/encoding';
-import { Coin, logs, parseCoins } from '@cosmjs/stargate';
+import { toBech32, fromBech32 } from '@interchainjs/encoding';
+import { Log, findAttribute } from '@interchainjs/utils';
+import { parseCoins } from '@interchainjs/amino';
 import BigNumber from 'bignumber.js';
 import { jsd, DeliverTxResponse as DeliverJsdTxResponse } from 'hyperwebjs';
 import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
 import { CodeInfoResponse } from '@interchainjs/react/cosmwasm/wasm/v1/query';
-import { DeliverTxResponse } from '@interchainjs/react/types';
+import { Coin, DeliverTxResponse } from '@interchainjs/react/types';
 
 import { getExponentFromAsset } from './common';
 
@@ -75,18 +76,18 @@ export const bytesToKb = (bytes: number) => {
 };
 
 export const findAttr = (
-  events: logs.Log['events'],
+  events: Log['events'],
   eventType: string,
   attrKey: string
 ) => {
-  const mimicLog: logs.Log = {
+  const mimicLog: Log = {
     msg_index: 0,
     log: '',
     events,
   };
 
   try {
-    return logs.findAttribute([mimicLog], eventType, attrKey).value;
+    return findAttribute([mimicLog], eventType, attrKey).value;
   } catch {
     return undefined;
   }

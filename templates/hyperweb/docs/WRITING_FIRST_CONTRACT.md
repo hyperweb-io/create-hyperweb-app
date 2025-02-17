@@ -5,6 +5,7 @@ This guide walks you through creating a simple "Hello World" contract using Hype
 ## Prerequisites
 
 Before starting, ensure you have:
+
 - Set up the Hyperweb development environment (refer to the main [README](../README.md)).
 - Basic understanding of TypeScript and object-oriented programming.
 
@@ -42,12 +43,12 @@ export interface State {
 
 default export class HelloWorldContract {
     state: State;
-    
+
     constructor(state: State) {
       this.state = state;
       this.state.set('greet', "Hello, World!"); // Set initial greeting in constructor
     }
-    
+
     // Retrieve the greeting message
     greet(): string {
       return this.state.get('greet');
@@ -69,12 +70,12 @@ To include your contract in the build process:
 
    ```ts
    const configs: BuildConfig[] = [
-   // existing contracts
-    {
-      entryFile: 'src/hello-world',
-      outFile: 'dist/contracts/helloWorld.js',
-      externalPackages: []
-    }
+     // existing contracts
+     {
+       entryFile: "src/hello-world",
+       outFile: "dist/contracts/helloWorld.js",
+       externalPackages: [],
+     },
    ];
    ```
 
@@ -103,96 +104,102 @@ Testing helps ensure the contract behaves as expected. In the `__tests__/` direc
 2. Write test cases for greeting retrieval:
 
    ```js
-   import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
-   import { assertIsDeliverTxSuccess } from '@cosmjs/stargate';
-   
+   import { Secp256k1HDWallet } from "@interchainjs/cosmos/wallets/secp256k1hd";
+   import { assertIsDeliverTxSuccess } from "@interchainjs/cosmos/utils";
+
    import path from "path";
-   import fs from 'fs';
-   import { getSigningJsdClient, jsd } from 'hyperwebjs';
-   import { useChain, generateMnemonic } from 'starshipjs';
-   import { sleep } from '../test-utils/sleep';
-   import './setup.test';
-   
-   describe('Hello World Contract Tests', () => {
-    let wallet, denom, address, queryClient, signingClient;
-    let chainInfo, getCoin, getRpcEndpoint, creditFromFaucet;
-    let contractCode, contractIndex;
-   
-    let fee;
-   
-    beforeAll(async () => {
-    ({
-      chainInfo,
-      getCoin,
-      getRpcEndpoint,
-      creditFromFaucet
-      } = useChain('hyperweb'));
+   import fs from "fs";
+   import { getSigningJsdClient, jsd } from "hyperwebjs";
+   import { useChain, generateMnemonic } from "starshipjs";
+   import { sleep } from "../test-utils/sleep";
+   import "./setup.test";
+
+   describe("Hello World Contract Tests", () => {
+     let wallet, denom, address, queryClient, signingClient;
+     let chainInfo, getCoin, getRpcEndpoint, creditFromFaucet;
+     let contractCode, contractIndex;
+
+     let fee;
+
+     beforeAll(async () => {
+       ({ chainInfo, getCoin, getRpcEndpoint, creditFromFaucet } =
+         useChain("hyperweb"));
        denom = (await getCoin()).base;
-   
+
        // Initialize wallet
-       wallet = await DirectSecp256k1HdWallet.fromMnemonic(generateMnemonic(), {
-         prefix: chainInfo.chain.bech32_prefix
-       });
+       wallet = Secp256k1HDWallet.fromMnemonic(generateMnemonic(), [
+         {
+           prefix: chainInfo.chain.bech32_prefix,
+           hdPath: "m/44'/118'/0'/0/0",
+         },
+       ]);
        address = (await wallet.getAccounts())[0].address;
        console.log(`contract creator address: ${address}`);
-   
+
        // Create custom cosmos interchain client
        queryClient = await jsd.ClientFactory.createRPCQueryClient({
-         rpcEndpoint: await getRpcEndpoint()
+         rpcEndpoint: await getRpcEndpoint(),
        });
-   
+
        signingClient = await getSigningJsdClient({
          rpcEndpoint: await getRpcEndpoint(),
-         signer: wallet
+         signer: wallet,
        });
-   
+
        // Set default fee
-       fee = { amount: [{ denom, amount: '100000' }], gas: '550000' };
-   
+       fee = { amount: [{ denom, amount: "100000" }], gas: "550000" };
+
        await creditFromFaucet(address);
        await sleep(2000); // Wait for faucet transfer
-    });
-   
-    it('check balance', async () => {
-      const balance = await signingClient.getBalance(address, denom);
-      expect(balance.amount).toEqual("10000000000");
-      expect(balance.denom).toEqual(denom);
-    });
-   
-    it('instantiate Hello World contract', async () => {
-      // Read contract code from external file
-      const contractPath = path.join(__dirname, '../dist/contracts/helloWorld.js');
-      contractCode = fs.readFileSync(contractPath, 'utf8');
-   
-      const msg = jsd.jsd.MessageComposer.fromPartial.instantiate({
-        creator: address,
-        code: contractCode,
-      });
-   
-      const result = await signingClient.signAndBroadcast(address, [msg], fee);
-      assertIsDeliverTxSuccess(result);
-   
-      // Parse response to get the contract index
-      const response = jsd.jsd.MsgInstantiateResponse.fromProtoMsg(result.msgResponses[0]);
-      contractIndex = response.index;
-      expect(contractIndex).toBeGreaterThan(0);
-      console.log(`contract index: ${contractIndex}`);
-    });
-   
-    it('query for initial greeting', async () => {
-      const msg = jsd.jsd.MessageComposer.fromPartial.eval({
-        creator: address,
-        index: contractIndex,
-        fnName: "greet",
-        arg: "",
-      });
-   
-      const result = await signingClient.signAndBroadcast(address, [msg], fee);
-      assertIsDeliverTxSuccess(result);
-   
-      const response = jsd.jsd.MsgEvalResponse.fromProtoMsg(result.msgResponses[0]);
-      expect(response.result).toEqual("Hello, World!");
-    });
+     });
+
+     it("check balance", async () => {
+       const balance = await signingClient.getBalance(address, denom);
+       expect(balance.amount).toEqual("10000000000");
+       expect(balance.denom).toEqual(denom);
+     });
+
+     it("instantiate Hello World contract", async () => {
+       // Read contract code from external file
+       const contractPath = path.join(
+         __dirname,
+         "../dist/contracts/helloWorld.js"
+       );
+       contractCode = fs.readFileSync(contractPath, "utf8");
+
+       const msg = jsd.jsd.MessageComposer.fromPartial.instantiate({
+         creator: address,
+         code: contractCode,
+       });
+
+       const result = await signingClient.signAndBroadcast(address, [msg], fee);
+       assertIsDeliverTxSuccess(result);
+
+       // Parse response to get the contract index
+       const response = jsd.jsd.MsgInstantiateResponse.fromProtoMsg(
+         result.msgResponses[0]
+       );
+       contractIndex = response.index;
+       expect(contractIndex).toBeGreaterThan(0);
+       console.log(`contract index: ${contractIndex}`);
+     });
+
+     it("query for initial greeting", async () => {
+       const msg = jsd.jsd.MessageComposer.fromPartial.eval({
+         creator: address,
+         index: contractIndex,
+         fnName: "greet",
+         arg: "",
+       });
+
+       const result = await signingClient.signAndBroadcast(address, [msg], fee);
+       assertIsDeliverTxSuccess(result);
+
+       const response = jsd.jsd.MsgEvalResponse.fromProtoMsg(
+         result.msgResponses[0]
+       );
+       expect(response.result).toEqual("Hello, World!");
+     });
    });
    ```
 

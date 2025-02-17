@@ -4,7 +4,7 @@ import {
   Validator,
 } from '@interchainjs/react/cosmos/staking/v1beta1/staking';
 import { isGreaterThanZero, shiftDigits, toNumber } from '.';
-import { Coin, decodeCosmosSdkDecFromProto } from '@cosmjs/stargate';
+import { decodeCosmosSdkDecFromProto } from '@interchainjs/encoding';
 import {
   QueryDelegatorDelegationsResponse,
   QueryParamsResponse,
@@ -12,6 +12,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { QueryAnnualProvisionsResponse } from '@interchainjs/react/cosmos/mint/v1beta1/query';
 import type { Asset } from '@chain-registry/v2-types';
+import type { Coin } from '@interchainjs/react/types';
 
 const DAY_TO_SECONDS = 24 * 60 * 60;
 const ZERO = '0';

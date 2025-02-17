@@ -1,4 +1,4 @@
-import { fromBech32 } from '@cosmjs/encoding';
+import { fromBech32 } from '@interchainjs/encoding';
 
 export const creditFromFaucet = async (
   address: string,

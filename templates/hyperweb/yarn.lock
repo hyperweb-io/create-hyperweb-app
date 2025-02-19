@@ -1295,7 +1295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hyperweb/build@npm:^1.0.1":
+"@hyperweb/build@npm:^1.0.0":
   version: 1.0.1
   resolution: "@hyperweb/build@npm:1.0.1"
   dependencies:
@@ -7660,7 +7660,7 @@ __metadata:
   resolution: "hyperweb@workspace:."
   dependencies:
     "@chain-registry/types": "npm:^0.50.18"
-    "@hyperweb/build": "npm:^1.0.1"
+    "@hyperweb/build": "npm:^1.0.0"
     "@interchain-kit/core": "npm:0.0.1-beta.62"
     "@interchain-kit/keplr-extension": "npm:0.0.1-beta.62"
     "@interchain-kit/leap-extension": "npm:0.0.1-beta.62"
@@ -7681,7 +7681,7 @@ __metadata:
     eslint-plugin-simple-import-sort: "npm:^10.0.0"
     eslint-plugin-unused-imports: "npm:^3.0.0"
     generate-lockfile: "npm:0.0.12"
-    hyperwebjs: "npm:1.0.1"
+    hyperwebjs: "npm:1.0.0"
     interchain-kit: "npm:0.0.1-beta.62"
     jest: "npm:^29.6.2"
     next: "npm:^13"
@@ -7697,9 +7697,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"hyperwebjs@npm:1.0.1":
-  version: 1.0.1
-  resolution: "hyperwebjs@npm:1.0.1"
+"hyperwebjs@npm:1.0.0":
+  version: 1.0.0
+  resolution: "hyperwebjs@npm:1.0.0"
   dependencies:
     "@cosmjs/amino": "npm:0.32.3"
     "@cosmjs/encoding": "npm:0.32.3"
@@ -7707,7 +7707,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:0.32.3"
     "@cosmjs/stargate": "npm:0.32.3"
     "@cosmology/lcd": "npm:^0.14.0"
-  checksum: 10c0/40d2dee949abbea12e685e260e1ca06e5acf71e0094b3098220e9f84c35efa827fba31ad5a755598c3ce79a26967b0f8a40d6607d9a5a9acae916434befa85f0
+  checksum: 10c0/fe3c7f2347e1c8c70427f689ada560c21d62da6351b2d66986a0538e2ab32a922d55979428f20c4a340f59edb4207eea35d210f7256971c92fdb30638725a138
   languageName: node
   linkType: hard
 

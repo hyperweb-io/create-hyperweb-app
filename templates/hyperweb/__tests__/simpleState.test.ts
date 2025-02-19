@@ -10,7 +10,7 @@ import { sleep } from "../test-utils/sleep";
 import "./setup.test";
 import { DirectGenericOfflineSigner } from "@interchainjs/cosmos/types/wallet";
 
-describe("JSD tests", () => {
+describe("Simple state tests", () => {
   let wallet, denom, address, queryClient, signingClient;
   let chainInfo, getCoin, getRpcEndpoint, creditFromFaucet;
   let contractCode, contractIndex;

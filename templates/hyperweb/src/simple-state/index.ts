@@ -1,5 +1,5 @@
 export default class Contract {
-  private state: { value: number } = { value: 0 };
+  private state: { value: number };
 
   constructor() { }
 

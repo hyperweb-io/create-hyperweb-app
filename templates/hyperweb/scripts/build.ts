@@ -9,15 +9,15 @@ interface BuildConfig {
 
 const configs: BuildConfig[] = [
   {
+    entryFile: 'src/hello/index.ts',
+    outFile: 'dist/contracts/hello.js',
+    externalPackages: ['otherpackage', '~somepackage']
+  },
+  {
     entryFile: 'src/simple-state/index.ts',
     outFile: 'dist/contracts/simpleState.js',
     externalPackages: ['otherpackage', '~somepackage']
   },
-  {
-    entryFile: 'src/amm-contract/index.ts',
-    outFile: 'dist/contracts/ammContract.js',
-    externalPackages: ['~bank'],
-  }
 ];
 
 const rootDir = join(__dirname, '/../');

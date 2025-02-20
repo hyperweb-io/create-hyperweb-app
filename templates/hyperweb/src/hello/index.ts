@@ -1,7 +1,7 @@
 export default class Contract {
     state: {
         msg?: string | boolean | null;
-    } = {};
+    };
 
     constructor() { }
 

@@ -1,26 +1,34 @@
-export interface State {
-  get(key: string): string;
-  set(key: string, value: any): void;
-}
+export default class Contract {
+  private state: { value: number };
 
-export function reset(state: State) {
-  const newValue = 0;
-  state.set('value', newValue);
-  return newValue
-}
-export function inc(state: State, { x }: { x: number }) {
-  const oldValue = Number(state.get('value')) || 0;
-  const newValue = oldValue + x;
-  state.set('value', newValue);
-  return newValue
-}
-export function dec(state: State, { x }: { x: number }) {
-  const oldValue = Number(state.get('value')) || 0;
-  const newValue = oldValue - x;
-  state.set('value', newValue);
-  return newValue
-}
+  constructor() { }
 
-export function read(state: State) {
-  return state.get('value');
+  reset(): number {
+    this.state.value = 0;
+    return this.state.value;
+  }
+
+  init(): number {
+    this.state.value = 0;
+    return this.state.value;
+  }
+
+  inc(): number {
+    const oldValue = this.state.value || 0;
+    const newValue = oldValue + 1;
+    this.state.value = newValue;
+    return this.state.value;
+  }
+
+  dec(): number {
+    const oldValue = this.state.value ?? 0;
+    const newValue = oldValue - 1;
+    this.state.value = newValue;
+    return newValue;
+  }
+
+  read(): number {
+    return this.state.value;
+  }
+
 }

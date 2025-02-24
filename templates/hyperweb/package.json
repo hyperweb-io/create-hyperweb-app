@@ -77,7 +77,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   },
-  "keywords": [],
-  "packageManager": "yarn@4.3.0",
-  "gitHead": "d7557df95ccbe65022679a20d52e2f3bfc8af6f5"
+  "keywords": []
 }

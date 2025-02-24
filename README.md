@@ -1,7 +1,7 @@
 # create-hyperweb-app
 
 <p align="center" width="100%">
-    <img height="148" src="https://github.com/user-attachments/assets/f672f9b8-e59a-4f44-8f51-df3e8d2eaae5" />
+    <img height="148" src="https://raw.githubusercontent.com/hyperweb-io/.github/refs/heads/main/assets/logo.svg" />
 </p>
 
 <p align="center" width="100%">

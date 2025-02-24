@@ -11,10 +11,12 @@ var Contract = class {
   init() {
     console.log("[Contract] init called");
     this.state.value = 0;
+    return this.state.value;
   }
   inc(x) {
     console.log("[Contract] inc called");
     this.state.value += x;
+    return this.state.value;
   }
   dec(x) {
     console.log("[Contract] dec called");

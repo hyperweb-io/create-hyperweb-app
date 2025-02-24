@@ -14,14 +14,16 @@ export default class Contract {
     this.state.value = 0;
   }
 
-  init() {
+  init(): number {
     console.log("[Contract] init called");
     this.state.value = 0;
+    return this.state.value
   }
 
-  inc(x: number) {
+  inc(x: number): number {
     console.log("[Contract] inc called");
     this.state.value += x;
+    return this.state.value;
   }
 
   dec(x: number) {

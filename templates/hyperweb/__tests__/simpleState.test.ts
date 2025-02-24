@@ -4,7 +4,7 @@ import { assertIsDeliverTxSuccess } from '@cosmjs/stargate';
 
 import path from "path";
 import fs from 'fs';
-import { getSigningHyperwebClient, hyperweb } from 'hyperwebjs';
+import { getSigningHyperwebClient, hyperweb, google } from 'hyperwebjs';
 import { useChain, generateMnemonic } from 'starshipjs';
 import { sleep } from '../test-utils/sleep';
 import './setup.test';
@@ -12,7 +12,7 @@ import './setup.test';
 describe('State Contract Tests', () => {
   let wallet, denom, address, queryClient, signingClient;
   let chainInfo, getCoin, getRpcEndpoint, creditFromFaucet;
-  let contractCode, contractIndex;
+  let contractCode, contractIndex, contractAddress;
   let fee;
 
   beforeAll(async () => {
@@ -75,16 +75,32 @@ describe('State Contract Tests', () => {
     // Parse the response to get the contract index
     const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(result.msgResponses[0]);
     contractIndex = response.index;
+    contractAddress = response.address;
     expect(contractIndex).toBeGreaterThan(0);
-    console.log(`Contract instantiated at index: ${contractIndex}`);
+    console.log(`Contract instantiated at index: ${contractIndex} and address ${contractAddress}`);
+  });
+
+  it('Perform init function', async () => {
+    const msg = hyperweb.hvm.MessageComposer.fromPartial.eval({
+      address: contractAddress,
+      creator: address,
+      callee: "init",
+      args: []
+    });
+
+    const result = await signingClient.signAndBroadcast(address, [msg], fee);
+    assertIsDeliverTxSuccess(result);
+
+    const response = hyperweb.hvm.MsgEvalResponse.fromProtoMsg(result.msgResponses[0]);
+    expect(response.result).toEqual("0");
   });
 
   it('Perform increment evaluation', async () => {
     const msg = hyperweb.hvm.MessageComposer.fromPartial.eval({
+      address: contractAddress,
       creator: address,
       callee: "inc",
-      index: contractIndex,
-      args: [10] as any[],
+      args: ["10"]
     });
 
     const result = await signingClient.signAndBroadcast(address, [msg], fee);

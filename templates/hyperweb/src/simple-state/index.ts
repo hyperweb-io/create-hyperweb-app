@@ -7,11 +7,15 @@ export default class Contract {
 
   constructor() {
     console.log("[Contract] constructor called");
-    this.state.value = 0;
   }
 
   reset() {
     console.log("[Contract] reset called");
+    this.state.value = 0;
+  }
+
+  init() {
+    console.log("[Contract] init called");
     this.state.value = 0;
   }
 

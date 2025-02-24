@@ -12,11 +12,6 @@ const configs: BuildConfig[] = [
     entryFile: 'src/simple-state/index.ts',
     outFile: 'dist/contracts/simpleState.js',
     externalPackages: ['otherpackage', '~somepackage']
-  },
-  {
-    entryFile: 'src/amm-contract/index.ts',
-    outFile: 'dist/contracts/ammContract.js',
-    externalPackages: ['~bank'],
   }
 ];
 

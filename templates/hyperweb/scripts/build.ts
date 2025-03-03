@@ -1,21 +1,9 @@
-import { HyperwebBuild, HyperwebBuildOptions } from '@hyperweb/build';
-import { join } from 'path';
+import { HyperwebBuild, HyperwebBuildOptions } from "@hyperweb/build";
+import { join } from "path";
 
-interface BuildConfig {
-  entryFile: string;
-  outFile: string;
-  externalPackages: string[];
-}
+import { configs, type BuildConfig } from "./configs";
 
-const configs: BuildConfig[] = [
-  {
-    entryFile: 'src/simple-state/index.ts',
-    outFile: 'dist/contracts/simpleState.js',
-    externalPackages: ['otherpackage', '~somepackage']
-  }
-];
-
-const rootDir = join(__dirname, '/../');
+const rootDir = join(__dirname, "/../");
 
 async function buildInterweb(config: BuildConfig): Promise<void> {
   const { entryFile, outFile, externalPackages } = config;
@@ -23,14 +11,14 @@ async function buildInterweb(config: BuildConfig): Promise<void> {
   const options: Partial<HyperwebBuildOptions> = {
     entryPoints: [join(rootDir, entryFile)],
     outfile: join(rootDir, outFile),
-    external: externalPackages
+    external: externalPackages,
   };
 
   try {
     await HyperwebBuild.build(options);
     console.log(`Build completed successfully! Output: ${options.outfile}`);
   } catch (error) {
-    console.error('Build failed:', error);
+    console.error("Build failed:", error);
     throw error;
   }
 }

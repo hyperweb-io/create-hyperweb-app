@@ -68,7 +68,7 @@ jobs:
 
       - name: Upload Tarball to S3
         run: |
-          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/$TARBALL_NAME" --acl public-read
+          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/$TARBALL_NAME"
           echo "Tarball uploaded: https://$AWS_S3_BUCKET.s3.amazonaws.com/create-hyperweb-app/$TARBALL_NAME"
         env:
           AWS_DEFAULT_REGION: 'us-east-1'
@@ -79,7 +79,7 @@ jobs:
       - name: Update latest.tar.gz (Only on Main)
         if: github.ref == 'refs/heads/main'
         run: |
-          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/latest.tar.gz" --acl public-read
+          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/latest.tar.gz"
           echo "Latest tarball updated: https://$AWS_S3_BUCKET.s3.amazonaws.com/create-hyperweb-app/latest.tar.gz"
         env:
           AWS_DEFAULT_REGION: 'us-east-1'

@@ -53,11 +53,22 @@ jobs:
 
       - name: Create Tarball
         run: |
-          tar --exclude="./.git" --exclude="./node_modules" --ignore-failed-read -czf "$TARBALL_NAME" ./
+          # Create a temporary directory
+          TEMP_DIR=$(mktemp -d)
+
+          # Copy everything except .git and node_modules to the temp directory
+          rsync -a --exclude=".git" --exclude="node_modules" ./ "$TEMP_DIR/"
+
+          # Navigate to the temp directory and create the tarball
+          cd "$TEMP_DIR"
+          tar --ignore-failed-read -czf "$GITHUB_WORKSPACE/$TARBALL_NAME" ./
+
+          # Clean up the temporary directory
+          rm -rf "$TEMP_DIR"
 
       - name: Upload Tarball to S3
         run: |
-          aws s3 cp "$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/$TARBALL_NAME" --acl public-read
+          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/$TARBALL_NAME" --acl public-read
           echo "Tarball uploaded: https://$AWS_S3_BUCKET.s3.amazonaws.com/create-hyperweb-app/$TARBALL_NAME"
         env:
           AWS_DEFAULT_REGION: 'us-east-1'
@@ -68,7 +79,7 @@ jobs:
       - name: Update latest.tar.gz (Only on Main)
         if: github.ref == 'refs/heads/main'
         run: |
-          aws s3 cp "$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/latest.tar.gz" --acl public-read
+          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/latest.tar.gz" --acl public-read
           echo "Latest tarball updated: https://$AWS_S3_BUCKET.s3.amazonaws.com/create-hyperweb-app/latest.tar.gz"
         env:
           AWS_DEFAULT_REGION: 'us-east-1'

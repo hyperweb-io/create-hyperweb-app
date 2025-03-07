@@ -53,7 +53,7 @@ jobs:
 
       - name: Create Tarball
         run: |
-          tar --exclude=".git" --warning=no-file-changed -czf "$TARBALL_NAME" ./
+          tar --exclude="./.git" --exclude="./node_modules" --ignore-failed-read -czf "$TARBALL_NAME" ./
 
       - name: Upload Tarball to S3
         run: |

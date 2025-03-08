@@ -1,0 +1,87 @@
+name: S3 Playground
+
+on:
+  push:
+    branches:
+      - main
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.S3_PLAYGROUND_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.S3_PLAYGROUND_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+
+#      - name: Install AWS CLI v2
+#        run: |
+#          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+#          unzip -q /tmp/awscliv2.zip -d /tmp
+#          rm /tmp/awscliv2.zip
+#          sudo /tmp/aws/install
+#          rm -rf /tmp/aws/
+
+      - name: Install tar
+        run: sudo apt-get update && sudo apt-get install -y tar
+
+      - name: Determine Archive Name
+        run: |
+          # Check if triggered by a tag (e.g., v1.0.0)
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION_TAG="${{ github.ref_name }}"
+            TARBALL_NAME="${VERSION_TAG}.tar.gz"
+          else
+            COMMIT_HASH=$(git rev-parse --short HEAD)
+            TARBALL_NAME="${COMMIT_HASH}.tar.gz"
+          fi
+          echo "TARBALL_NAME=$TARBALL_NAME" >> $GITHUB_ENV
+
+      - name: Create Tarball
+        run: |
+          # Create a temporary directory
+          TEMP_DIR=$(mktemp -d)
+
+          # Copy everything except .git and node_modules to the temp directory
+          rsync -a --exclude=".git" --exclude="node_modules" ./ "$TEMP_DIR/"
+
+          # Navigate to the temp directory and create the tarball
+          cd "$TEMP_DIR"
+          tar --ignore-failed-read -czf "$GITHUB_WORKSPACE/$TARBALL_NAME" ./
+
+          # Clean up the temporary directory
+          rm -rf "$TEMP_DIR"
+
+      - name: Upload Tarball to S3
+        run: |
+          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/$TARBALL_NAME"
+          echo "Tarball uploaded: https://$AWS_S3_BUCKET.s3.amazonaws.com/create-hyperweb-app/$TARBALL_NAME"
+        env:
+          AWS_DEFAULT_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_PLAYGROUND_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_PLAYGROUND_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: 'hyperweb-playground'
+
+      - name: Update latest.tar.gz (Only on Main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          aws s3 cp "$GITHUB_WORKSPACE/$TARBALL_NAME" "s3://$AWS_S3_BUCKET/create-hyperweb-app/latest.tar.gz"
+          echo "Latest tarball updated: https://$AWS_S3_BUCKET.s3.amazonaws.com/create-hyperweb-app/latest.tar.gz"
+        env:
+          AWS_DEFAULT_REGION: 'us-east-1'
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_PLAYGROUND_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_PLAYGROUND_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: 'hyperweb-playground'

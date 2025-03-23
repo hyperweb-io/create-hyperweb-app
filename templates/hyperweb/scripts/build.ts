@@ -3,7 +3,7 @@ import { join } from "path";
 
 import { configs, type BuildConfig } from "./configs";
 
-const rootDir = join(__dirname, "/../");
+const rootDir = join(__dirname, '/../');
 
 async function buildInterweb(config: BuildConfig): Promise<void> {
   const { entryFile, outFile, externalPackages } = config;

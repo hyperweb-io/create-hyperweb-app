@@ -5,6 +5,7 @@ export default class Contract {
     constructor() { }
 
     balance({ address, denom }: { address: string; denom: string }): string {
+        console.log("checking balance for address:", address, "denom:", denom);
         return getBalance(address, denom).amount.toString();
     }
 
@@ -14,7 +15,8 @@ export default class Contract {
         amount: number;
         denom: string
     }): string {
-        sendCoins(from, to, { [denom]: amount });
+        console.log("transferring", amount, "of", denom, "from", from, "to", to);
+        sendCoins(from, to, `${amount}${denom}`);
         return "Transfer successful";
     }
 }

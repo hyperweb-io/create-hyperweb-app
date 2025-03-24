@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/simple-state/index.ts"],
+  "sourcesContent": ["export interface State {\n  value: number;\n}\n\nexport default class Contract {\n  state: State;\n\n  constructor() {\n    console.log(\"[Contract] constructor called\");\n  }\n\n  reset() {\n    console.log(\"[Contract] reset called\");\n    this.state.value = 0;\n  }\n\n  init(): number {\n    console.log(\"[Contract] init called\");\n    this.state.value = 0;\n    return this.state.value\n  }\n\n  inc(x: number): number {\n    console.log(\"[Contract] inc called\");\n    this.state.value += x;\n    return this.state.value;\n  }\n\n  dec(x: number) {\n    console.log(\"[Contract] dec called\");\n    this.state.value -= x;\n  }\n\n  read() {\n    console.log(\"[Contract] read called\");\n    return this.state.value;\n  }\n}\n"],
+  "mappings": ";AAIA,IAAqB,WAArB,MAA8B;AAAA,EAC5B;AAAA,EAEA,cAAc;AACZ,YAAQ,IAAI,+BAA+B;AAAA,EAC7C;AAAA,EAEA,QAAQ;AACN,YAAQ,IAAI,yBAAyB;AACrC,SAAK,MAAM,QAAQ;AAAA,EACrB;AAAA,EAEA,OAAe;AACb,YAAQ,IAAI,wBAAwB;AACpC,SAAK,MAAM,QAAQ;AACnB,WAAO,KAAK,MAAM;AAAA,EACpB;AAAA,EAEA,IAAI,GAAmB;AACrB,YAAQ,IAAI,uBAAuB;AACnC,SAAK,MAAM,SAAS;AACpB,WAAO,KAAK,MAAM;AAAA,EACpB;AAAA,EAEA,IAAI,GAAW;AACb,YAAQ,IAAI,uBAAuB;AACnC,SAAK,MAAM,SAAS;AAAA,EACtB;AAAA,EAEA,OAAO;AACL,YAAQ,IAAI,wBAAwB;AACpC,WAAO,KAAK,MAAM;AAAA,EACpB;AACF;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/bank/index.ts"],
+  "sourcesContent": ["// @ts-ignore\nimport { getBalance, sendCoins } from \"@hyperweb/bank\";\n\nexport default class Contract {\n    constructor() { }\n\n    balance({ address, denom }: { address: string; denom: string }): string {\n        console.log(\"checking balance for address:\", address, \"denom:\", denom);\n        return getBalance(address, denom).amount.toString();\n    }\n\n    transfer({ from, to, amount, denom }: {\n        from: string;\n        to: string;\n        amount: number;\n        denom: string\n    }): string {\n        console.log(\"transferring\", amount, \"of\", denom, \"from\", from, \"to\", to);\n        sendCoins(from, to, `${amount}${denom}`);\n        return \"Transfer successful\";\n    }\n}"],
+  "mappings": ";AACA,SAAS,YAAY,iBAAiB;AAEtC,IAAqB,WAArB,MAA8B;AAAA,EAC1B,cAAc;AAAA,EAAE;AAAA,EAEhB,QAAQ,EAAE,SAAS,MAAM,GAA+C;AACpE,YAAQ,IAAI,iCAAiC,SAAS,UAAU,KAAK;AACrE,WAAO,WAAW,SAAS,KAAK,EAAE,OAAO,SAAS;AAAA,EACtD;AAAA,EAEA,SAAS,EAAE,MAAM,IAAI,QAAQ,MAAM,GAKxB;AACP,YAAQ,IAAI,gBAAgB,QAAQ,MAAM,OAAO,QAAQ,MAAM,MAAM,EAAE;AACvE,cAAU,MAAM,IAAI,GAAG,MAAM,GAAG,KAAK,EAAE;AACvC,WAAO;AAAA,EACX;AACJ;",
+  "names": []
+}

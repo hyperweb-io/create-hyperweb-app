@@ -30,4 +30,4 @@ var Contract = class {
 export {
   Contract as default
 };
-//# sourceMappingURL=simpleState.js.map
+//# sourceMappingURL=simple-state.js.map

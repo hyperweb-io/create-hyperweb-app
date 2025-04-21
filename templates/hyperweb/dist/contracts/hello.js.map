@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/hello/index.ts"],
+  "sourcesContent": ["export default class Contract {\n    state: {\n        msg?: string | boolean | null;\n    };\n\n    constructor() { }\n\n    hello(x: string) {\n        this.state.msg = x;\n        return `Hello, ${String(this.state.msg)}`;\n    }\n}\n"],
+  "mappings": ";AAAA,IAAqB,WAArB,MAA8B;AAAA,EAC1B;AAAA,EAIA,cAAc;AAAA,EAAE;AAAA,EAEhB,MAAM,GAAW;AACb,SAAK,MAAM,MAAM;AACjB,WAAO,UAAU,OAAO,KAAK,MAAM,GAAG,CAAC;AAAA,EAC3C;AACJ;",
+  "names": []
+}

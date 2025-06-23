@@ -61,7 +61,7 @@ const ConnectButton = () => {
   const walletLogo =
     typeof walletInfo?.logo === 'string'
       ? walletInfo.logo
-      : walletInfo.logo.major || walletInfo.logo.minor;
+      : walletInfo?.logo?.major || walletInfo?.logo?.minor;
 
   return (
     <>

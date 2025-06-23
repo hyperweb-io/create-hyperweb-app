@@ -1535,6 +1535,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chain-registry/client@npm:^2.0.0":
+  version: 2.0.9
+  resolution: "@chain-registry/client@npm:2.0.9"
+  dependencies:
+    "@chain-registry/types": "npm:^2.0.9"
+    "@chain-registry/utils": "npm:^2.0.9"
+    bfs-path: "npm:^1.0.2"
+    cross-fetch: "npm:^3.1.5"
+  checksum: 10c0/779bc2985afc883e915599cbb0b43b0c0370f931afa8b1bfdea9f3a44d7af65766f1393d9b058e39756884699d7a5fa5095e2f8ccee20d0e46bde3c909a993b8
+  languageName: node
+  linkType: hard
+
 "@chain-registry/types@npm:0.44.3":
   version: 0.44.3
   resolution: "@chain-registry/types@npm:0.44.3"
@@ -1572,6 +1584,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chain-registry/types@npm:^2.0.1, @chain-registry/types@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "@chain-registry/types@npm:2.0.9"
+  checksum: 10c0/c3805f20fb8d83340fe180e6a2e4d3dd36d4c81edfc0036c3c0109c4824fd14399663d6535c6f27282b542aaee0593ba0877faa3d5cb66716eea19901f0ade52
+  languageName: node
+  linkType: hard
+
 "@chain-registry/utils@npm:^1.17.0":
   version: 1.47.7
   resolution: "@chain-registry/utils@npm:1.47.7"
@@ -1580,6 +1599,18 @@ __metadata:
     bignumber.js: "npm:9.1.2"
     sha.js: "npm:^2.4.11"
   checksum: 10c0/c4835d14611698f46d125eae7cd94c6d97130e4d6ef1632a804c0afa80109e2f6e6decf6f6eb034e650b866f0482f8ff57646f0e5753a25081f8eb52064736ed
+  languageName: node
+  linkType: hard
+
+"@chain-registry/utils@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "@chain-registry/utils@npm:2.0.9"
+  dependencies:
+    "@chain-registry/types": "npm:^2.0.9"
+    bignumber.js: "npm:9.1.2"
+    chain-registry: "npm:^2.0.9"
+    sha.js: "npm:^2.4.11"
+  checksum: 10c0/d645651b077f1557184155049f8611b850e966c38b9965217685c713570c20787b2db18530f17db3f3946245261f0dc9c0598bd30afce6b7e11e3e2d6bfa03ca
   languageName: node
   linkType: hard
 
@@ -2394,12 +2425,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hyperweb/build@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "@hyperweb/build@npm:0.0.2"
+"@hyperweb/build@npm:^1.0.1":
+  version: 1.6.0
+  resolution: "@hyperweb/build@npm:1.6.0"
   dependencies:
     esbuild: "npm:^0.23.1"
-  checksum: 10c0/11d460855d9a6d6aa89aa00be4ccdf8f369dbc56b119fd1682b92c694396a101cf1e1865a6b723d7902f5fd06a851c7156be72c615ee7807dddf7ec026d4058d
+  checksum: 10c0/d9f29d762b382f93c81d1a02c358d8a431bd758ba1a16dbfd4156e711bf4573a918bca9656c07c61701df8644d19b5a353800bec8d04d4b7ae22a56ef3c975dc
   languageName: node
   linkType: hard
 
@@ -7850,22 +7881,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@starship-ci/cli@npm:^2.10.1":
-  version: 2.10.2
-  resolution: "@starship-ci/cli@npm:2.10.2"
-  dependencies:
-    "@starship-ci/client": "npm:^2.9.2"
-    chalk: "npm:^4.1.0"
-    deepmerge: "npm:^4.3.1"
-    inquirerer: "npm:^1.9.0"
-    js-yaml: "npm:^4.1.0"
-    minimist: "npm:^1.2.8"
-  bin:
-    starship: index.js
-  checksum: 10c0/b0e41d5475b04b877499dadaf843085eb7f9b1b6081fdffd71ee7fecc25e7df6b629d9b3c46d650fd6eb878f096a01c794462479f4faf6a6b0c227adb157e376
-  languageName: node
-  linkType: hard
-
 "@starship-ci/cli@npm:^2.10.2":
   version: 2.11.0
   resolution: "@starship-ci/cli@npm:2.11.0"
@@ -7882,6 +7897,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@starship-ci/cli@npm:^3.3.0":
+  version: 3.14.1
+  resolution: "@starship-ci/cli@npm:3.14.1"
+  dependencies:
+    "@starship-ci/client": "npm:^3.14.1"
+    chalk: "npm:^4.1.0"
+    deepmerge: "npm:^4.3.1"
+    inquirerer: "npm:^1.9.0"
+    js-yaml: "npm:^4.1.0"
+    minimist: "npm:^1.2.8"
+  bin:
+    starship: index.js
+  checksum: 10c0/9aeca974b55f3b9d88d121b125f8e803b02e40dfb1ad124aac20f7a4e33abac1fa5cedc47817cb48711f9a74757ff88def687a8b740571885b823613b456c766
+  languageName: node
+  linkType: hard
+
 "@starship-ci/client@npm:^2.10.0":
   version: 2.10.0
   resolution: "@starship-ci/client@npm:2.10.0"
@@ -7895,16 +7926,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@starship-ci/client@npm:^2.9.2":
-  version: 2.9.2
-  resolution: "@starship-ci/client@npm:2.9.2"
+"@starship-ci/client@npm:^3.14.1":
+  version: 3.14.1
+  resolution: "@starship-ci/client@npm:3.14.1"
   dependencies:
+    "@starship-ci/types": "npm:^3.14.0"
+    axios: "npm:^1.6.7"
     chalk: "npm:^4.1.0"
     deepmerge: "npm:^4.3.1"
     js-yaml: "npm:^4.1.0"
     mkdirp: "npm:3.0.1"
     shelljs: "npm:^0.8.5"
-  checksum: 10c0/341655cf6f164ac7e77ed5e3cd6b7d8579fcf3433a6f6a5ea7281a6f4eb06e1a09b48a6a782d73678fb641ef8b76c102ff60049ecb117a25a23b716b00ba8b73
+  checksum: 10c0/a77bc92919c82ccc87704e0f6ddeaed8b830df50434dbe7302760aa942daa7cfac03dfee80805c8a5319c2352ad2cd131755a7ddc4f499b4f99533b6588c2202
+  languageName: node
+  linkType: hard
+
+"@starship-ci/types@npm:^3.14.0":
+  version: 3.14.0
+  resolution: "@starship-ci/types@npm:3.14.0"
+  dependencies:
+    "@chain-registry/types": "npm:^2.0.1"
+  bin:
+    starship: index.js
+  checksum: 10c0/eaecf2224da076b1a88aa25c6d89dea76835c94ad58f878a587be1d2f69be97aab6294c900f8997242102c2c5369ea8dc0a4ec6f9216767fd22e29c7f5d3ab42
   languageName: node
   linkType: hard
 
@@ -9498,6 +9542,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.6.7":
+  version: 1.10.0
+  resolution: "axios@npm:1.10.0"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10c0/2239cb269cc789eac22f5d1aabd58e1a83f8f364c92c2caa97b6f5cbb4ab2903d2e557d9dc670b5813e9bcdebfb149e783fb8ab3e45098635cd2f559b06bd5d8
+  languageName: node
+  linkType: hard
+
 "axios@npm:^1.7.9":
   version: 1.7.9
   resolution: "axios@npm:1.7.9"
@@ -10107,6 +10162,15 @@ __metadata:
   dependencies:
     "@chain-registry/types": "npm:^0.44.3"
   checksum: 10c0/acb2dcee56604083a38dd7e4524458d7d5c2e786d8d78ed40444530a8cb3236d16e0fef52462603ef339c2c529ede1c846597a8e6f99fa7751481b28279c9a56
+  languageName: node
+  linkType: hard
+
+"chain-registry@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "chain-registry@npm:2.0.9"
+  dependencies:
+    "@chain-registry/types": "npm:^2.0.9"
+  checksum: 10c0/36195f8e898eeda4172d7a68d951117bfc295895b9b37bba519261130050a957c76c58461767fd0eb8fe51557107cb4a068e70301c5fbc417a2e8eb0af991a2b
   languageName: node
   linkType: hard
 
@@ -13320,7 +13384,7 @@ __metadata:
   resolution: "hyperweb@workspace:templates/hyperweb"
   dependencies:
     "@chain-registry/types": "npm:^0.50.18"
-    "@hyperweb/build": "npm:^0.0.2"
+    "@hyperweb/build": "npm:^1.0.1"
     "@interchain-kit/core": "npm:0.0.1-beta.62"
     "@interchain-kit/keplr-extension": "npm:0.0.1-beta.62"
     "@interchain-kit/leap-extension": "npm:0.0.1-beta.62"
@@ -13328,7 +13392,7 @@ __metadata:
     "@interchain-ui/react": "npm:1.26.1"
     "@interchain-ui/react-no-ssr": "npm:^0.1.6"
     "@interchainjs/cosmos": "npm:^1.9.12"
-    "@starship-ci/cli": "npm:^2.10.1"
+    "@starship-ci/cli": "npm:^3.3.0"
     "@types/jest": "npm:^29.5.11"
     "@types/node": "npm:^22.7.4"
     "@types/react": "npm:18.2.0"
@@ -13341,7 +13405,7 @@ __metadata:
     eslint-plugin-simple-import-sort: "npm:^10.0.0"
     eslint-plugin-unused-imports: "npm:^3.0.0"
     generate-lockfile: "npm:0.0.12"
-    hyperwebjs: "npm:0.0.4"
+    hyperwebjs: "npm:1.1.1"
     interchain-kit: "npm:0.0.1-beta.62"
     jest: "npm:^29.6.2"
     next: "npm:^13"
@@ -13350,16 +13414,16 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-icons: "npm:4.6.0"
     rimraf: "npm:4.4.1"
-    starshipjs: "npm:^2.4.1"
+    starshipjs: "npm:^3.3.0"
     ts-jest: "npm:^29.1.1"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.1.6"
   languageName: unknown
   linkType: soft
 
-"hyperwebjs@npm:0.0.4":
-  version: 0.0.4
-  resolution: "hyperwebjs@npm:0.0.4"
+"hyperwebjs@npm:1.1.1":
+  version: 1.1.1
+  resolution: "hyperwebjs@npm:1.1.1"
   dependencies:
     "@cosmjs/amino": "npm:0.32.3"
     "@cosmjs/encoding": "npm:0.32.3"
@@ -13367,7 +13431,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:0.32.3"
     "@cosmjs/stargate": "npm:0.32.3"
     "@cosmology/lcd": "npm:^0.14.0"
-  checksum: 10c0/c434b4748281e58ef10b583913c366672c35af128efb45a85dabdea9ec88229c711fe5f94641c977eb8397b8be10a8625a8a359f23ccb3c22d922e8f8da34c08
+  checksum: 10c0/5b82583914f8d053013490a160826d879642712e8960d1ea5ee1256c24e22b7c4bd013b4ad082b43c741d9fdd8d5c2c37514ae755be43b1808b801ec1baaa6f8
   languageName: node
   linkType: hard
 
@@ -19028,6 +19092,19 @@ __metadata:
     js-yaml: "npm:^4.1.0"
     node-fetch: "npm:^2.6.9"
   checksum: 10c0/24b572fa399de90f40f90e466f471f3b284a21e92c51ff36c18267f7cc450918e50b70cd8af3fe36c930273199cd483f0010eb6afa7e4023a27810ae9898f70a
+  languageName: node
+  linkType: hard
+
+"starshipjs@npm:^3.3.0":
+  version: 3.14.1
+  resolution: "starshipjs@npm:3.14.1"
+  dependencies:
+    "@chain-registry/client": "npm:^2.0.0"
+    "@starship-ci/types": "npm:^3.14.0"
+    bip39: "npm:^3.1.0"
+    js-yaml: "npm:^4.1.0"
+    node-fetch: "npm:^2.6.1"
+  checksum: 10c0/c823024e2a50f3e725912ba9f532321fcd7dc9a256bcd6e1b0987765c498a414a24c53749e7cc7c2e3df93d13b7778270e653d782b52cd7d766b467015fd5258
   languageName: node
   linkType: hard
 

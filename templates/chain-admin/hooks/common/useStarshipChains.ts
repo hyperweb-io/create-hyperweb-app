@@ -33,6 +33,7 @@ export const useStarshipChains = () => {
 
         const assets = (await Promise.all(
           chains.map((chain) =>
+            // @ts-ignore
             fetcher<AssetList>(`${baseUrl}/chains/${chain.chain_id}/assets`) // if use chainId, got error: Cannot read properties of undefined (reading 'chainName') at const { connect, disconnect, address, wallet } = useChain(selectedChain)
           )
         ).then((assetLists) => assetLists.filter(Boolean))) as AssetList[];

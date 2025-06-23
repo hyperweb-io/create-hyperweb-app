@@ -51,7 +51,7 @@ export function useVotingData(chainName: string) {
   const { data: rpcEndpoint, isFetching } = useRpcEndpoint(chainName);
 
   const getVote = createGetVote(rpcEndpoint);
-  const chain = chains.find((c) => c.chain_name === chainName);
+  const chain = chains.find((c) => c.chainName === chainName);
   const isReady = !!address && !!rpcEndpoint;
 
   const proposalsQuery = useGetProposals({

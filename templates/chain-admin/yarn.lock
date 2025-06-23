@@ -30,12 +30,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/assets@npm:1.63.5":
-  version: 1.63.5
-  resolution: "@chain-registry/assets@npm:1.63.5"
+"@chain-registry/assets@npm:1.70.240":
+  version: 1.70.240
+  resolution: "@chain-registry/assets@npm:1.70.240"
   dependencies:
-    "@chain-registry/types": "npm:^0.44.3"
-  checksum: 10c0/52211bb383829a245f738e9a7f388fb768ae35ad34a299dce6b4506ee02d069eaee103f62794b786efc4fc258c6b9b26fd88d21a5c8a2d75612343737b9f10f2
+    "@chain-registry/types": "npm:^0.50.149"
+  checksum: 10c0/0d6efad6f6652290ab33fcb1189c32d55a56db61959090014b1df9719335b2939f810dac37b0bb1c1d32d5b9e671041f5b1633562a3d84a2a1d9711a7c6bfba8
   languageName: node
   linkType: hard
 
@@ -68,17 +68,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.44.3":
-  version: 0.44.3
-  resolution: "@chain-registry/types@npm:0.44.3"
-  checksum: 10c0/471e85e934e42ba2704fece7ca0545df5ef98e947a5d10aaefa7872145a21211036740b4b37bb8a33359561b7533c07c22e1608b372efc19be5e2ebd386ac3de
-  languageName: node
-  linkType: hard
-
 "@chain-registry/types@npm:^0.45.26":
   version: 0.45.26
   resolution: "@chain-registry/types@npm:0.45.26"
   checksum: 10c0/9f3163a458c7f2a5867bbad2cea0916345df9df3c03e110dfd79290331b58462da903836fb98b573ba1b95ad835ecffb803c3de649edcfcfb608dde7880e24b4
+  languageName: node
+  linkType: hard
+
+"@chain-registry/types@npm:^0.50.149":
+  version: 0.50.159
+  resolution: "@chain-registry/types@npm:0.50.159"
+  checksum: 10c0/d342b26cd2bf523ab25ce18131cfd1bca22ca67a5496d41f1e727991723aab0ae77e60a55af8c592ae17d96a70b33cbefd6e98c23a6ed9c643bf03caaa73d901
   languageName: node
   linkType: hard
 
@@ -4457,7 +4457,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "chain-admin@workspace:."
   dependencies:
-    "@chain-registry/assets": "npm:1.63.5"
+    "@chain-registry/assets": "npm:1.70.240"
     "@chain-registry/types": "npm:2.0.9"
     "@interchain-kit/core": "npm:^0.2.1"
     "@interchain-kit/keplr-extension": "npm:^0.2.1"

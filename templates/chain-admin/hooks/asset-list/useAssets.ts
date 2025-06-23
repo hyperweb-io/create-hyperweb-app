@@ -100,7 +100,7 @@ export const useAssets = (chainName: string) => {
         const dollarValue = calcCoinDollarValue(prices, { amount, denom });
         return {
           symbol,
-          logoUrl: asset.logo_URIs?.png || asset.logo_URIs?.svg,
+          logoUrl: asset.logoURIs?.png || asset.logoURIs?.svg,
           prettyChainName: getPrettyChainName(denom),
           displayAmount: convRawToDispAmount(denom, amount),
           dollarValue,

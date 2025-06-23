@@ -7,7 +7,7 @@ import {
 } from '@interchainjs/react/cosmos/gov/v1beta1/gov';
 
 export function getChainLogo(chain: Chain) {
-  return chain.logo_URIs?.svg || chain.logo_URIs?.png || chain.logo_URIs?.jpeg;
+  return chain.logoURIs?.svg || chain.logoURIs?.png;
 }
 
 export function formatDate(date?: Date) {

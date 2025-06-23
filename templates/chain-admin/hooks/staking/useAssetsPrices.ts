@@ -1,4 +1,4 @@
-import { assets } from 'chain-registry';
+import { assetLists as assets } from 'chain-registry';
 import { useQuery } from '@tanstack/react-query';
 import { AssetList } from '@chain-registry/types';
 import { useChainStore } from '@/contexts';
@@ -17,7 +17,7 @@ const handleError = (resp: Response) => {
 
 const getGeckoIdsFromAssets = (assets: AssetList[]) => {
   return assets
-    .map((asset) => asset.assets[0].coingecko_id)
+    .map((asset) => asset.assets[0].coingeckoId)
     .filter(Boolean) as string[];
 };
 
@@ -27,7 +27,7 @@ const formatPrices = (
 ): Prices => {
   return Object.entries(prices).reduce((priceHash, cur) => {
     const assetList = assets.find(
-      (asset) => asset.assets[0].coingecko_id === cur[0]
+      (asset) => asset.assets[0].coingeckoId === cur[0]
     )!;
     const denom = assetList.assets[0].base;
     return { ...priceHash, [denom]: cur[1].usd };
@@ -53,7 +53,7 @@ export const useAssetsPrices = () => {
     starshipData?.v1 ?? {};
 
   const isStarshipChain = starshipChains.some(
-    (chain) => chain.chain_name === selectedChain
+    (chain) => chain.chainName === selectedChain
   );
 
   return useQuery({

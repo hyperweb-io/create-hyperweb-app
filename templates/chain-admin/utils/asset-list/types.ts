@@ -1,4 +1,4 @@
-import { AssetDenomUnit } from '@chain-registry/types';
+import { DenomUnit as AssetDenomUnit } from '@chain-registry/types';
 
 export type CoinDenom = AssetDenomUnit['denom'];
 

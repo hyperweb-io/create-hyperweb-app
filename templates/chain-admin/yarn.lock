@@ -52,10 +52,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:0.44.3, @chain-registry/types@npm:^0.44.3":
-  version: 0.44.3
-  resolution: "@chain-registry/types@npm:0.44.3"
-  checksum: 10c0/471e85e934e42ba2704fece7ca0545df5ef98e947a5d10aaefa7872145a21211036740b4b37bb8a33359561b7533c07c22e1608b372efc19be5e2ebd386ac3de
+"@chain-registry/types@npm:2.0.9, @chain-registry/types@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "@chain-registry/types@npm:2.0.9"
+  checksum: 10c0/c3805f20fb8d83340fe180e6a2e4d3dd36d4c81edfc0036c3c0109c4824fd14399663d6535c6f27282b542aaee0593ba0877faa3d5cb66716eea19901f0ade52
   languageName: node
   linkType: hard
 
@@ -65,6 +65,13 @@ __metadata:
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
   checksum: 10c0/00400f2994c838dbf0a4a6aa01af397d72badbeee82e13095e1ae1e5853a9405f802f0e5629f3aab0cfaa7ec9eae78eb0976001d5a24a7f33d138e2b02edb547
+  languageName: node
+  linkType: hard
+
+"@chain-registry/types@npm:^0.44.3":
+  version: 0.44.3
+  resolution: "@chain-registry/types@npm:0.44.3"
+  checksum: 10c0/471e85e934e42ba2704fece7ca0545df5ef98e947a5d10aaefa7872145a21211036740b4b37bb8a33359561b7533c07c22e1608b372efc19be5e2ebd386ac3de
   languageName: node
   linkType: hard
 
@@ -4451,7 +4458,7 @@ __metadata:
   resolution: "chain-admin@workspace:."
   dependencies:
     "@chain-registry/assets": "npm:1.63.5"
-    "@chain-registry/types": "npm:0.44.3"
+    "@chain-registry/types": "npm:2.0.9"
     "@interchain-kit/core": "npm:^0.2.1"
     "@interchain-kit/keplr-extension": "npm:^0.2.1"
     "@interchain-kit/leap-extension": "npm:^0.2.1"
@@ -4469,7 +4476,7 @@ __metadata:
     "@types/react-dom": "npm:18.0.9"
     ace-builds: "npm:1.35.0"
     bignumber.js: "npm:9.1.2"
-    chain-registry: "npm:1.62.3"
+    chain-registry: "npm:2.0.9"
     dayjs: "npm:1.11.11"
     eslint: "npm:8.28.0"
     eslint-config-next: "npm:13.0.5"
@@ -4491,12 +4498,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"chain-registry@npm:1.62.3":
-  version: 1.62.3
-  resolution: "chain-registry@npm:1.62.3"
+"chain-registry@npm:2.0.9":
+  version: 2.0.9
+  resolution: "chain-registry@npm:2.0.9"
   dependencies:
-    "@chain-registry/types": "npm:^0.44.3"
-  checksum: 10c0/acb2dcee56604083a38dd7e4524458d7d5c2e786d8d78ed40444530a8cb3236d16e0fef52462603ef339c2c529ede1c846597a8e6f99fa7751481b28279c9a56
+    "@chain-registry/types": "npm:^2.0.9"
+  checksum: 10c0/36195f8e898eeda4172d7a68d951117bfc295895b9b37bba519261130050a957c76c58461767fd0eb8fe51557107cb4a068e70301c5fbc417a2e8eb0af991a2b
   languageName: node
   linkType: hard
 

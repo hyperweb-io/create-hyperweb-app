@@ -1,4 +1,4 @@
-import { AssetList, Chain } from '@chain-registry/v2-types';
+import { AssetList, Chain } from '@chain-registry/types';
 import { toBech32, fromBech32 } from '@interchainjs/encoding';
 import { Log, findAttribute } from '@interchainjs/utils';
 import { parseCoins } from '@interchainjs/amino';

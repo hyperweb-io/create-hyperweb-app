@@ -31,7 +31,7 @@
     "@tanstack/react-query": "4.32.0",
     "ace-builds": "1.35.0",
     "bignumber.js": "9.1.2",
-    "chain-registry": "1.62.3",
+    "chain-registry": "2.0.9",
     "dayjs": "1.11.11",
     "hyperwebjs": "^0.0.5",
     "interchain-kit": "^0.2.1",
@@ -46,7 +46,7 @@
     "zustand": "4.5.2"
   },
   "devDependencies": {
-    "@chain-registry/types": "0.44.3",
+    "@chain-registry/types": "2.0.9",
     "@starship-ci/cli": "^2.10.2",
     "@tanstack/react-query-devtools": "4.32.0",
     "@types/node": "18.11.9",

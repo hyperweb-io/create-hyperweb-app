@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi';
-import { Asset } from '@chain-registry/v2-types';
+import { Asset } from '@chain-registry/types';
 import {
   Avatar,
   Box,
@@ -95,7 +95,7 @@ export const SelectAssetItem = ({
         >
           <PopoverTrigger>
             <SelectButton
-              onClick={() => {}}
+              onClick={() => { }}
               placeholder={selectedAssetWithAmount?.asset?.symbol ?? 'Select'}
               _css={{ width: isMobile ? '100px' : '140px' }}
             />
@@ -108,9 +108,8 @@ export const SelectAssetItem = ({
               py="10px"
               bg="$background"
               borderRadius="4px"
-              boxShadow={`0px 4px 20px 0px rgba(${
-                theme === 'light' ? '0,0,0' : '128,128,128'
-              }, 0.1)`}
+              boxShadow={`0px 4px 20px 0px rgba(${theme === 'light' ? '0,0,0' : '128,128,128'
+                }, 0.1)`}
               maxHeight="220px"
               overflowY="auto"
             >

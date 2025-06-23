@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Box } from '@interchain-ui/react';
-import { Asset } from '@chain-registry/v2-types';
+import { Asset } from '@chain-registry/types';
 import BigNumber from 'bignumber.js';
 import { TbCurrencyDollarOff } from 'react-icons/tb';
 import { LuListPlus } from 'react-icons/lu';

@@ -3,7 +3,7 @@ import { AssetList, Chain } from '@chain-registry/types';
 import {
   Chain as ChainV2,
   AssetList as AssetListV2,
-} from '@chain-registry/v2-types';
+} from '@chain-registry/types';
 
 import { StarshipConfig } from '@/starship';
 import { convertKeysToCamelCase } from '@/utils';
@@ -33,7 +33,7 @@ export const useStarshipChains = () => {
 
         const assets = (await Promise.all(
           chains.map((chain) =>
-            fetcher<AssetList>(`${baseUrl}/chains/${chain.chain_id}/assets`)
+            fetcher<AssetList>(`${baseUrl}/chains/${chain.chain_id}/assets`) // if use chainId, got error: Cannot read properties of undefined (reading 'chainName') at const { connect, disconnect, address, wallet } = useChain(selectedChain)
           )
         ).then((assetLists) => assetLists.filter(Boolean))) as AssetList[];
 

@@ -1547,10 +1547,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:0.44.3":
-  version: 0.44.3
-  resolution: "@chain-registry/types@npm:0.44.3"
-  checksum: 10c0/471e85e934e42ba2704fece7ca0545df5ef98e947a5d10aaefa7872145a21211036740b4b37bb8a33359561b7533c07c22e1608b372efc19be5e2ebd386ac3de
+"@chain-registry/types@npm:2.0.9, @chain-registry/types@npm:^2.0.1, @chain-registry/types@npm:^2.0.9":
+  version: 2.0.9
+  resolution: "@chain-registry/types@npm:2.0.9"
+  checksum: 10c0/c3805f20fb8d83340fe180e6a2e4d3dd36d4c81edfc0036c3c0109c4824fd14399663d6535c6f27282b542aaee0593ba0877faa3d5cb66716eea19901f0ade52
   languageName: node
   linkType: hard
 
@@ -1574,20 +1574,6 @@ __metadata:
   version: 0.46.7
   resolution: "@chain-registry/types@npm:0.46.7"
   checksum: 10c0/cb765a780985926c90c9b5c094dd83cf3d499e488208e59b83cbf3f249c8f7affd5b08ac9dc64b9f506d61f28bc853ebc6c3f15d87c7d088ac5c71ede4616e1c
-  languageName: node
-  linkType: hard
-
-"@chain-registry/types@npm:^0.50.18":
-  version: 0.50.76
-  resolution: "@chain-registry/types@npm:0.50.76"
-  checksum: 10c0/165c2cf75014c34d456bf98c66728dd21e5a56527cd720d968db93263b4e6f9053768b75b8d3b1cb9925b8248ec5b13c0d7baa0b7aeadd8544bcc12837305802
-  languageName: node
-  linkType: hard
-
-"@chain-registry/types@npm:^2.0.1, @chain-registry/types@npm:^2.0.9":
-  version: 2.0.9
-  resolution: "@chain-registry/types@npm:2.0.9"
-  checksum: 10c0/c3805f20fb8d83340fe180e6a2e4d3dd36d4c81edfc0036c3c0109c4824fd14399663d6535c6f27282b542aaee0593ba0877faa3d5cb66716eea19901f0ade52
   languageName: node
   linkType: hard
 
@@ -10116,7 +10102,7 @@ __metadata:
   resolution: "chain-admin@workspace:templates/chain-admin"
   dependencies:
     "@chain-registry/assets": "npm:1.63.5"
-    "@chain-registry/types": "npm:0.44.3"
+    "@chain-registry/types": "npm:2.0.9"
     "@interchain-kit/core": "npm:^0.2.1"
     "@interchain-kit/keplr-extension": "npm:^0.2.1"
     "@interchain-kit/leap-extension": "npm:^0.2.1"
@@ -10134,7 +10120,7 @@ __metadata:
     "@types/react-dom": "npm:18.0.9"
     ace-builds: "npm:1.35.0"
     bignumber.js: "npm:9.1.2"
-    chain-registry: "npm:1.62.3"
+    chain-registry: "npm:2.0.9"
     dayjs: "npm:1.11.11"
     eslint: "npm:8.28.0"
     eslint-config-next: "npm:13.0.5"
@@ -10156,16 +10142,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"chain-registry@npm:1.62.3":
-  version: 1.62.3
-  resolution: "chain-registry@npm:1.62.3"
-  dependencies:
-    "@chain-registry/types": "npm:^0.44.3"
-  checksum: 10c0/acb2dcee56604083a38dd7e4524458d7d5c2e786d8d78ed40444530a8cb3236d16e0fef52462603ef339c2c529ede1c846597a8e6f99fa7751481b28279c9a56
-  languageName: node
-  linkType: hard
-
-"chain-registry@npm:^2.0.9":
+"chain-registry@npm:2.0.9, chain-registry@npm:^2.0.9":
   version: 2.0.9
   resolution: "chain-registry@npm:2.0.9"
   dependencies:
@@ -13383,7 +13360,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hyperweb@workspace:templates/hyperweb"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.18"
+    "@chain-registry/types": "npm:2.0.9"
     "@hyperweb/build": "npm:^1.0.1"
     "@interchain-kit/core": "npm:0.0.1-beta.62"
     "@interchain-kit/keplr-extension": "npm:0.0.1-beta.62"
@@ -20015,7 +19992,7 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.1.6#optional!builtin<compat/typescript>":
   version: 5.6.2
-  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=d69c25"
+  resolution: "typescript@patch:typescript@npm%3A5.6.2#optional!builtin<compat/typescript>::version=5.6.2&hash=b45daf"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

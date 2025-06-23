@@ -444,6 +444,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chain-registry/types@npm:2.0.9":
+  version: 2.0.9
+  resolution: "@chain-registry/types@npm:2.0.9"
+  checksum: 10c0/c3805f20fb8d83340fe180e6a2e4d3dd36d4c81edfc0036c3c0109c4824fd14399663d6535c6f27282b542aaee0593ba0877faa3d5cb66716eea19901f0ade52
+  languageName: node
+  linkType: hard
+
 "@chain-registry/types@npm:^0.17.1":
   version: 0.17.1
   resolution: "@chain-registry/types@npm:0.17.1"
@@ -457,13 +464,6 @@ __metadata:
   version: 0.46.5
   resolution: "@chain-registry/types@npm:0.46.5"
   checksum: 10c0/5733a286b9f9a36eb16df50e1405b7c2c215b0c8e5eb03e230f74359993b83d7b92a9c3377fe5bed0dd028365bce7621feb97b641b5dd6ac65d01a05e73238fb
-  languageName: node
-  linkType: hard
-
-"@chain-registry/types@npm:^0.50.18":
-  version: 0.50.56
-  resolution: "@chain-registry/types@npm:0.50.56"
-  checksum: 10c0/429412401fcea0b8f86ceb922689ac9adf46ebf5048cff2a7b5119cef79694618b47a1b68c76c93555e165f802720a5db56595d15122958807743f91f6094327
   languageName: node
   linkType: hard
 
@@ -7659,7 +7659,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hyperweb@workspace:."
   dependencies:
-    "@chain-registry/types": "npm:^0.50.18"
+    "@chain-registry/types": "npm:2.0.9"
     "@hyperweb/build": "npm:^1.0.1"
     "@interchain-kit/core": "npm:0.0.1-beta.62"
     "@interchain-kit/keplr-extension": "npm:0.0.1-beta.62"

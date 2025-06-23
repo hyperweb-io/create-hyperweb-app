@@ -3,7 +3,7 @@ import '@interchain-ui/react/styles';
 
 import type { AppProps } from 'next/app';
 import { ChainProvider } from '@interchain-kit/react';
-import { chains, assetLists } from '@chain-registry/v2';
+import { chains, assetLists } from 'chain-registry';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Box, Toaster, useTheme } from '@interchain-ui/react';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';

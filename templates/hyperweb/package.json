@@ -39,7 +39,7 @@
     "@types/react-dom": "18.0.9"
   },
   "dependencies": {
-    "@chain-registry/types": "^0.50.18",
+    "@chain-registry/types": "2.0.9",
     "@interchain-kit/core": "0.0.1-beta.62",
     "@interchain-kit/keplr-extension": "0.0.1-beta.62",
     "@interchain-kit/leap-extension": "0.0.1-beta.62",

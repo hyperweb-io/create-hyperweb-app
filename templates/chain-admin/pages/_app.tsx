@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import '@interchain-ui/react/styles';
 
 import type { AppProps } from 'next/app';
-import { ChainProvider } from '@interchain-kit/react';
+import { ChainProvider, InterchainWalletModal } from '@interchain-kit/react';
 import { chains, assetLists } from 'chain-registry';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Box, Toaster, useTheme } from '@interchain-ui/react';
@@ -36,6 +36,7 @@ function AppContent({ Component, pageProps }: AppProps) {
     }
     return chains;
   }, [starshipData]);
+  console.log('combinedChains', combinedChains);
 
   // Merge chain-registry and starship assetLists
   const combinedAssetLists = useMemo(() => {
@@ -51,7 +52,9 @@ function AppContent({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <ChainProvider chains={combinedChains} assetLists={combinedAssetLists} wallets={wallets}>
+    <ChainProvider chains={combinedChains} assetLists={combinedAssetLists} wallets={wallets}
+      walletModal={() => <InterchainWalletModal />}
+    >
       <Box className={themeClass}>
         <Layout>
           <Component {...pageProps} />

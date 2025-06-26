@@ -1,7 +1,6 @@
 import "../styles/globals.css";
 import "@interchain-ui/react/styles";
 
-import { assetLists, chains } from "@chain-registry/v2";
 import { keplrWallet } from "@interchain-kit/keplr-extension";
 import { leapWallet } from "@interchain-kit/leap-extension";
 import { ChainProvider } from "@interchain-kit/react";
@@ -11,6 +10,7 @@ import {
   useColorModeValue,
   useTheme,
 } from "@interchain-ui/react";
+import { assetLists, chains } from "chain-registry";
 import type { AppProps } from "next/app";
 
 const chain = chains.find((chain) => chain.chainName === "cosmoshub")!;

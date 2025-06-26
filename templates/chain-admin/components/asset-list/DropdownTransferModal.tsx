@@ -99,7 +99,7 @@ const OverviewTransferWrapper = (
   const toastHandlers = useToastHandlers();
   const { data: signingClient } = useSigningClient(sourceChainName);
   const { mutate: transfer, isLoading } = useTransfer({
-    clientResolver: signingClient,
+    clientResolver: signingClient as any,
     options: {
       context: defaultContext,
       ...toastHandlers,

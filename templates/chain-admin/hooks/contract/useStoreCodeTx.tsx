@@ -24,7 +24,7 @@ export const useStoreCodeTx = (chainName: string) => {
   const { toast } = useToast();
   const { data: signingClient } = useCustomSigningClient();
   const { mutate: storeCode, isLoading } = useStoreCode({
-    clientResolver: signingClient,
+    clientResolver: signingClient as any,
     options: {
       context: defaultContext,
     },
@@ -34,8 +34,8 @@ export const useStoreCodeTx = (chainName: string) => {
     wasmFile,
     permission,
     addresses,
-    onTxSucceed = () => {},
-    onTxFailed = () => {},
+    onTxSucceed = () => { },
+    onTxFailed = () => { },
   }: StoreCodeTxParams) => {
     if (!address) return;
 

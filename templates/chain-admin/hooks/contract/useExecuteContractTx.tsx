@@ -39,12 +39,12 @@ export const useExecuteContractTx = (chainName: string) => {
     fee,
     funds,
     msg,
-    onTxFailed = () => {},
-    onTxSucceed = () => {},
+    onTxFailed = () => { },
+    onTxSucceed = () => { },
   }: ExecuteTxParams) => {
     await handleTx({
       txFunction: async () => {
-        const executeContract = createExecuteContract(signingClient);
+        const executeContract = createExecuteContract(signingClient as any);
         const res = await executeContract(
           address,
           {
@@ -68,8 +68,8 @@ export const useExecuteContractTx = (chainName: string) => {
     contractIndex,
     fnName,
     arg,
-    onTxFailed = () => {},
-    onTxSucceed = () => {},
+    onTxFailed = () => { },
+    onTxSucceed = () => { },
   }: ExecuteJsdTxParams) => {
     const msg = jsd.jsd.MessageComposer.fromPartial.eval({
       creator: address,
@@ -84,7 +84,7 @@ export const useExecuteContractTx = (chainName: string) => {
       txFunction: async () => {
         const signingClient = await getSigningJsdClient({
           rpcEndpoint: rpcEndpoint!,
-          signer: wallet.getOfflineSignerDirect(chain.chainId ?? ''),
+          signer: wallet.getOfflineSigner(chain.chainId ?? '') as any,
         });
 
         return signingClient.signAndBroadcast(address, [msg], fee);

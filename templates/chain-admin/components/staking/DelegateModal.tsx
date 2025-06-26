@@ -70,7 +70,7 @@ export const DelegateModal = ({
   const toastHandlers = useToastHandlers();
   const { data: signingClient } = useSigningClient(chainName);
   const { mutate: delegate, isLoading: isDelegating } = useDelegate({
-    clientResolver: signingClient,
+    clientResolver: signingClient as any,
     options: {
       context: defaultContext,
       ...toastHandlers,

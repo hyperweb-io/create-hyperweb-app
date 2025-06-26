@@ -46,7 +46,7 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        const instantiateContract = createInstantiateContract(signingClient);
+        const instantiateContract = createInstantiateContract(signingClient as any);
         const res = await instantiateContract(
           address,
           {
@@ -80,7 +80,7 @@ export const useInstantiateTx = (chainName: string) => {
       txFunction: async () => {
         const signingClient = await getSigningJsdClient({
           rpcEndpoint: rpcEndpoint!,
-          signer: wallet.getOfflineSignerDirect(chain.chainId ?? ''),
+          signer: wallet.getOfflineSigner(chain.chainId ?? '') as any,
         });
 
         const msg = jsd.jsd.MessageComposer.fromPartial.instantiate({

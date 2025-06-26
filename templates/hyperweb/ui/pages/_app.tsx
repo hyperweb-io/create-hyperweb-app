@@ -3,7 +3,7 @@ import "@interchain-ui/react/styles";
 
 import { keplrWallet } from "@interchain-kit/keplr-extension";
 import { leapWallet } from "@interchain-kit/leap-extension";
-import { ChainProvider } from "@interchain-kit/react";
+import { ChainProvider, InterchainWalletModal } from "@interchain-kit/react";
 import {
   Box,
   ThemeProvider,
@@ -28,6 +28,7 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         // @ts-ignore
         signerOptions={{}}
         endpointOptions={{ endpoints: {} }}
+        walletModal={() => <InterchainWalletModal />}
       >
         <Box
           className={themeClass}

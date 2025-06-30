@@ -39,8 +39,8 @@ export const useExecuteContractTx = (chainName: string) => {
     fee,
     funds,
     msg,
-    onTxFailed = () => { },
-    onTxSucceed = () => { },
+    onTxFailed = () => {},
+    onTxSucceed = () => {},
   }: ExecuteTxParams) => {
     await handleTx({
       txFunction: async () => {
@@ -68,8 +68,8 @@ export const useExecuteContractTx = (chainName: string) => {
     contractIndex,
     fnName,
     arg,
-    onTxFailed = () => { },
-    onTxSucceed = () => { },
+    onTxFailed = () => {},
+    onTxSucceed = () => {},
   }: ExecuteJsdTxParams) => {
     const msg = jsd.jsd.MessageComposer.fromPartial.eval({
       creator: address,

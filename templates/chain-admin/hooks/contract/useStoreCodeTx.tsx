@@ -34,8 +34,8 @@ export const useStoreCodeTx = (chainName: string) => {
     wasmFile,
     permission,
     addresses,
-    onTxSucceed = () => { },
-    onTxFailed = () => { },
+    onTxSucceed = () => {},
+    onTxFailed = () => {},
   }: StoreCodeTxParams) => {
     if (!address) return;
 

@@ -26,7 +26,10 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
 
   return (
     <CustomThemeProvider>
-      <ChainProvider chains={chains} assetLists={assetLists} wallets={wallets}
+      <ChainProvider
+        chains={chains}
+        assetLists={assetLists}
+        wallets={wallets}
         walletModal={() => <InterchainWalletModal />}
       >
         <QueryClientProvider client={queryClient}>

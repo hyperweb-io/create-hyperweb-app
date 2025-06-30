@@ -46,9 +46,7 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        const instantiateContract = createInstantiateContract(
-          signingClient as any
-        );
+        const instantiateContract = createInstantiateContract(signingClient);
         const res = await instantiateContract(
           address,
           {

@@ -17,15 +17,16 @@ export const useAddHyperwebChain = () => {
     }
   }, [starshipData, isHyperwebAdded]);
 
-  const refetchAndAddChain = () => {
-    refetch().then(({ data }) => {
-      addHyperwebChain(data?.v2);
-    });
+  const refetchAndAddChain = async () => {
+    const { data } = await refetch();
+    await addHyperwebChain(data?.v2);
   };
 
-  const addHyperwebChain = (data: StarshipChains['v2'] | null | undefined) => {
+  const addHyperwebChain = async (
+    data: StarshipChains['v2'] | null | undefined
+  ) => {
     if (!data) return;
-    addChains(data.chains, data.assets);
+    await addChains(data.chains, data.assets);
     chainStore.setSelectedChain(data.chains[0].chainName);
     chainStore.setIsHyperwebAdded(true);
   };

@@ -78,7 +78,7 @@ export const useChainUtils = (chainName: string) => {
 
   const getExponentByDenom = (denom: CoinDenom): Exponent => {
     const asset = getAssetByDenom(denom);
-    const unit = asset.denomUnits.find(({ denom }) => denom === asset.display);
+    const unit = asset?.denomUnits.find(({ denom }) => denom === asset.display);
     return unit?.exponent || 0;
   };
 

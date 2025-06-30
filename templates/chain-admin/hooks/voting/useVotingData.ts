@@ -171,7 +171,7 @@ export function useVotingData(chainName: string) {
       Object.entries(singleQueries).map(([key, query]) => [key, query.data])
     ) as SingleQueriesData;
 
-    singleQueriesData?.proposals.forEach((proposal) => {
+    singleQueriesData?.proposals?.forEach((proposal) => {
       if (proposal.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
         (async () => {
           for (const { address } of chain?.apis?.rest || []) {

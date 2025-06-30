@@ -26,7 +26,7 @@
     "@interchain-kit/react": "0.3.41",
     "@interchain-ui/react": "1.23.31",
     "@interchain-ui/react-no-ssr": "0.1.2",
-    "@interchainjs/cosmos": "^1.9.12",
+    "@interchainjs/cosmos": "1.9.12",
     "@interchainjs/react": "1.9.12",
     "@tanstack/react-query": "4.32.0",
     "ace-builds": "1.35.0",

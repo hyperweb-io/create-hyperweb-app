@@ -1,5 +1,6 @@
-import { DeliverTxResponse, getSigningJsdClient, jsd } from 'hyperwebjs';
-import { createInstantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
+import { getSigningJsdClient, jsd } from 'hyperwebjs';
+import { instantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
+import { DeliverTxResponse } from '@interchainjs/react/types';
 import { StdFee } from '@interchainjs/react/types';
 import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 import { useChain } from '@interchain-kit/react';
@@ -47,8 +48,12 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        const instantiateContract = createInstantiateContract(signingClient);
+        if (!signingClient) {
+          throw new Error('Signing client is not available');
+        }
+
         const res = await instantiateContract(
+          signingClient,
           address,
           {
             sender: address,
@@ -79,8 +84,12 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
+        if (!rpcEndpoint) {
+          throw new Error('RPC endpoint is not available');
+        }
+
         const signingClient = await getSigningJsdClient({
-          rpcEndpoint: rpcEndpoint!,
+          rpcEndpoint,
           signer: wallet.getOfflineSigner(chain.chainId ?? '') as any,
         });
 

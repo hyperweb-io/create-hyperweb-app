@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { createGetSmartContractState } from '@interchainjs/react/cosmwasm/wasm/v1/query.rpc.func';
+import { getSmartContractState } from '@interchainjs/react/cosmwasm/wasm/v1/query.rpc.func';
 
 import { useChainStore } from '@/contexts';
 import { fromUint8Array, toUint8Array } from '@/utils';
@@ -20,10 +20,13 @@ export const useQueryContract = ({
 
   return useQuery({
     queryKey: ['useQueryContract', contractAddress, queryMsg],
-    queryFn: () => {
+    queryFn: async () => {
+      if (!rpcEndpoint) {
+        throw new Error('RPC endpoint is not available');
+      }
+
       const parsedQueryMsg = queryMsg ? JSON.parse(queryMsg) : null;
-      const getSmartContractState = createGetSmartContractState(rpcEndpoint);
-      return getSmartContractState({
+      return getSmartContractState(rpcEndpoint, {
         address: contractAddress,
         queryData: parsedQueryMsg
           ? toUint8Array(parsedQueryMsg)

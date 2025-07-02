@@ -124,7 +124,6 @@ export const InstantiateContract = ({
       txResult.events.find((e) => e.type === 'instantiate')?.attributes[0]
         .value ?? '';
 
-    // @ts-expect-error
     const transactionHash = txResult?.hash || txResult?.transactionHash || '';
 
     const infoItems: TxInfoItem[] = [

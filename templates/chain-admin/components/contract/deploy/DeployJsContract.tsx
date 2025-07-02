@@ -51,7 +51,7 @@ export const DeployJsContract = ({
       code: await readFileContent(jsFile),
       onTxSucceed: (txInfo) => {
         setIsLoading(false);
-        setTxResult(txInfo);
+        setTxResult(txInfo as DeliverTxResponse);
         updateMyContracts();
         onSuccess?.();
       },

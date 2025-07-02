@@ -69,7 +69,7 @@ export const useChainUtils = (chainName: string) => {
           },
         ],
         logoURIs: {
-          png: '',
+          png: 'https://gist.githubusercontent.com/Anmol1696/bea1b3835dfb0fce3ab9ed993f5a0792/raw/7065493384a51c888752284be7c1afbf6135b50a/logo-png.png',
           svg: '',
         },
         typeAsset: 'sdk.coin',

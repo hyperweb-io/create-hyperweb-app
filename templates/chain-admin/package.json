@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@chain-registry/assets": "1.70.240",
+    "@chain-registry/v2": "^1.71.237",
     "@interchain-kit/core": "0.3.41",
     "@interchain-kit/keplr-extension": "0.3.41",
     "@interchain-kit/leap-extension": "0.3.41",

@@ -49,7 +49,34 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getAssetByDenom = (denom: CoinDenom): Asset => {
-    return allAssets.find((asset) => asset.base === denom) as Asset;
+    const asset = allAssets.find((asset) => asset.base === denom);
+
+    // Fallback for hyperweb native token if not found in asset lists
+    if (!asset && denom === 'uhyper' && chainName === 'hyperweb') {
+      return {
+        base: 'uhyper',
+        name: 'Hyperweb',
+        display: 'hyper',
+        symbol: 'HYPER',
+        denomUnits: [
+          {
+            denom: 'uhyper',
+            exponent: 0,
+          },
+          {
+            denom: 'hyper',
+            exponent: 6,
+          },
+        ],
+        logoURIs: {
+          png: '',
+          svg: '',
+        },
+        typeAsset: 'sdk.coin',
+      } as unknown as Asset;
+    }
+
+    return asset as Asset;
   };
 
   const denomToSymbol = (denom: CoinDenom): CoinSymbol => {
@@ -77,8 +104,15 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getExponentByDenom = (denom: CoinDenom): Exponent => {
+    // Special handling for hyperweb native token
+    if (denom === 'uhyper') {
+      return 6;
+    }
+
     const asset = getAssetByDenom(denom);
-    const unit = asset?.denomUnits.find(({ denom }) => denom === asset.display);
+    const unit = asset?.denomUnits?.find(
+      ({ denom }) => denom === asset.display
+    );
     return unit?.exponent || 0;
   };
 
@@ -98,6 +132,11 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getChainName = (ibcDenom: CoinDenom) => {
+    // Special handling for hyperweb native token
+    if (ibcDenom === 'uhyper' && chainName === 'hyperweb') {
+      return chainName;
+    }
+
     if (nativeAssets.find((asset) => asset.base === ibcDenom)) {
       return chainName;
     }
@@ -109,8 +148,13 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getPrettyChainName = (ibcDenom: CoinDenom) => {
-    const chainName = getChainName(ibcDenom);
-    const chain = chains.find((chain) => chain.chainName === chainName);
+    // Special handling for hyperweb native token
+    if (ibcDenom === 'uhyper' && chainName === 'hyperweb') {
+      return 'Hyperweb Devnet';
+    }
+
+    const resolvedChainName = getChainName(ibcDenom);
+    const chain = chains.find((chain) => chain.chainName === resolvedChainName);
     if (!chain) throw Error('chain not found');
     return chain.prettyName;
   };

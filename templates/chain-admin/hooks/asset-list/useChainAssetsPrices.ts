@@ -48,12 +48,27 @@ export const useChainAssetsPrices = (chainName: string) => {
   return useQuery({
     queryKey: ['useChainAssetsPrices', chainName],
     queryFn: () => fetchPrices(geckoIds),
-    select: (data) => ({
-      ...formatPrices(data, assetsWithGeckoIds),
-      ...(isStarshipChain
-        ? { [allAssets[0].base]: DEFAULT_HYPERWEB_TOKEN_PRICE }
-        : {}),
-    }),
+    select: (data) => {
+      const formattedPrices = formatPrices(data, assetsWithGeckoIds);
+
+      // Always add hyperweb price for hyperweb chain
+      const hyperwebPrice =
+        chainName === 'hyperweb'
+          ? { uhyper: DEFAULT_HYPERWEB_TOKEN_PRICE }
+          : {};
+
+      // Also add for starship chains if detected
+      const starshipPrice =
+        isStarshipChain && allAssets.length > 0
+          ? { [allAssets[0].base]: DEFAULT_HYPERWEB_TOKEN_PRICE }
+          : {};
+
+      return {
+        ...formattedPrices,
+        ...hyperwebPrice,
+        ...starshipPrice,
+      };
+    },
     staleTime: Infinity,
   });
 };

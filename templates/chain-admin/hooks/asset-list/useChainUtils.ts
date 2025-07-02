@@ -160,6 +160,11 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const isNativeAsset = ({ denom }: PrettyAsset) => {
+    // Special handling for hyperweb native token
+    if (denom === 'uhyper' && chainName === 'hyperweb') {
+      return true;
+    }
+
     return !!nativeAssets.find((asset) => asset.base === denom);
   };
 

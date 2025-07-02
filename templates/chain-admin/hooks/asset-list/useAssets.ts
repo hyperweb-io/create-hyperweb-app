@@ -3,7 +3,7 @@ import { useChain } from '@interchain-kit/react';
 import { defaultContext } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useGetAllBalances } from '@interchainjs/react/cosmos/bank/v1beta1/query.rpc.react';
-import { Coin } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { PrettyAsset } from '@/components';
 import { useChainUtils } from './useChainUtils';

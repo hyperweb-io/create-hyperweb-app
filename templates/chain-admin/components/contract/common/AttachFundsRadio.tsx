@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import { TbCurrencyDollarOff } from 'react-icons/tb';
 import { LuListPlus } from 'react-icons/lu';
 import { VscJson } from 'react-icons/vsc';
-import { Coin } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { JsonInput } from './JsonInput';
 import { SelectAssetContent } from './SelectAssetContent';

@@ -1,6 +1,7 @@
 import { DeliverTxResponse, getSigningJsdClient, jsd } from 'hyperwebjs';
 import { createInstantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
-import { Coin, StdFee } from '@interchainjs/react/types';
+import { StdFee } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 import { useChain } from '@interchain-kit/react';
 
 import { toUint8Array } from '@/utils';

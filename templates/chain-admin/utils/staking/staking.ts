@@ -12,7 +12,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { QueryAnnualProvisionsResponse } from '@interchainjs/react/cosmos/mint/v1beta1/query';
 import type { Asset } from '@chain-registry/types';
-import type { Coin } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 const DAY_TO_SECONDS = 24 * 60 * 60;
 const ZERO = '0';

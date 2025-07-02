@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Box, Text } from '@interchain-ui/react';
 import { useChain } from '@interchain-kit/react';
-import { Coin } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import {
   JsonInput,

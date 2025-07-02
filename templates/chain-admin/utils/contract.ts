@@ -6,7 +6,8 @@ import BigNumber from 'bignumber.js';
 import { jsd, DeliverTxResponse as DeliverJsdTxResponse } from 'hyperwebjs';
 import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
 import { CodeInfoResponse } from '@interchainjs/react/cosmwasm/wasm/v1/query';
-import { Coin, DeliverTxResponse } from '@interchainjs/react/types';
+import { DeliverTxResponse } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { getExponentFromAsset } from './common';
 

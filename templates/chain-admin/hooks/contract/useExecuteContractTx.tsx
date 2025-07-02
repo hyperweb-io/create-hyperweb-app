@@ -1,7 +1,8 @@
 import { useChain } from '@interchain-kit/react';
 import { getSigningJsdClient, jsd } from 'hyperwebjs';
 import { createExecuteContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
-import { Coin, StdFee } from '@interchainjs/react/types';
+import { StdFee } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { toUint8Array } from '@/utils';
 

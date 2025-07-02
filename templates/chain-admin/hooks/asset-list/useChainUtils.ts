@@ -3,7 +3,7 @@ import { useWalletManager } from '@interchain-kit/react';
 import { Asset, AssetList } from '@chain-registry/types';
 import { asset_lists as ibcAssetLists } from '@chain-registry/assets';
 import { assetLists as chainAssets, ibcData as ibc } from 'chain-registry';
-import { Coin } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 import BigNumber from 'bignumber.js';
 
 import { PrettyAsset } from '@/components';

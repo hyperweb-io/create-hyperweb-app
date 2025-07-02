@@ -8,7 +8,8 @@ import {
 } from '@interchain-ui/react';
 import { IoChevronDown } from 'react-icons/io5';
 import { useChain } from '@interchain-kit/react';
-import { Coin, DeliverTxResponse } from '@interchainjs/react/types';
+import { DeliverTxResponse } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { CodeIdField } from './CodeIdField';
 import {

@@ -73,7 +73,12 @@ export const useAssets = (chainName: string) => {
       Object.entries(dataQueries).map(([key, query]) => [key, query.data])
     ) as QueriesData;
 
-    const { allBalances, prices } = queriesData;
+    const { allBalances, prices: rawPrices } = queriesData;
+
+    // Filter out undefined values to ensure proper indexing
+    const prices = Object.fromEntries(
+      Object.entries(rawPrices ?? {}).filter(([, value]) => value != null)
+    );
 
     const nativeAndIbcBalances: Coin[] = allBalances?.filter(
       ({ denom }) => !denom.startsWith('gamm') && prices[denom]

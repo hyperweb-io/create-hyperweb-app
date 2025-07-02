@@ -90,7 +90,12 @@ export const useTotalAssets = (chainName: string) => {
       Object.entries(dataQueries).map(([key, query]) => [key, query.data])
     ) as QueriesData;
 
-    const { allBalances, delegations, prices = {} } = queriesData;
+    const { allBalances, delegations, prices: rawPrices = {} } = queriesData;
+
+    // Filter out undefined values to ensure proper indexing
+    const prices = Object.fromEntries(
+      Object.entries(rawPrices).filter(([, value]) => value != null)
+    );
 
     const stakedTotal = delegations
       ?.map((coin) => calcCoinDollarValue(prices, coin))

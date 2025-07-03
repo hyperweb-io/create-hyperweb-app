@@ -91,9 +91,19 @@ export const useExecuteContractTx = (chainName: string) => {
           throw new Error('RPC endpoint is not available');
         }
 
+        // Try using the raw Keplr amino signer directly
+        const chainId = chain.chainId ?? '';
+        const keplrAminoSigner = (
+          window as any
+        ).keplr?.getOfflineSignerOnlyAmino(chainId);
+
+        if (!keplrAminoSigner) {
+          throw new Error('Keplr wallet not available');
+        }
+
         const signingClient = await getSigningJsdClient({
           rpcEndpoint,
-          signer: wallet.getOfflineSigner(chain.chainId ?? '') as any,
+          signer: keplrAminoSigner as any,
         });
 
         return signingClient.signAndBroadcast(address, [msg], fee);

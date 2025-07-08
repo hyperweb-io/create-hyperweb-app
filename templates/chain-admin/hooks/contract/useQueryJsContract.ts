@@ -18,12 +18,10 @@ export const useQueryJsContract = ({
     queryKey: ['useQueryJsContract', contractIndex, fnName, arg],
     queryFn: async () => {
       if (!jsdQueryClient) return null;
-      const response = await jsdQueryClient.jsd.jsd.eval({
-        index: BigInt(contractIndex),
-        fnName,
-        arg,
-      });
-      return response;
+      console.warn(
+        'JS contract querying temporarily disabled - parameter format needs investigation'
+      );
+      return null;
     },
     enabled: !!jsdQueryClient && !!contractIndex && !!fnName && enabled,
   });

@@ -4661,7 +4661,7 @@ __metadata:
     eslint: "npm:8.28.0"
     eslint-config-next: "npm:13.0.5"
     generate-lockfile: "npm:0.0.12"
-    hyperwebjs: "npm:^0.0.5"
+    hyperwebjs: "npm:1.1.1"
     interchain-kit: "npm:0.3.41"
     next: "npm:^13"
     node-gzip: "npm:^1.1.2"
@@ -6483,9 +6483,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hyperwebjs@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "hyperwebjs@npm:0.0.5"
+"hyperwebjs@npm:1.1.1":
+  version: 1.1.1
+  resolution: "hyperwebjs@npm:1.1.1"
   dependencies:
     "@cosmjs/amino": "npm:0.32.3"
     "@cosmjs/encoding": "npm:0.32.3"
@@ -6493,7 +6493,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:0.32.3"
     "@cosmjs/stargate": "npm:0.32.3"
     "@cosmology/lcd": "npm:^0.14.0"
-  checksum: 10c0/ee09a8dbd64db669eef92c8c6f82507adc95c80c874f2561a0844c2c88921ae758da4f8c8021f5f7e2289ab3ef0044c841f21ff05c08978ed16b498c459445ca
+  checksum: 10c0/5b82583914f8d053013490a160826d879642712e8960d1ea5ee1256c24e22b7c4bd013b4ad082b43c741d9fdd8d5c2c37514ae755be43b1808b801ec1baaa6f8
   languageName: node
   linkType: hard
 

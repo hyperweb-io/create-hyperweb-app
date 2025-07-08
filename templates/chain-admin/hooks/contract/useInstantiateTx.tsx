@@ -1,4 +1,4 @@
-import { getSigningJsdClient, jsd } from 'hyperwebjs';
+import { hyperweb, getSigningHyperwebClient } from 'hyperwebjs';
 import { instantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
 import { DeliverTxResponse } from '@interchainjs/react/types';
 import { StdFee } from '@interchainjs/react/types';
@@ -8,7 +8,7 @@ import { useChain } from '@interchain-kit/react';
 import { toUint8Array } from '@/utils';
 
 import { useHandleTx } from './useHandleTx';
-import { useCustomSigningClient, useRpcEndpoint } from '../common';
+import { useRpcEndpoint } from '../common';
 
 interface InstantiateTxParams {
   address: string;
@@ -29,7 +29,6 @@ interface InstantiateJsdTxParams {
 }
 
 export const useInstantiateTx = (chainName: string) => {
-  const { data: signingClient } = useCustomSigningClient();
   const { data: rpcEndpoint } = useRpcEndpoint(chainName);
   const { chain, wallet } = useChain(chainName);
   const handleTx = useHandleTx(chainName);
@@ -48,25 +47,9 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        if (!signingClient) {
-          throw new Error('Signing client is not available');
-        }
-
-        const res = await instantiateContract(
-          signingClient,
-          address,
-          {
-            sender: address,
-            codeId: BigInt(codeId),
-            admin,
-            funds,
-            label,
-            msg: toUint8Array(initMsg),
-          },
-          fee,
-          ''
+        throw new Error(
+          'WASM contract instantiation not supported in hyperwebjs 1.1.1. Use instantiateJsdTx for JS contracts.'
         );
-        return res;
       },
       successMessage: 'Instantiate Success',
       onTxSucceed,
@@ -88,31 +71,30 @@ export const useInstantiateTx = (chainName: string) => {
           throw new Error('RPC endpoint is not available');
         }
 
-        // Try using the raw Keplr amino signer directly
         const chainId = chain.chainId ?? '';
-        const keplrAminoSigner = (
-          window as any
-        ).keplr?.getOfflineSignerOnlyAmino(chainId);
 
-        if (!keplrAminoSigner) {
+        if (!(window as any).keplr) {
           throw new Error('Keplr wallet not available');
         }
 
-        const signingClient = await getSigningJsdClient({
+        // Create signing client using hyperwebjs 1.1.1
+        const signingClient = await getSigningHyperwebClient({
           rpcEndpoint,
-          signer: keplrAminoSigner as any,
+          signer: (window as any).keplr.getOfflineSigner(chainId),
         });
 
-        const msg = jsd.jsd.MessageComposer.fromPartial.instantiate({
+        const msg = hyperweb.hvm.MessageComposer.fromPartial.instantiate({
           creator: address,
           code,
+          source: 'chain-admin', // Set a default source value
         });
 
-        return signingClient.signAndBroadcast(
+        const result = await signingClient.signAndBroadcast(
           address,
           [msg],
           fee
-        ) as Promise<DeliverTxResponse>;
+        );
+        return result;
       },
       successMessage: 'Deploy Success',
       onTxSucceed,

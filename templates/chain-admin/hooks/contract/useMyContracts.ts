@@ -87,7 +87,8 @@ const fetchWasmContracts = async (
 
 const fetchJsdContracts = async (client: JsdQueryClient, address: string) => {
   try {
-    const response = await client.jsd.jsd.contractsAll({
+    // Use listContracts method available in hyperwebjs 1.1.1
+    const response = await client.hyperweb.hvm.listContracts({
       pagination: {
         limit: 1000n,
         reverse: true,

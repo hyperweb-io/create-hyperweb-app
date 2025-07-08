@@ -34,7 +34,7 @@
     "bignumber.js": "9.1.2",
     "chain-registry": "2.0.9",
     "dayjs": "1.11.11",
-    "hyperwebjs": "^0.0.5",
+    "hyperwebjs": "1.1.1",
     "interchain-kit": "0.3.41",
     "next": "^13",
     "node-gzip": "^1.1.2",

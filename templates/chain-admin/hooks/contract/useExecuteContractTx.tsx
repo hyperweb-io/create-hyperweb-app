@@ -1,5 +1,5 @@
 import { useChain } from '@interchain-kit/react';
-import { getSigningJsdClient, jsd } from 'hyperwebjs';
+import { hyperweb, getSigningHyperwebClient } from 'hyperwebjs';
 import { executeContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
 import { StdFee } from '@interchainjs/react/types';
 import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
@@ -7,7 +7,7 @@ import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 import { toUint8Array } from '@/utils';
 
 import { useHandleTx } from './useHandleTx';
-import { useCustomSigningClient, useRpcEndpoint } from '../common';
+import { useRpcEndpoint } from '../common';
 
 interface ExecuteTxParams {
   address: string;
@@ -29,7 +29,6 @@ interface ExecuteJsdTxParams {
 }
 
 export const useExecuteContractTx = (chainName: string) => {
-  const { data: signingClient } = useCustomSigningClient();
   const { data: rpcEndpoint } = useRpcEndpoint(chainName);
   const { chain, wallet } = useChain(chainName);
   const handleTx = useHandleTx(chainName);
@@ -45,23 +44,9 @@ export const useExecuteContractTx = (chainName: string) => {
   }: ExecuteTxParams) => {
     await handleTx({
       txFunction: async () => {
-        if (!signingClient) {
-          throw new Error('Signing client is not available');
-        }
-
-        const res = await executeContract(
-          signingClient,
-          address,
-          {
-            sender: address,
-            contract: contractAddress,
-            msg: toUint8Array(msg),
-            funds,
-          },
-          fee,
-          ''
+        throw new Error(
+          'WASM contract execution not supported in hyperwebjs 1.1.1. Use executeJsdTx for JS contracts.'
         );
-        return res;
       },
       onTxSucceed,
       onTxFailed,
@@ -76,13 +61,6 @@ export const useExecuteContractTx = (chainName: string) => {
     onTxFailed = () => {},
     onTxSucceed = () => {},
   }: ExecuteJsdTxParams) => {
-    const msg = jsd.jsd.MessageComposer.fromPartial.eval({
-      creator: address,
-      index: BigInt(contractIndex),
-      fnName,
-      arg,
-    });
-
     const fee = { amount: [], gas: '550000' };
 
     await handleTx({
@@ -91,22 +69,31 @@ export const useExecuteContractTx = (chainName: string) => {
           throw new Error('RPC endpoint is not available');
         }
 
-        // Try using the raw Keplr amino signer directly
         const chainId = chain.chainId ?? '';
-        const keplrAminoSigner = (
-          window as any
-        ).keplr?.getOfflineSignerOnlyAmino(chainId);
 
-        if (!keplrAminoSigner) {
+        if (!(window as any).keplr) {
           throw new Error('Keplr wallet not available');
         }
 
-        const signingClient = await getSigningJsdClient({
+        // Create signing client using hyperwebjs 1.1.1
+        const signingClient = await getSigningHyperwebClient({
           rpcEndpoint,
-          signer: keplrAminoSigner as any,
+          signer: (window as any).keplr.getOfflineSigner(chainId),
         });
 
-        return signingClient.signAndBroadcast(address, [msg], fee);
+        const msg = hyperweb.hvm.MessageComposer.fromPartial.eval({
+          address: contractIndex, // Contract address in 1.1.1
+          creator: address,
+          callee: fnName,
+          args: [arg],
+        });
+
+        const result = await signingClient.signAndBroadcast(
+          address,
+          [msg],
+          fee
+        );
+        return result;
       },
       onTxSucceed,
       onTxFailed,

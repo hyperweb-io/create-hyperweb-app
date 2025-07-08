@@ -5,7 +5,7 @@ chains:
   - id: hyperweb-1
     name: hyperweb
     numValidators: 1
-    image: ghcr.io/hyperweb-io/hyperweb:latest
+    image: ghcr.io/hyperweb-io/hyperweb:20250610-627555b
     coins: 100000000000000uhyper,100000000000000uhypweb,100000000000000uatom,100000000000000uusdc
     ports:
       rest: 1317

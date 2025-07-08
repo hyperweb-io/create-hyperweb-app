@@ -3,7 +3,10 @@ import { toBech32, fromBech32 } from '@interchainjs/encoding';
 import { Log, findAttribute } from '@interchainjs/utils';
 import { parseCoins } from '@interchainjs/amino';
 import BigNumber from 'bignumber.js';
-import { jsd, DeliverTxResponse as DeliverJsdTxResponse } from 'hyperwebjs';
+import {
+  hyperweb,
+  DeliverTxResponse as DeliverJsdTxResponse,
+} from 'hyperwebjs';
 import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
 import { CodeInfoResponse } from '@interchainjs/react/cosmwasm/wasm/v1/query';
 import { DeliverTxResponse } from '@interchainjs/react/types';
@@ -196,7 +199,7 @@ export const toPascalCase = (str: string): string => {
 };
 
 export const getContractIndex = (txResult: DeliverJsdTxResponse) => {
-  const response = jsd.jsd.MsgInstantiateResponse.fromProtoMsg(
+  const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(
     // @ts-ignore
     txResult.msgResponses[0]
   );

@@ -13,11 +13,12 @@
 Set up a Hyperweb app by running one command ⚛️
 
 - [Overview](#overview)
-- [Education & Resources](#education--resources)
 - [Creating an App](#creating-an-app)
 - [Templates](#templates)
 - [Options](#options)
-- [Development](#development)
+- [Interchain JavaScript Stack](#interchain-javascript-stack)
+- [Credits](#credits)
+- [Disclaimer](#disclaimer)
 
 ## Overview
 

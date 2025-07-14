@@ -13,11 +13,12 @@
 Set up a Hyperweb app by running one command ⚛️
 
 - [Overview](#overview)
-- [Education & Resources](#education--resources)
 - [Creating an App](#creating-an-app)
 - [Templates](#templates)
 - [Options](#options)
-- [Development](#development)
+- [Interchain JavaScript Stack](#interchain-javascript-stack)
+- [Credits](#credits)
+- [Disclaimer](#disclaimer)
 
 ## Overview
 
@@ -168,7 +169,7 @@ cha --name chain-admin-template --template chain-admin
 | `-t`, `--template`   | Define the template to use              | None    |
 | `-b`, `--fromBranch` | Specify the branch to use for cloning   | None    |
 
-## Interchain JavaScript Stack ⚛️
+## Interchain JavaScript Stack
 
 A unified toolkit for building applications and smart contracts in the Interchain ecosystem
 

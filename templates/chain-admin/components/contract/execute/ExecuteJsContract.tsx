@@ -101,8 +101,8 @@ export const ExecuteJsContract = ({
         />
       </InputField>
       <Button
-        onClick={handleExecute}
         disabled={isButtonDisabled}
+        onClick={handleExecute}
         isLoading={isLoading}
         width="100%"
         variant="primary"

@@ -206,6 +206,25 @@ export const getContractIndex = (txResult: DeliverJsdTxResponse) => {
   return response.index.toString();
 };
 
+export const getContractAddress = (txResult: DeliverJsdTxResponse) => {
+  const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(
+    // @ts-ignore
+    txResult.msgResponses[0]
+  );
+  return response.address;
+};
+
+export const getContractInfo = (txResult: DeliverJsdTxResponse) => {
+  const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(
+    // @ts-ignore
+    txResult.msgResponses[0]
+  );
+  return {
+    index: response.index.toString(),
+    address: response.address,
+  };
+};
+
 export const readFileContent = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

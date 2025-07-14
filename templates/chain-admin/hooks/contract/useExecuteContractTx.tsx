@@ -8,6 +8,7 @@ import { toUint8Array } from '@/utils';
 
 import { useHandleTx } from './useHandleTx';
 import { useRpcEndpoint } from '../common';
+import { useJsdQueryClient } from './useJsdQueryClient';
 
 interface ExecuteTxParams {
   address: string;
@@ -32,6 +33,7 @@ export const useExecuteContractTx = (chainName: string) => {
   const { data: rpcEndpoint } = useRpcEndpoint(chainName);
   const { chain, wallet } = useChain(chainName);
   const handleTx = useHandleTx(chainName);
+  const { data: jsdQueryClient } = useJsdQueryClient();
 
   const executeTx = async ({
     address,
@@ -75,6 +77,62 @@ export const useExecuteContractTx = (chainName: string) => {
           throw new Error('Keplr wallet not available');
         }
 
+        if (!jsdQueryClient) {
+          throw new Error('Query client not available');
+        }
+
+        // Get contract address from contract index using listContracts
+        const contractsResponse =
+          await jsdQueryClient.hyperweb.hvm.listContracts({
+            pagination: {
+              limit: 1000n,
+              reverse: true,
+              countTotal: false,
+              key: new Uint8Array(),
+              offset: 0n,
+            },
+          });
+
+        const contractInfo = contractsResponse.contracts.find(
+          (contract) => contract.index.toString() === contractIndex
+        );
+
+        if (!contractInfo) {
+          throw new Error(`Contract not found for index ${contractIndex}`);
+        }
+
+        // Debug: Log the contract info structure
+        console.log('Contract Info:', contractInfo);
+        console.log('Contract Info Keys:', Object.keys(contractInfo));
+
+        // Try to extract contract address from different possible fields
+        let contractAddress;
+
+        // Try common field names
+        if ((contractInfo as any).address) {
+          contractAddress = (contractInfo as any).address;
+        } else if ((contractInfo as any).contractAddress) {
+          contractAddress = (contractInfo as any).contractAddress;
+        } else if (
+          (contractInfo as any).contract &&
+          (contractInfo as any).contract.address
+        ) {
+          contractAddress = (contractInfo as any).contract.address;
+        } else {
+          // If we can't find the address, let's try using the index directly
+          // as the system might expect it
+          contractAddress = contractIndex;
+          console.warn(
+            'Could not find contract address field, using index directly'
+          );
+        }
+
+        if (!contractAddress) {
+          throw new Error(
+            `Contract address not found for index ${contractIndex}`
+          );
+        }
+
         // Create signing client using hyperwebjs 1.1.1
         const signingClient = await getSigningHyperwebClient({
           rpcEndpoint,
@@ -82,7 +140,7 @@ export const useExecuteContractTx = (chainName: string) => {
         });
 
         const msg = hyperweb.hvm.MessageComposer.fromPartial.eval({
-          address: contractIndex, // Contract address in 1.1.1
+          address: contractAddress, // Use the contract address from getContractByIndex
           creator: address,
           callee: fnName,
           args: [arg],

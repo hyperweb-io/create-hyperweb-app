@@ -6,6 +6,7 @@ import { DeliverTxResponse } from 'hyperwebjs';
 import {
   formatTxFee,
   getContractIndex,
+  getContractAddress,
   shortenAddress,
   readFileContent,
 } from '@/utils';
@@ -73,12 +74,19 @@ export const DeployJsContract = ({
       txResult.events.find((e) => e.type === 'tx')?.attributes[0].value ?? '';
 
     const contractIndex = getContractIndex(txResult);
+    const contractAddress = getContractAddress(txResult);
 
     const infoItems: TxInfoItem[] = [
       {
         label: 'Contract Index',
         value: contractIndex,
         copyValue: contractIndex,
+        showCopy: true,
+      },
+      {
+        label: 'Contract Address',
+        value: contractAddress,
+        copyValue: contractAddress,
         showCopy: true,
       },
       {
@@ -109,7 +117,7 @@ export const DeployJsContract = ({
               width="$full"
               variant="primary"
               onClick={() => {
-                switchTab?.(contractIndex, TabLabel.Query);
+                switchTab?.(contractAddress, TabLabel.Query);
               }}
             >
               Query
@@ -118,7 +126,7 @@ export const DeployJsContract = ({
               width="$full"
               variant="primary"
               onClick={() => {
-                switchTab?.(contractIndex, TabLabel.Execute);
+                switchTab?.(contractAddress, TabLabel.Execute);
               }}
             >
               Execute

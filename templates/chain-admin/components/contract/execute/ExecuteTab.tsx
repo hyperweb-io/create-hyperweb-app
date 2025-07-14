@@ -2,7 +2,7 @@ import { useIsHyperwebChain } from '@/hooks';
 import { ExecuteJsContract } from './ExecuteJsContract';
 import { ExecuteWasmContract } from './ExecuteWasmContract';
 
-export type ExecuteTabProps = {
+type ExecuteTabProps = {
   show: boolean;
   addressValue: string;
   onAddressInput: (input: string) => void;

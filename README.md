@@ -169,7 +169,7 @@ cha --name chain-admin-template --template chain-admin
 | `-t`, `--template`   | Define the template to use              | None    |
 | `-b`, `--fromBranch` | Specify the branch to use for cloning   | None    |
 
-## Interchain JavaScript Stack ⚛️
+## Interchain JavaScript Stack
 
 A unified toolkit for building applications and smart contracts in the Interchain ecosystem
 

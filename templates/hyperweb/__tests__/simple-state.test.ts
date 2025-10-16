@@ -46,7 +46,7 @@ describe('State Contract Tests', () => {
     fee = { amount: [{ denom, amount: '100000' }], gas: '550000' };
 
     await creditFromFaucet(address);
-    await sleep(2000); // Sleep for 2 sec to allow faucet tokens to arrive
+    await sleep(10000); // Sleep for 2 sec to allow faucet tokens to arrive
   });
 
   it('Check initial balance', async () => {
@@ -59,7 +59,7 @@ describe('State Contract Tests', () => {
     // Read contract code from external file
     const contractPath = path.join(
       __dirname,
-      "../dist/contracts/simpleState.js"
+      "../dist/contracts/simple-state.js"
     );
     contractCode = fs.readFileSync(contractPath, "utf8");
 

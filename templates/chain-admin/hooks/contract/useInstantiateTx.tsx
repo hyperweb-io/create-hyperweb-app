@@ -1,12 +1,14 @@
-import { DeliverTxResponse, getSigningJsdClient, jsd } from 'hyperwebjs';
-import { createInstantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
-import { Coin, StdFee } from '@interchainjs/react/types';
+import { hyperweb, getSigningHyperwebClient } from 'hyperwebjs';
+import { instantiateContract } from '@interchainjs/react/cosmwasm/wasm/v1/tx.rpc.func';
+import { DeliverTxResponse } from '@interchainjs/react/types';
+import { StdFee } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 import { useChain } from '@interchain-kit/react';
 
 import { toUint8Array } from '@/utils';
 
 import { useHandleTx } from './useHandleTx';
-import { useCustomSigningClient, useRpcEndpoint } from '../common';
+import { useRpcEndpoint } from '../common';
 
 interface InstantiateTxParams {
   address: string;
@@ -27,7 +29,6 @@ interface InstantiateJsdTxParams {
 }
 
 export const useInstantiateTx = (chainName: string) => {
-  const { data: signingClient } = useCustomSigningClient();
   const { data: rpcEndpoint } = useRpcEndpoint(chainName);
   const { chain, wallet } = useChain(chainName);
   const handleTx = useHandleTx(chainName);
@@ -46,21 +47,9 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        const instantiateContract = createInstantiateContract(signingClient);
-        const res = await instantiateContract(
-          address,
-          {
-            sender: address,
-            codeId: BigInt(codeId),
-            admin,
-            funds,
-            label,
-            msg: toUint8Array(initMsg),
-          },
-          fee,
-          ''
+        throw new Error(
+          'WASM contract instantiation not supported in hyperwebjs 1.1.1. Use instantiateJsdTx for JS contracts.'
         );
-        return res;
       },
       successMessage: 'Instantiate Success',
       onTxSucceed,
@@ -78,21 +67,34 @@ export const useInstantiateTx = (chainName: string) => {
 
     await handleTx<DeliverTxResponse>({
       txFunction: async () => {
-        const signingClient = await getSigningJsdClient({
-          rpcEndpoint: rpcEndpoint!,
-          signer: wallet.getOfflineSignerDirect(chain.chainId ?? ''),
+        if (!rpcEndpoint) {
+          throw new Error('RPC endpoint is not available');
+        }
+
+        const chainId = chain.chainId ?? '';
+
+        if (!(window as any).keplr) {
+          throw new Error('Keplr wallet not available');
+        }
+
+        // Create signing client using hyperwebjs 1.1.1
+        const signingClient = await getSigningHyperwebClient({
+          rpcEndpoint,
+          signer: (window as any).keplr.getOfflineSigner(chainId),
         });
 
-        const msg = jsd.jsd.MessageComposer.fromPartial.instantiate({
+        const msg = hyperweb.hvm.MessageComposer.fromPartial.instantiate({
           creator: address,
           code,
+          source: 'chain-admin', // Set a default source value
         });
 
-        return signingClient.signAndBroadcast(
+        const result = await signingClient.signAndBroadcast(
           address,
           [msg],
           fee
-        ) as Promise<DeliverTxResponse>;
+        );
+        return result;
       },
       successMessage: 'Deploy Success',
       onTxSucceed,

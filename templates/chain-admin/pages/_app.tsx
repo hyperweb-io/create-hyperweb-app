@@ -2,8 +2,8 @@ import '../styles/globals.css';
 import '@interchain-ui/react/styles';
 
 import type { AppProps } from 'next/app';
-import { ChainProvider } from '@interchain-kit/react';
-import { chains, assetLists } from '@chain-registry/v2';
+import { ChainProvider, InterchainWalletModal } from '@interchain-kit/react';
+import { chains, assetLists } from 'chain-registry';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Box, Toaster, useTheme } from '@interchain-ui/react';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -26,7 +26,12 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
 
   return (
     <CustomThemeProvider>
-      <ChainProvider chains={chains} assetLists={assetLists} wallets={wallets}>
+      <ChainProvider
+        chains={chains}
+        assetLists={assetLists}
+        wallets={wallets}
+        walletModal={() => <InterchainWalletModal />}
+      >
         <QueryClientProvider client={queryClient}>
           <Box className={themeClass}>
             <Layout>

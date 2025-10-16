@@ -3,7 +3,7 @@ import { useChain } from '@interchain-kit/react';
 import { defaultContext } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import { useGetAllBalances } from '@interchainjs/react/cosmos/bank/v1beta1/query.rpc.react';
-import { Coin } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { PrettyAsset } from '@/components';
 import { useChainUtils } from './useChainUtils';
@@ -73,7 +73,12 @@ export const useAssets = (chainName: string) => {
       Object.entries(dataQueries).map(([key, query]) => [key, query.data])
     ) as QueriesData;
 
-    const { allBalances, prices } = queriesData;
+    const { allBalances, prices: rawPrices } = queriesData;
+
+    // Filter out undefined values to ensure proper indexing
+    const prices = Object.fromEntries(
+      Object.entries(rawPrices ?? {}).filter(([, value]) => value != null)
+    );
 
     const nativeAndIbcBalances: Coin[] = allBalances?.filter(
       ({ denom }) => !denom.startsWith('gamm') && prices[denom]
@@ -100,7 +105,7 @@ export const useAssets = (chainName: string) => {
         const dollarValue = calcCoinDollarValue(prices, { amount, denom });
         return {
           symbol,
-          logoUrl: asset.logo_URIs?.png || asset.logo_URIs?.svg,
+          logoUrl: asset?.logoURIs?.png || asset?.logoURIs?.svg,
           prettyChainName: getPrettyChainName(denom),
           displayAmount: convRawToDispAmount(denom, amount),
           dollarValue,

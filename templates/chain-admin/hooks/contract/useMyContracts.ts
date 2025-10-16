@@ -1,15 +1,15 @@
 import { useChain } from '@interchain-kit/react';
 import { useQuery } from '@tanstack/react-query';
 import {
-  createGetContractsByCreator,
-  createGetContractInfo,
+  getContractsByCreator,
+  getContractInfo,
 } from '@interchainjs/react/cosmwasm/wasm/v1/query.rpc.func';
-import { RpcResolver } from '@interchainjs/react/helper-func-types';
 
 import { useChainStore } from '@/contexts';
 
 import { useIsHyperwebChain, useRpcEndpoint } from '../common';
 import { JsdQueryClient, useJsdQueryClient } from './useJsdQueryClient';
+import { HttpEndpoint } from '@interchainjs/types';
 
 export type WasmContractInfo = Awaited<
   ReturnType<typeof fetchWasmContracts>
@@ -56,12 +56,12 @@ export const useMyContracts = () => {
   });
 };
 
-const fetchWasmContracts = async (client: RpcResolver, address: string) => {
-  const getContractsByCreator = createGetContractsByCreator(client);
-  const getContractInfo = createGetContractInfo(client);
-
+const fetchWasmContracts = async (
+  client: string | HttpEndpoint,
+  address: string
+) => {
   try {
-    const { contractAddresses } = await getContractsByCreator({
+    const { contractAddresses } = await getContractsByCreator(client, {
       creatorAddress: address,
       pagination: {
         limit: 1000n,
@@ -73,7 +73,9 @@ const fetchWasmContracts = async (client: RpcResolver, address: string) => {
     });
 
     const contracts = await Promise.all(
-      contractAddresses.map((address) => getContractInfo({ address }))
+      contractAddresses.map((contractAddress: string) =>
+        getContractInfo(client, { address: contractAddress })
+      )
     );
 
     return contracts;
@@ -85,7 +87,8 @@ const fetchWasmContracts = async (client: RpcResolver, address: string) => {
 
 const fetchJsdContracts = async (client: JsdQueryClient, address: string) => {
   try {
-    const response = await client.jsd.jsd.contractsAll({
+    // Use listContracts method available in hyperwebjs 1.1.1
+    const response = await client.hyperweb.hvm.listContracts({
       pagination: {
         limit: 1000n,
         reverse: true,

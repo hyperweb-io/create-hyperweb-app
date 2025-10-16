@@ -24,7 +24,7 @@ export function useVoting({ chainName, proposal }: useVotingOptions) {
   const toastHandlers = useToastHandlers();
   const { data: signingClient } = useSigningClient(chainName);
   const { mutate: vote, isLoading: isVoting } = useVote({
-    clientResolver: signingClient,
+    clientResolver: signingClient as any,
     options: {
       context: defaultContext,
       ...toastHandlers,

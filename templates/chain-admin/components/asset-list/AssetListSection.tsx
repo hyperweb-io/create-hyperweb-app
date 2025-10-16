@@ -47,7 +47,11 @@ export const AssetListSection = ({ chainName }: AssetListSectionProps) => {
       <AssetsOverview
         isLoading={isLoading || !data}
         assets={data?.assets ?? []}
-        prices={data?.prices ?? {}}
+        prices={Object.fromEntries(
+          Object.entries(data?.prices ?? {}).filter(
+            ([, value]) => value != null
+          )
+        )}
         selectedChainName={chainName}
         refetch={refetch}
       />

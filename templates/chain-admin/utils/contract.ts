@@ -1,12 +1,16 @@
-import { AssetList, Chain } from '@chain-registry/v2-types';
+import { AssetList, Chain } from '@chain-registry/types';
 import { toBech32, fromBech32 } from '@interchainjs/encoding';
 import { Log, findAttribute } from '@interchainjs/utils';
 import { parseCoins } from '@interchainjs/amino';
 import BigNumber from 'bignumber.js';
-import { jsd, DeliverTxResponse as DeliverJsdTxResponse } from 'hyperwebjs';
+import {
+  hyperweb,
+  DeliverTxResponse as DeliverJsdTxResponse,
+} from 'hyperwebjs';
 import { AccessType } from '@interchainjs/react/cosmwasm/wasm/v1/types';
 import { CodeInfoResponse } from '@interchainjs/react/cosmwasm/wasm/v1/query';
-import { Coin, DeliverTxResponse } from '@interchainjs/react/types';
+import { DeliverTxResponse } from '@interchainjs/react/types';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 
 import { getExponentFromAsset } from './common';
 
@@ -195,11 +199,30 @@ export const toPascalCase = (str: string): string => {
 };
 
 export const getContractIndex = (txResult: DeliverJsdTxResponse) => {
-  const response = jsd.jsd.MsgInstantiateResponse.fromProtoMsg(
+  const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(
     // @ts-ignore
     txResult.msgResponses[0]
   );
   return response.index.toString();
+};
+
+export const getContractAddress = (txResult: DeliverJsdTxResponse) => {
+  const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(
+    // @ts-ignore
+    txResult.msgResponses[0]
+  );
+  return response.address;
+};
+
+export const getContractInfo = (txResult: DeliverJsdTxResponse) => {
+  const response = hyperweb.hvm.MsgInstantiateResponse.fromProtoMsg(
+    // @ts-ignore
+    txResult.msgResponses[0]
+  );
+  return {
+    index: response.index.toString(),
+    address: response.address,
+  };
 };
 
 export const readFileContent = (file: File): Promise<string> => {

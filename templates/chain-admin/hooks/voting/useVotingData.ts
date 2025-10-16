@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useChain } from '@interchain-kit/react';
 import { defaultContext, useQueries } from '@tanstack/react-query';
 import { ProposalStatus } from '@interchainjs/react/cosmos/gov/v1beta1/gov';
-import { createGetVote } from '@interchainjs/react/cosmos/gov/v1beta1/query.rpc.func';
+import { getVote } from '@interchainjs/react/cosmos/gov/v1beta1/query.rpc.func';
 import { Proposal as ProposalV1 } from '@interchainjs/react/cosmos/gov/v1/gov';
 import { chains } from 'chain-registry';
 import {
@@ -50,8 +50,7 @@ export function useVotingData(chainName: string) {
   const { address } = useChain(chainName);
   const { data: rpcEndpoint, isFetching } = useRpcEndpoint(chainName);
 
-  const getVote = createGetVote(rpcEndpoint);
-  const chain = chains.find((c) => c.chain_name === chainName);
+  const chain = chains.find((c) => c.chainName === chainName);
   const isReady = !!address && !!rpcEndpoint;
 
   const proposalsQuery = useGetProposals({
@@ -111,11 +110,15 @@ export function useVotingData(chainName: string) {
   const votesQueries = useQueries({
     queries: (votedProposalsQuery.data || []).map(({ id }) => ({
       queryKey: ['voteQuery', id, address],
-      queryFn: () =>
-        getVote({
+      queryFn: async () => {
+        if (!rpcEndpoint) {
+          throw new Error('RPC endpoint is not available');
+        }
+        return getVote(rpcEndpoint, {
           proposalId: id,
           voter: address || '',
-        }),
+        });
+      },
       enabled: isReady && !!votedProposalsQuery.data,
       keepPreviousData: true,
     })),
@@ -171,7 +174,7 @@ export function useVotingData(chainName: string) {
       Object.entries(singleQueries).map(([key, query]) => [key, query.data])
     ) as SingleQueriesData;
 
-    singleQueriesData?.proposals.forEach((proposal) => {
+    singleQueriesData?.proposals?.forEach((proposal) => {
       if (proposal.status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD) {
         (async () => {
           for (const { address } of chain?.apis?.rest || []) {

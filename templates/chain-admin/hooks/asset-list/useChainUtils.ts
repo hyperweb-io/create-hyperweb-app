@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { useWalletManager } from '@interchain-kit/react';
 import { Asset, AssetList } from '@chain-registry/types';
 import { asset_lists as ibcAssetLists } from '@chain-registry/assets';
-import { assets as chainAssets, ibc } from 'chain-registry';
-import { Coin } from '@interchainjs/react/types';
+import { assetLists as chainAssets, ibcData as ibc } from 'chain-registry';
+import { Coin } from '@interchainjs/react/cosmos/base/v1beta1/coin';
 import BigNumber from 'bignumber.js';
 
 import { PrettyAsset } from '@/components';
@@ -18,14 +18,14 @@ export const useChainUtils = (chainName: string) => {
     starshipData?.v1 ?? {};
 
   const isStarshipChain = starshipChains.some(
-    (chain) => chain.chain_name === chainName
+    (chain) => chain.chainName === chainName
   );
 
   const filterAssets = (assetList: AssetList[]): Asset[] => {
     return (
       assetList
-        .find(({ chain_name }) => chain_name === chainName)
-        ?.assets?.filter(({ type_asset }) => type_asset !== 'ics20') || []
+        .find(({ chainName }) => chainName === chainName)
+        ?.assets?.filter(({ typeAsset }) => typeAsset !== 'ics20') || []
     );
   };
 
@@ -49,7 +49,34 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getAssetByDenom = (denom: CoinDenom): Asset => {
-    return allAssets.find((asset) => asset.base === denom) as Asset;
+    const asset = allAssets.find((asset) => asset.base === denom);
+
+    // Fallback for hyperweb native token if not found in asset lists
+    if (!asset && denom === 'uhyper' && chainName === 'hyperweb') {
+      return {
+        base: 'uhyper',
+        name: 'Hyperweb',
+        display: 'hyper',
+        symbol: 'HYPER',
+        denomUnits: [
+          {
+            denom: 'uhyper',
+            exponent: 0,
+          },
+          {
+            denom: 'hyper',
+            exponent: 6,
+          },
+        ],
+        logoURIs: {
+          png: 'https://gist.githubusercontent.com/Anmol1696/bea1b3835dfb0fce3ab9ed993f5a0792/raw/7065493384a51c888752284be7c1afbf6135b50a/logo-png.png',
+          svg: '',
+        },
+        typeAsset: 'sdk.coin',
+      } as unknown as Asset;
+    }
+
+    return asset as Asset;
   };
 
   const denomToSymbol = (denom: CoinDenom): CoinSymbol => {
@@ -66,7 +93,7 @@ export const useChainUtils = (chainName: string) => {
       (asset) =>
         asset.symbol === symbol &&
         (!chainName ||
-          asset.traces?.[0].counterparty.chain_name.toLowerCase() ===
+          asset.traces?.[0].counterparty.chainName.toLowerCase() ===
             chainName.toLowerCase())
     );
     const base = asset?.base;
@@ -77,8 +104,15 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getExponentByDenom = (denom: CoinDenom): Exponent => {
+    // Special handling for hyperweb native token
+    if (denom === 'uhyper') {
+      return 6;
+    }
+
     const asset = getAssetByDenom(denom);
-    const unit = asset.denom_units.find(({ denom }) => denom === asset.display);
+    const unit = asset?.denomUnits?.find(
+      ({ denom }) => denom === asset.display
+    );
     return unit?.exponent || 0;
   };
 
@@ -98,24 +132,39 @@ export const useChainUtils = (chainName: string) => {
   };
 
   const getChainName = (ibcDenom: CoinDenom) => {
+    // Special handling for hyperweb native token
+    if (ibcDenom === 'uhyper' && chainName === 'hyperweb') {
+      return chainName;
+    }
+
     if (nativeAssets.find((asset) => asset.base === ibcDenom)) {
       return chainName;
     }
     const asset = ibcAssets.find((asset) => asset.base === ibcDenom);
-    const ibcChainName = asset?.traces?.[0].counterparty.chain_name;
+    const ibcChainName = asset?.traces?.[0].counterparty.chainName;
     if (!ibcChainName)
       throw Error('chainName not found for ibcDenom: ' + ibcDenom);
     return ibcChainName;
   };
 
   const getPrettyChainName = (ibcDenom: CoinDenom) => {
-    const chainName = getChainName(ibcDenom);
-    const chain = chains.find((chain) => chain.chainName === chainName);
+    // Special handling for hyperweb native token
+    if (ibcDenom === 'uhyper' && chainName === 'hyperweb') {
+      return 'Hyperweb Devnet';
+    }
+
+    const resolvedChainName = getChainName(ibcDenom);
+    const chain = chains.find((chain) => chain.chainName === resolvedChainName);
     if (!chain) throw Error('chain not found');
     return chain.prettyName;
   };
 
   const isNativeAsset = ({ denom }: PrettyAsset) => {
+    // Special handling for hyperweb native token
+    if (denom === 'uhyper' && chainName === 'hyperweb') {
+      return true;
+    }
+
     return !!nativeAssets.find((asset) => asset.base === denom);
   };
 
@@ -140,15 +189,15 @@ export const useChainUtils = (chainName: string) => {
 
     let ibcInfo = ibc.find(
       (i) =>
-        i.chain_1.chain_name === fromChainName &&
-        i.chain_2.chain_name === toChainName
+        i.chain1.chainName === fromChainName &&
+        i.chain2.chainName === toChainName
     );
 
     if (!ibcInfo) {
       ibcInfo = ibc.find(
         (i) =>
-          i.chain_1.chain_name === toChainName &&
-          i.chain_2.chain_name === fromChainName
+          i.chain1.chainName === toChainName &&
+          i.chain2.chainName === fromChainName
       );
       flipped = true;
     }
@@ -157,9 +206,9 @@ export const useChainUtils = (chainName: string) => {
       throw new Error('cannot find IBC info');
     }
 
-    const key = flipped ? 'chain_2' : 'chain_1';
-    const sourcePort = ibcInfo.channels[0][key].port_id;
-    const sourceChannel = ibcInfo.channels[0][key].channel_id;
+    const key = flipped ? 'chain2' : 'chain1';
+    const sourcePort = ibcInfo.channels[0][key].portId;
+    const sourceChannel = ibcInfo.channels[0][key].channelId;
 
     return { sourcePort, sourceChannel };
   };

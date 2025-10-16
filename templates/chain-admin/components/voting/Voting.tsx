@@ -58,7 +58,7 @@ export function Voting({ chainName }: VotingProps) {
   const { modal, open: openModal, close: closeModal, setTitle } = useModal('');
   const [tallies, setTallies] = useState<{ [key: string]: TallyResult }>({});
 
-  const chain = chains.find((c) => c.chain_name === chainName);
+  const chain = chains.find((c) => c.chainName === chainName);
 
   useEffect(() => {
     if (!data.proposals || data.proposals.length === 0) return;

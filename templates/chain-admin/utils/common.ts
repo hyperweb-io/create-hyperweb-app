@@ -1,5 +1,5 @@
 import { Wallet } from '@interchain-kit/core';
-import { Asset, AssetList, Chain } from '@chain-registry/v2-types';
+import { Asset, AssetList, Chain } from '@chain-registry/types';
 import BigNumber from 'bignumber.js';
 
 export const getNativeAsset = (assets: AssetList) => {

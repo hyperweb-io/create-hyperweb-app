@@ -56,7 +56,7 @@ export const RedelegateModal = ({
   const { data: signingClient } = useSigningClient(chainName);
   const { mutate: beginRedelegate, isLoading: isRedelegating } =
     useBeginRedelegate({
-      clientResolver: signingClient,
+      clientResolver: signingClient as any,
       options: {
         context: defaultContext,
         ...toastHandlers,

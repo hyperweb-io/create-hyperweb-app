@@ -3,7 +3,7 @@ import { AssetList, Chain } from '@chain-registry/types';
 import {
   Chain as ChainV2,
   AssetList as AssetListV2,
-} from '@chain-registry/v2-types';
+} from '@chain-registry/types';
 
 import { StarshipConfig } from '@/starship';
 import { convertKeysToCamelCase } from '@/utils';
@@ -31,20 +31,27 @@ export const useStarshipChains = () => {
         const { chains = [] } =
           (await fetcher<{ chains: Chain[] }>(`${baseUrl}/chains`)) ?? {};
 
+        const chainsWithType = chains.map((chain) => ({
+          ...chain,
+          chainType: 'cosmos' as const,
+        }));
+
         const assets = (await Promise.all(
-          chains.map((chain) =>
-            fetcher<AssetList>(`${baseUrl}/chains/${chain.chain_id}/assets`)
+          chainsWithType.map(
+            (chain) =>
+              // @ts-ignore
+              fetcher<AssetList>(`${baseUrl}/chains/${chain.chain_id}/assets`) // if use chainId, got error: Cannot read properties of undefined (reading 'chainName') at const { connect, disconnect, address, wallet } = useChain(selectedChain)
           )
         ).then((assetLists) => assetLists.filter(Boolean))) as AssetList[];
 
-        return chains.length > 0 && assets.length > 0
+        return chainsWithType.length > 0 && assets.length > 0
           ? {
               v1: {
-                chains,
+                chains: chainsWithType,
                 assets,
               },
               v2: {
-                chains: convertKeysToCamelCase(chains) as ChainV2[],
+                chains: convertKeysToCamelCase(chainsWithType) as ChainV2[],
                 assets: convertKeysToCamelCase(assets) as AssetListV2[],
               },
             }

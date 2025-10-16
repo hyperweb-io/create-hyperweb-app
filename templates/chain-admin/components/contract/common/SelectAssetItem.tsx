@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi';
-import { Asset } from '@chain-registry/v2-types';
+import { Asset } from '@chain-registry/types';
 import {
   Avatar,
   Box,

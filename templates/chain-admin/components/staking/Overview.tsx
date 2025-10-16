@@ -39,7 +39,7 @@ const Overview = ({
   const { data: signingClient } = useSigningClient(chainName);
   const { mutate: withdrawDelegatorReward, isLoading: isClaiming } =
     useWithdrawDelegatorReward({
-      clientResolver: signingClient,
+      clientResolver: signingClient as any,
       options: {
         context: defaultContext,
         ...toastHandlers,

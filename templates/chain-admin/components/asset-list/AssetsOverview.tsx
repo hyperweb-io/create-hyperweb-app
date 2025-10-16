@@ -162,7 +162,11 @@ const AssetsOverview = ({
 
       {data && dropdownTransferInfo && (
         <DropdownTransferModal
-          prices={data?.prices ?? {}}
+          prices={Object.fromEntries(
+            Object.entries(data?.prices ?? {}).filter(
+              ([, value]) => value != null
+            )
+          )}
           assets={ibcAssets}
           transferInfoState={{
             transferInfo: dropdownTransferInfo,
@@ -176,7 +180,11 @@ const AssetsOverview = ({
 
       {rowTransferInfo && (
         <RowTransferModal
-          prices={data?.prices ?? {}}
+          prices={Object.fromEntries(
+            Object.entries(data?.prices ?? {}).filter(
+              ([, value]) => value != null
+            )
+          )}
           transferInfo={rowTransferInfo}
           updateData={refetch}
           modalControl={rowModalControl}

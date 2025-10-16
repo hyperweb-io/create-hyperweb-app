@@ -59,7 +59,7 @@ export const UndelegateModal = ({
   const toastHandlers = useToastHandlers();
   const { data: signingClient } = useSigningClient(chainName);
   const { mutate: undelegate, isLoading: isUndelegating } = useUndelegate({
-    clientResolver: signingClient,
+    clientResolver: signingClient as any,
     options: {
       context: defaultContext,
       ...toastHandlers,

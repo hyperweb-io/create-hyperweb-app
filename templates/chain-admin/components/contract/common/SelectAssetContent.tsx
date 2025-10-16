@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
-import { assetLists } from '@chain-registry/v2';
+import { assetLists } from 'chain-registry';
 import { LuPlus } from 'react-icons/lu';
 
 import {

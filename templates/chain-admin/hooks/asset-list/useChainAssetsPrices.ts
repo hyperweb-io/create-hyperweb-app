@@ -8,11 +8,11 @@ type CoinGeckoUSD = { usd: number };
 type CoinGeckoUSDResponse = Record<CoinGeckoId, CoinGeckoUSD>;
 
 const getAssetsWithGeckoIds = (assets: Asset[]) => {
-  return assets.filter((asset) => !!asset?.coingecko_id);
+  return assets.filter((asset) => !!asset?.coingeckoId);
 };
 
 const getGeckoIds = (assets: Asset[]) => {
-  return assets.map((asset) => asset.coingecko_id) as string[];
+  return assets.map((asset) => asset.coingeckoId) as string[];
 };
 
 const formatPrices = (
@@ -20,7 +20,7 @@ const formatPrices = (
   assets: Asset[]
 ): Record<string, number> => {
   return Object.entries(prices).reduce((priceHash, cur) => {
-    const denom = assets.find((asset) => asset.coingecko_id === cur[0])!.base;
+    const denom = assets.find((asset) => asset.coingeckoId === cur[0])!.base;
     return { ...priceHash, [denom]: cur[1].usd };
   }, {});
 };
@@ -48,12 +48,27 @@ export const useChainAssetsPrices = (chainName: string) => {
   return useQuery({
     queryKey: ['useChainAssetsPrices', chainName],
     queryFn: () => fetchPrices(geckoIds),
-    select: (data) => ({
-      ...formatPrices(data, assetsWithGeckoIds),
-      ...(isStarshipChain
-        ? { [allAssets[0].base]: DEFAULT_HYPERWEB_TOKEN_PRICE }
-        : {}),
-    }),
+    select: (data) => {
+      const formattedPrices = formatPrices(data, assetsWithGeckoIds);
+
+      // Always add hyperweb price for hyperweb chain
+      const hyperwebPrice =
+        chainName === 'hyperweb'
+          ? { uhyper: DEFAULT_HYPERWEB_TOKEN_PRICE }
+          : {};
+
+      // Also add for starship chains if detected
+      const starshipPrice =
+        isStarshipChain && allAssets.length > 0
+          ? { [allAssets[0].base]: DEFAULT_HYPERWEB_TOKEN_PRICE }
+          : {};
+
+      return {
+        ...formattedPrices,
+        ...hyperwebPrice,
+        ...starshipPrice,
+      };
+    },
     staleTime: Infinity,
   });
 };

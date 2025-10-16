@@ -15,10 +15,10 @@ export const useJsContractInfo = ({
     queryFn: async () => {
       if (!jsdQueryClient) return null;
 
-      const response = await jsdQueryClient.jsd.jsd.contracts({
+      // Use getContractByIndex method available in hyperwebjs 1.1.1
+      const response = await jsdQueryClient.hyperweb.hvm.getContractByIndex({
         index: BigInt(contractIndex),
       });
-
       return response;
     },
     enabled: !!contractIndex && enabled,

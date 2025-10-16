@@ -1,17 +1,17 @@
 import "../styles/globals.css";
 import "@interchain-ui/react/styles";
 
-import type { AppProps } from "next/app";
-import { ChainProvider } from "@interchain-kit/react";
-import { assetLists, chains } from "@chain-registry/v2";
 import { keplrWallet } from "@interchain-kit/keplr-extension";
 import { leapWallet } from "@interchain-kit/leap-extension";
+import { ChainProvider, InterchainWalletModal } from "@interchain-kit/react";
 import {
   Box,
   ThemeProvider,
   useColorModeValue,
   useTheme,
 } from "@interchain-ui/react";
+import { assetLists, chains } from "chain-registry";
+import type { AppProps } from "next/app";
 
 const chain = chains.find((chain) => chain.chainName === "cosmoshub")!;
 
@@ -28,6 +28,7 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         // @ts-ignore
         signerOptions={{}}
         endpointOptions={{ endpoints: {} }}
+        walletModal={() => <InterchainWalletModal />}
       >
         <Box
           className={themeClass}

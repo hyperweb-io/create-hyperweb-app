@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { createGetCode } from '@interchainjs/react/cosmwasm/wasm/v1/query.rpc.func';
+import { getCode } from '@interchainjs/react/cosmwasm/wasm/v1/query.rpc.func';
 
 import { prettyCodeInfo } from '@/utils';
 import { useChainStore } from '@/contexts';
@@ -12,12 +12,11 @@ export const useCodeDetails = (codeId: number, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['useCodeDetails', codeId],
     queryFn: async () => {
-      const getCode = createGetCode(rpcEndpoint);
       try {
-        const { codeInfo } = await getCode({
+        const response = await getCode(rpcEndpoint!, {
           codeId: BigInt(codeId),
         });
-        return codeInfo && prettyCodeInfo(codeInfo);
+        return response.codeInfo && prettyCodeInfo(response.codeInfo);
       } catch (error) {
         console.error(error);
         return null;
